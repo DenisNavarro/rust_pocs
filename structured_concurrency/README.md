@@ -13,9 +13,9 @@ The best introduction I know to structured concurrency is an excellent article f
 Nathaniel J. Smith: [Notes on structured concurrency, or: Go statement considered harmful][].
 
 The code from the [Rust Book final project][] does not use structured concurrency. Indeed, it
-called `std::thread::spawn`. But then the borrow checker required to create an
+calls `std::thread::spawn`. But then the borrow checker requires to create an
 `Arc<Mutex<Receiver<Job>>>` instead of a `Mutex<Receiver<Job>>`, because the call to
-`std::thread::JoinHandle::join` did not change the lifetime of the `Mutex<Receiver<Job>>` seen by
+`std::thread::JoinHandle::join` does not change the lifetime of the `Mutex<Receiver<Job>>` seen by
 the borrow checker.
 
 Fortunately, [Rust 1.63.0][] introduced `std::thread::scope`, which allows to use the structured
