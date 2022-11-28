@@ -1,6 +1,6 @@
 // Adapted from:
 // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/main.rs
-// The original code lack error handling. I don't know yet if I will fix that too in this POC.
+// The original code lacks error handling. I don't know yet if I will fix that too in this POC.
 
 #![warn(clippy::nursery, clippy::pedantic)]
 #![allow(clippy::unused_io_amount)]
@@ -20,7 +20,7 @@ fn main() {
     let (sender, receiver) = mpsc::channel();
 
     // Instead of an Arc<Mutex<Receiver<Job>>>, we create a
-    // Mutex<Receiver<Job>> before the thread scope.
+    // Mutex<Receiver<Job>> before the `thread::scope` call.
     // In the original code, it was created inside `ThreadPool::new`:
     // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L26
     let receiver = Mutex::new(receiver);
