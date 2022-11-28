@@ -17,7 +17,7 @@ type Job = Box<dyn FnOnce() + Send + 'static>;
 
 // In the original code, `ThreadPool::new` panicked if the size (thread count) was 0:
 // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L20
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 pub struct ThreadCount(pub NonZeroUsize);
 
 impl<'scope> ThreadPool<'scope> {
