@@ -15,19 +15,16 @@ pub struct ThreadPool<'scope> {
 
 type Job = Box<dyn FnOnce() + Send + 'static>;
 
-// In the original code, `ThreadPool::new` panicked if the size (thread count) was 0:
-// https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L20
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
-pub struct ThreadCount(pub NonZeroUsize);
-
 impl<'scope> ThreadPool<'scope> {
     pub fn new<'env>(
         s: &'scope Scope<'scope, 'env>,
         sender: mpsc::Sender<Job>,
         receiver: &'env Mutex<mpsc::Receiver<Job>>,
-        thread_count: ThreadCount,
+        // In the original code, `ThreadPool::new` panicked if the size (thread count) was 0:
+        // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L20
+        thread_count: NonZeroUsize,
     ) -> ThreadPool<'scope> {
-        let thread_count = thread_count.0.get();
+        let thread_count = thread_count.get();
         let mut workers = Vec::with_capacity(thread_count);
         for id in 0..thread_count {
             workers.push(Worker::new(s, id, receiver));

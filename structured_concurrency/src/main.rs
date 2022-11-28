@@ -13,7 +13,7 @@ use std::sync::{mpsc, Mutex};
 use std::thread;
 use std::time::Duration;
 
-use structured_concurrency::{ThreadCount, ThreadPool};
+use structured_concurrency::ThreadPool;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap(); // unwrap like in the original code
@@ -26,7 +26,7 @@ fn main() {
     let receiver = Mutex::new(receiver);
 
     thread::scope(|s| {
-        let thread_count = ThreadCount(NonZeroUsize::new(4).unwrap());
+        let thread_count = NonZeroUsize::new(4).unwrap();
         let pool = ThreadPool::new(s, sender, &receiver, thread_count);
         for stream in listener.incoming().take(2) {
             let stream = stream.unwrap(); // unwrap like in the original code
