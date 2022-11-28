@@ -14,9 +14,7 @@ Nathaniel J. Smith: [Notes on structured concurrency, or: Go statement considere
 
 The code from the [Rust Book final project][] does not use structured concurrency. Indeed, it
 calls `std::thread::spawn`. But then the borrow checker requires to create an
-`Arc<Mutex<Receiver<Job>>>` instead of a `Mutex<Receiver<Job>>`, because the call to
-`std::thread::JoinHandle::join` does not change the lifetime of the `Mutex<Receiver<Job>>` seen by
-the borrow checker.
+`Arc<Mutex<Receiver<Job>>>` instead of a `Mutex<Receiver<Job>>`.
 
 Fortunately, [Rust 1.63.0][] introduced `std::thread::scope`, which allows to use the structured
 concurrency paradigm!
