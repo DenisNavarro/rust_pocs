@@ -21,7 +21,7 @@ concurrency paradigm!
 
 ## Remove a useless `Option`
 
-In the original code, the `Worker::thread` attribute was an `Option<thread::JoinHandle<()>>`:
+In the original code, the `Worker::thread` field was an `Option<thread::JoinHandle<()>>`:
 <https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L66>
 
 Why `Option`? Because `ThreadPool::drop` called `Option::take`:
