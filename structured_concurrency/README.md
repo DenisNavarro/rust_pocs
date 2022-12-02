@@ -45,7 +45,7 @@ I like using `#![warn(clippy::nursery, clippy::pedantic)]`.
 
 With a Makefile, the code is easier to update.
 
-I did not add automated tests, so the testing is still done manually by opening:
+I did not add automated tests, so the testing is still done manually by requesting:
 
   + <http://127.0.0.1:7878/>
   + <http://127.0.0.1:7878/sleep>
