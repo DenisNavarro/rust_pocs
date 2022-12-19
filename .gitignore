@@ -1,6 +1,5 @@
 
-bin_from_ninja/backup/target/
-bin_from_ninja/backup/Cargo.lock
+bin_from_ninja/backup/target
 structured_concurrency/target
 structured_concurrency/clippy.maketarget
 structured_concurrency/fmt.maketarget
