@@ -7,10 +7,10 @@
 //! - `/path/to/directory` to `/path/to/directory_2000-01-02-03h04` and
 //! - `/path/to/file` to `/path/to/file_2000-01-02-03h04`.
 
-use anyhow::Context;
+use anyhow::{bail, Context};
 use clap::Parser;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::process::Command;
 use time::{format_description, OffsetDateTime};
 
@@ -22,7 +22,7 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    let now = OffsetDateTime::now_local().context("Cannot determine the local offset.")?;
+    let now = OffsetDateTime::now_local().context("cannot determine the local offset")?;
     work(cli.paths, now)
 }
 
@@ -55,10 +55,10 @@ fn check_if_copy_seems_possible(
     dst_path_suffix: &str,
 ) -> anyhow::Result<CopyAction> {
     let metadata = fs::metadata(&src_path)
-        .with_context(|| format!("Failed to read metadata from {src_path:?}."))?;
+        .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
     let mut file_name = src_path
         .file_name()
-        .with_context(|| format!("{src_path:?} does not have a name."))?
+        .with_context(|| format!("{src_path:?} does not have a name"))?
         .to_owned();
     file_name.push(dst_path_suffix);
     let mut dst_path = src_path.clone();
@@ -73,20 +73,21 @@ fn check_if_copy_seems_possible(
 fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     let CopyAction { src, dst, is_dir } = copy_action;
     if *is_dir {
-        copy_dir(src, dst).with_context(|| format!("Failed to copy {src:?} to {dst:?}."))?;
+        let status = Command::new("cp")
+            .arg("-r")
+            .arg("--")
+            .arg(src)
+            .arg(dst)
+            .status()
+            .with_context(|| {
+                format!("failed to copy {src:?} to {dst:?}: failed to execute process")
+            })?;
+        if !status.success() {
+            bail!("failed to copy {src:?} to {dst:?}: {status}");
+        }
     } else {
-        fs::copy(src, dst).with_context(|| format!("Failed to copy {src:?} to {dst:?}."))?;
+        fs::copy(src, dst).with_context(|| format!("failed to copy {src:?} to {dst:?}"))?;
     }
-    Ok(())
-}
-
-fn copy_dir(src: &Path, dst: &Path) -> anyhow::Result<()> {
-    Command::new("cp")
-        .arg("-r")
-        .arg("--")
-        .arg(src)
-        .arg(dst)
-        .status()?;
     Ok(())
 }
 
