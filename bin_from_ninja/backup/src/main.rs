@@ -22,7 +22,7 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    let now = OffsetDateTime::now_local().context("cannot determine the local offset")?;
+    let now = OffsetDateTime::now_local().context("could not determine the local offset")?;
     work(cli.paths, now)
 }
 
