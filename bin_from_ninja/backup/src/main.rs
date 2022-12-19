@@ -22,7 +22,8 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    work(cli.paths, OffsetDateTime::now_utc())
+    let now = OffsetDateTime::now_local().context("Cannot determine the local offset.")?;
+    work(cli.paths, now)
 }
 
 fn work(src_paths: impl IntoIterator<Item = PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
