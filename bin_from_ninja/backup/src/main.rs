@@ -28,7 +28,8 @@ fn main() -> anyhow::Result<()> {
 
 fn work(src_paths: impl IntoIterator<Item = PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let dst_path_suffix = get_dst_path_suffix(now, "_[year]-[month]-[day]-[hour]h[minute]");
-    for copy_action in check_if_each_copy_seems_possible(src_paths, &dst_path_suffix)? {
+    let copy_actions: Vec<_> = check_if_each_copy_seems_possible(src_paths, &dst_path_suffix)?;
+    for copy_action in copy_actions {
         do_copy(&copy_action)?;
         println!("Copied {:?} to {:?}.", copy_action.src, copy_action.dst);
     }
