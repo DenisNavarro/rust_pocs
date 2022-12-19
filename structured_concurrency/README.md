@@ -51,8 +51,11 @@ I did not add automated tests, so the testing is still done manually by requesti
   + <http://127.0.0.1:7878/sleep>
   + <http://127.0.0.1:7878/invalid-path>
 
+If you want to see a POC with automated tests, you can read the code of [`backup`][].
+
 [the code]: https://github.com/rust-lang/book/tree/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code
 [Rust Book final project]: https://doc.rust-lang.org/stable/book/ch20-00-final-project-a-web-server.html
 [Notes on structured concurrency, or: Go statement considered harmful]: https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/
 [Rust 1.28.0]: https://blog.rust-lang.org/2018/08/02/Rust-1.28.html
 [Rust 1.63.0]: https://blog.rust-lang.org/2022/08/11/Rust-1.63.0.html
+[`backup`]: ../bin_from_ninja/backup

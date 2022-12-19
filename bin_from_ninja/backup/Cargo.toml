@@ -1,0 +1,10 @@
+[package]
+name = "backup"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.68"
+clap = { version = "4.0.29", features = ["derive"] }
+tempfile = "3.3.0"
+time = { version = "0.3.17", features = ["formatting", "macros"] }
