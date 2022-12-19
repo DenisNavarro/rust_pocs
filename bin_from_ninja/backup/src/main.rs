@@ -1,7 +1,7 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 
 //! The `backup` binary copies files and directories by adding a suffix which depends on the
-//! current datetime.
+//! current datetime. It is tested on Linux.
 //!
 //! For example, on 2000-01-02 03:04:05, `backup /path/to/directory /path/to/file` copies:
 //! - `/path/to/directory` to `/path/to/directory_2000-01-02-03h04` and
