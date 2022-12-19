@@ -186,7 +186,10 @@ mod tests {
             Then check the success is (false)
             and the following dirs exist: (["empty"])
             and the following files exist: (["foo"])
-            and the following paths do not exist: (["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]).
+            and the following paths do not exist: ([
+                "empty_2000-01-02-03h04",
+                "foo_2000-01-02-03h04",
+            ]).
         );
     }
 
@@ -200,7 +203,10 @@ mod tests {
             Then check the success is (false)
             and the following dirs exist: (["empty"])
             and the following files exist: (["foo"])
-            and the following paths do not exist: (["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]).
+            and the following paths do not exist: ([
+                "empty_2000-01-02-03h04",
+                "foo_2000-01-02-03h04",
+            ]).
         );
     }
 }
