@@ -12,7 +12,7 @@ There is a finished POC and an unfinished one:
     Current status:
 
     - [x] Finish the code of the [`backup`][] project: DONE.
-    - [ ] Finish the code of the [`synchronize_backup`][] project: TODO.
+    - [ ] Finish the code of the `synchronize_backup` project: TODO.
     - [ ] Improve the code which writes the `build.ninja` file: TODO.
 
     For now, I just published the `backup` project, but I will publish the rest soon.
