@@ -131,7 +131,7 @@ mod tests {
                 "foo_2000-01-02-03h04",
                 "bar.md_2000-01-02-03h04",
             ]),
-            AndTheFollowingPathsDoesNotExist(vec![]),
+            AndTheFollowingPathsDoNotExist(vec![]),
         );
     }
 
@@ -145,10 +145,7 @@ mod tests {
             ThenCheckTheSuccessIs(false),
             AndTheFollowingDirsExist(vec!["empty"]),
             AndTheFollowingFilesExist(vec!["foo"]),
-            AndTheFollowingPathsDoesNotExist(vec![
-                "empty_2000-01-02-03h04",
-                "foo_2000-01-02-03h04",
-            ]),
+            AndTheFollowingPathsDoNotExist(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
         );
     }
 
@@ -162,10 +159,7 @@ mod tests {
             ThenCheckTheSuccessIs(false),
             AndTheFollowingDirsExist(vec!["empty"]),
             AndTheFollowingFilesExist(vec!["foo"]),
-            AndTheFollowingPathsDoesNotExist(vec![
-                "empty_2000-01-02-03h04",
-                "foo_2000-01-02-03h04",
-            ]),
+            AndTheFollowingPathsDoNotExist(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
         );
     }
 
@@ -177,7 +171,7 @@ mod tests {
     struct ThenCheckTheSuccessIs(bool);
     struct AndTheFollowingDirsExist(Vec<&'static str>);
     struct AndTheFollowingFilesExist(Vec<&'static str>);
-    struct AndTheFollowingPathsDoesNotExist(Vec<&'static str>);
+    struct AndTheFollowingPathsDoNotExist(Vec<&'static str>);
 
     fn check_story(
         dirs_to_create: CreateDirs,
@@ -187,7 +181,7 @@ mod tests {
         should_succeed: ThenCheckTheSuccessIs,
         dirs_which_should_exist: AndTheFollowingDirsExist,
         files_which_should_exist: AndTheFollowingFilesExist,
-        paths_which_should_not_exist: AndTheFollowingPathsDoesNotExist,
+        paths_which_should_not_exist: AndTheFollowingPathsDoNotExist,
     ) {
         let tmp_dir = tempdir().unwrap();
         let tmp_dir_path = tmp_dir.path();
