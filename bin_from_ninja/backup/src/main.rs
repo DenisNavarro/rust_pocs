@@ -107,13 +107,13 @@ mod tests {
 
     #[test]
     fn ok() {
-        check(
-            ExistingDirsBefore(vec!["empty", "colors", "colors/dark"]),
-            ExistingFilesBefore(vec!["colors/red", "colors/dark/black", "foo", "bar.md"]),
-            ArgPaths(vec!["empty", "colors", "foo", "bar.md"]),
-            Now(datetime!(2000-01-02 03:04:05 UTC)),
-            ShouldSucceed(true),
-            ExistingDirsAfter(vec![
+        check_story(
+            CreateDirs(vec!["empty", "colors", "colors/dark"]),
+            ThenCreateFiles(vec!["colors/red", "colors/dark/black", "foo", "bar.md"]),
+            ThenLaunchWorkOnPaths(vec!["empty", "colors", "foo", "bar.md"]),
+            OnDatetime(datetime!(2000-01-02 03:04:05 UTC)),
+            ThenCheckTheSuccessIs(true),
+            AndTheFollowingDirsExist(vec![
                 "empty",
                 "colors",
                 "colors/dark",
@@ -121,7 +121,7 @@ mod tests {
                 "colors_2000-01-02-03h04",
                 "colors_2000-01-02-03h04/dark",
             ]),
-            ExistingFilesAfter(vec![
+            AndTheFollowingFilesExist(vec![
                 "colors/red",
                 "colors/dark/black",
                 "foo",
@@ -131,65 +131,65 @@ mod tests {
                 "foo_2000-01-02-03h04",
                 "bar.md_2000-01-02-03h04",
             ]),
-            NotExistingPathsAfter(vec![]),
+            AndTheFollowingPathDoesNotExist(vec![]),
         );
     }
 
     #[test]
     fn fail_if_src_path_does_not_exist() {
-        check(
-            ExistingDirsBefore(vec!["empty"]),
-            ExistingFilesBefore(vec!["foo"]),
-            ArgPaths(vec!["empty", "foo", "bar.md"]),
-            Now(datetime!(2000-01-02 03:04:05 UTC)),
-            ShouldSucceed(false),
-            ExistingDirsAfter(vec!["empty"]),
-            ExistingFilesAfter(vec!["foo"]),
-            NotExistingPathsAfter(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
+        check_story(
+            CreateDirs(vec!["empty"]),
+            ThenCreateFiles(vec!["foo"]),
+            ThenLaunchWorkOnPaths(vec!["empty", "foo", "bar.md"]),
+            OnDatetime(datetime!(2000-01-02 03:04:05 UTC)),
+            ThenCheckTheSuccessIs(false),
+            AndTheFollowingDirsExist(vec!["empty"]),
+            AndTheFollowingFilesExist(vec!["foo"]),
+            AndTheFollowingPathDoesNotExist(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
         );
     }
 
     #[test]
     fn fail_if_src_path_does_not_have_a_name() {
-        check(
-            ExistingDirsBefore(vec!["empty"]),
-            ExistingFilesBefore(vec!["foo"]),
-            ArgPaths(vec!["empty", "foo", ".."]),
-            Now(datetime!(2000-01-02 03:04:05 UTC)),
-            ShouldSucceed(false),
-            ExistingDirsAfter(vec!["empty"]),
-            ExistingFilesAfter(vec!["foo"]),
-            NotExistingPathsAfter(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
+        check_story(
+            CreateDirs(vec!["empty"]),
+            ThenCreateFiles(vec!["foo"]),
+            ThenLaunchWorkOnPaths(vec!["empty", "foo", ".."]),
+            OnDatetime(datetime!(2000-01-02 03:04:05 UTC)),
+            ThenCheckTheSuccessIs(false),
+            AndTheFollowingDirsExist(vec!["empty"]),
+            AndTheFollowingFilesExist(vec!["foo"]),
+            AndTheFollowingPathDoesNotExist(vec!["empty_2000-01-02-03h04", "foo_2000-01-02-03h04"]),
         );
     }
 
     // Workaround to emulate named arguments
-    struct ExistingDirsBefore(Vec<&'static str>);
-    struct ExistingFilesBefore(Vec<&'static str>);
-    struct ArgPaths(Vec<&'static str>);
-    struct Now(OffsetDateTime);
-    struct ShouldSucceed(bool);
-    struct ExistingDirsAfter(Vec<&'static str>);
-    struct ExistingFilesAfter(Vec<&'static str>);
-    struct NotExistingPathsAfter(Vec<&'static str>);
+    struct CreateDirs(Vec<&'static str>);
+    struct ThenCreateFiles(Vec<&'static str>);
+    struct ThenLaunchWorkOnPaths(Vec<&'static str>);
+    struct OnDatetime(OffsetDateTime);
+    struct ThenCheckTheSuccessIs(bool);
+    struct AndTheFollowingDirsExist(Vec<&'static str>);
+    struct AndTheFollowingFilesExist(Vec<&'static str>);
+    struct AndTheFollowingPathDoesNotExist(Vec<&'static str>);
 
-    fn check(
-        existing_dirs_before: ExistingDirsBefore,
-        existing_files_before: ExistingFilesBefore,
-        arg_paths: ArgPaths,
-        now: Now,
-        should_succeed: ShouldSucceed,
-        existing_dirs_after: ExistingDirsAfter,
-        existing_files_after: ExistingFilesAfter,
-        not_existing_paths_after: NotExistingPathsAfter,
+    fn check_story(
+        dirs_to_create: CreateDirs,
+        files_to_create: ThenCreateFiles,
+        arg_paths: ThenLaunchWorkOnPaths,
+        now: OnDatetime,
+        should_succeed: ThenCheckTheSuccessIs,
+        dirs_which_should_exist: AndTheFollowingDirsExist,
+        files_which_should_exist: AndTheFollowingFilesExist,
+        paths_which_should_not_exist: AndTheFollowingPathDoesNotExist,
     ) {
         let tmp_dir = tempdir().unwrap();
         let tmp_dir_path = tmp_dir.path();
-        for path in &existing_dirs_before.0 {
+        for path in &dirs_to_create.0 {
             fs::create_dir(tmp_dir_path.join(path)).unwrap();
             println!("Created dir: {:?}", tmp_dir_path.join(path));
         }
-        for path in &existing_files_before.0 {
+        for path in &files_to_create.0 {
             File::create(tmp_dir_path.join(path)).unwrap();
             println!("Created file: {:?}", tmp_dir_path.join(path));
         }
@@ -200,13 +200,13 @@ mod tests {
         } else {
             assert!(result.is_err());
         }
-        for path in &existing_dirs_after.0 {
+        for path in &dirs_which_should_exist.0 {
             assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_dir());
         }
-        for path in &existing_files_after.0 {
+        for path in &files_which_should_exist.0 {
             assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_file());
         }
-        for path in &not_existing_paths_after.0 {
+        for path in &paths_which_should_not_exist.0 {
             assert!(fs::metadata(tmp_dir_path.join(path)).is_err());
         }
     }
