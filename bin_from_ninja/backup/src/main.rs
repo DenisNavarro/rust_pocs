@@ -193,11 +193,7 @@ mod tests {
             File::create(tmp_dir_path.join(path)).unwrap();
             println!("Created file: {:?}", tmp_dir_path.join(path));
         }
-        let src_paths = arg_paths
-            .0
-            .iter()
-            .copied()
-            .map(|path| tmp_dir_path.join(path));
+        let src_paths = arg_paths.0.iter().map(|path| tmp_dir_path.join(path));
         let result = work(src_paths, now.0);
         if should_succeed.0 {
             result.unwrap();
