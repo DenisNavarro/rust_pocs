@@ -55,12 +55,12 @@ fn check_if_copy_seems_possible(
     src_path: PathBuf,
     dst_path_suffix: &str,
 ) -> anyhow::Result<CopyAction> {
-    let metadata = fs::metadata(&src_path)
-        .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
     let mut file_name = src_path
         .file_name()
         .with_context(|| format!("{src_path:?} does not have a name"))?
         .to_owned();
+    let metadata = fs::metadata(&src_path)
+        .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
     file_name.push(dst_path_suffix);
     let mut dst_path = src_path.clone();
     dst_path.set_file_name(&file_name);
