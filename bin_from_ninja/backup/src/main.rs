@@ -1,14 +1,5 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 
-//! The `backup` binary copies files and directories by adding a suffix which depends on the
-//! current datetime. It is tested on Linux.
-//!
-//! For example, on 2000-01-02 03:04:05, `backup /path/to/directory /path/to/file` copies:
-//! - `/path/to/directory` to `/path/to/directory_2000-01-02-03h04` and
-//! - `/path/to/file` to `/path/to/file_2000-01-02-03h04`.
-//!
-//! `backup` follows symbolic links.
-
 use anyhow::{bail, Context};
 use clap::Parser;
 use std::fs;
@@ -17,7 +8,14 @@ use std::process::Command;
 use time::{format_description, OffsetDateTime};
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+/// Copy directories and files by adding a suffix which depends on the current datetime.
+/// Tested on Linux.
+///
+/// For example, on 2022-12-20 13:14:15, `backup /path/to/directory /path/to/file` copies
+/// `/path/to/directory` to `/path/to/directory_2022-12-20-13h14` and
+/// `/path/to/file` to `/path/to/file_2022-12-20-13h14`.
+///
+/// `backup` follows symbolic links.
 struct Cli {
     paths: Vec<PathBuf>,
 }
@@ -124,22 +122,22 @@ mod tests {
         ]);
         let result = story.launch_work_on_paths(
             ["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"],
-            datetime!(2000-01-02 03:04:05 UTC),
+            datetime!(2022-12-20 13:14:15 UTC),
         );
         result.unwrap();
         story.check_the_following_dirs_exist([
-            "empty_2000-01-02-03h04",
-            "colors_2000-01-02-03h04",
-            "colors_2000-01-02-03h04/dark",
-            "--_2000-01-02-03h04",
-            "-_2000-01-02-03h04",
+            "empty_2022-12-20-13h14",
+            "colors_2022-12-20-13h14",
+            "colors_2022-12-20-13h14/dark",
+            "--_2022-12-20-13h14",
+            "-_2022-12-20-13h14",
         ]);
         story.check_the_following_files_exist([
-            "colors_2000-01-02-03h04/red",
-            "colors_2000-01-02-03h04/dark/black",
-            "foo_2000-01-02-03h04",
-            "bar.md_2000-01-02-03h04",
-            "--b a z_2000-01-02-03h04",
+            "colors_2022-12-20-13h14/red",
+            "colors_2022-12-20-13h14/dark/black",
+            "foo_2022-12-20-13h14",
+            "bar.md_2022-12-20-13h14",
+            "--b a z_2022-12-20-13h14",
         ]);
     }
 
@@ -149,11 +147,11 @@ mod tests {
         story.create_dirs(["empty"]);
         story.create_files(["foo"]);
         let result =
-            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2000-01-02 03:04:05 UTC));
+            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2022-12-20 13:14:15 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2000-01-02-03h04",
-            "foo_2000-01-02-03h04",
+            "empty_2022-12-20-13h14",
+            "foo_2022-12-20-13h14",
         ]);
     }
 
@@ -164,28 +162,28 @@ mod tests {
         story.create_files(["foo"]);
         let result = story.launch_work_on_paths(
             ["empty", "foo", "bar.md"],
-            datetime!(2000-01-02 03:04:05 UTC),
+            datetime!(2022-12-20 13:14:15 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2000-01-02-03h04",
-            "foo_2000-01-02-03h04",
+            "empty_2022-12-20-13h14",
+            "foo_2022-12-20-13h14",
         ]);
     }
 
     #[test]
     fn fail_if_dir_dst_path_already_exists() {
         let story = Story::new();
-        story.create_dirs(["empty", "empty_2000-01-02-03h04"]);
+        story.create_dirs(["empty", "empty_2022-12-20-13h14"]);
         story.create_files(["foo", "bar.md"]);
         let result = story.launch_work_on_paths(
             ["foo", "bar.md", "empty"],
-            datetime!(2000-01-02 03:04:05 UTC),
+            datetime!(2022-12-20 13:14:15 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "foo_2000-01-02-03h04",
-            "bar.md_2000-01-02-03h04",
+            "foo_2022-12-20-13h14",
+            "bar.md_2022-12-20-13h14",
         ]);
     }
 
@@ -193,15 +191,15 @@ mod tests {
     fn fail_if_file_dst_path_already_exists() {
         let story = Story::new();
         story.create_dirs(["empty"]);
-        story.create_files(["foo", "bar.md", "bar.md_2000-01-02-03h04"]);
+        story.create_files(["foo", "bar.md", "bar.md_2022-12-20-13h14"]);
         let result = story.launch_work_on_paths(
             ["empty", "foo", "bar.md"],
-            datetime!(2000-01-02 03:04:05 UTC),
+            datetime!(2022-12-20 13:14:15 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2000-01-02-03h04",
-            "foo_2000-01-02-03h04",
+            "empty_2022-12-20-13h14",
+            "foo_2022-12-20-13h14",
         ]);
     }
 
