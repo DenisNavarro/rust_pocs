@@ -108,143 +108,168 @@ struct CopyAction {
 mod tests {
     use super::*;
     use std::fs::{self, File};
-    use tempfile::tempdir;
+    use tempfile::{tempdir, TempDir};
     use time::macros::datetime;
-
-    macro_rules! check_story {
-        (
-            Create dirs ($dirs_to_create:expr).
-            Then create files ($files_to_create:expr).
-            Then launch work on paths ($arg_paths:expr)
-            on ($now:expr).
-            Then check the success is ($should_succeed:expr)
-            and the following dirs exist: ($dirs_which_should_exist:expr)
-            and the following files exist: ($files_which_should_exist:expr)
-            and the following paths do not exist: ($paths_which_should_not_exist:expr).
-        ) => {
-            let tmp_dir = tempdir().unwrap();
-            let tmp_dir_path = tmp_dir.path();
-            for path in $dirs_to_create {
-                fs::create_dir(tmp_dir_path.join(path)).unwrap();
-                println!("Created dir: {:?}", tmp_dir_path.join(path));
-            }
-            for path in $files_to_create {
-                File::create(tmp_dir_path.join(path)).unwrap();
-                println!("Created file: {:?}", tmp_dir_path.join(path));
-            }
-            let src_paths = $arg_paths.iter().map(|path| tmp_dir_path.join(path));
-            let result = work(src_paths, $now);
-            if $should_succeed {
-                result.unwrap();
-            } else {
-                assert!(result.is_err());
-            }
-            for path in $dirs_which_should_exist {
-                let path: &'static str = path; // help the compiler to infer type
-                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_dir());
-            }
-            for path in $files_which_should_exist {
-                let path: &'static str = path; // help the compiler to infer type
-                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_file());
-            }
-            for path in $paths_which_should_not_exist {
-                let path: &'static str = path; // help the compiler to infer type
-                assert!(fs::metadata(tmp_dir_path.join(path)).is_err());
-            }
-        };
-    }
 
     #[test]
     fn ok() {
-        check_story!(
-            Create dirs (["empty", "colors", "colors/dark", "--", "-"]).
-            Then create files (["colors/red", "colors/dark/black", "foo", "bar.md", "--b a z"]).
-            Then launch work on paths (["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"])
-            on (datetime!(2000-01-02 03:04:05 UTC)).
-            Then check the success is (true)
-            and the following dirs exist: ([
-                "empty_2000-01-02-03h04",
-                "colors_2000-01-02-03h04",
-                "colors_2000-01-02-03h04/dark",
-                "--_2000-01-02-03h04",
-                "-_2000-01-02-03h04",
-            ])
-            and the following files exist: ([
-                "colors_2000-01-02-03h04/red",
-                "colors_2000-01-02-03h04/dark/black",
-                "foo_2000-01-02-03h04",
-                "bar.md_2000-01-02-03h04",
-                "--b a z_2000-01-02-03h04",
-            ])
-            and the following paths do not exist: ([]).
+        let story = Story::new();
+        story.create_dirs(["empty", "colors", "colors/dark", "--", "-"]);
+        story.create_files([
+            "colors/red",
+            "colors/dark/black",
+            "foo",
+            "bar.md",
+            "--b a z",
+        ]);
+        let result = story.launch_work_on_paths(
+            ["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"],
+            datetime!(2000-01-02 03:04:05 UTC),
         );
+        result.unwrap();
+        story.check_the_following_dirs_exist([
+            "empty_2000-01-02-03h04",
+            "colors_2000-01-02-03h04",
+            "colors_2000-01-02-03h04/dark",
+            "--_2000-01-02-03h04",
+            "-_2000-01-02-03h04",
+        ]);
+        story.check_the_following_files_exist([
+            "colors_2000-01-02-03h04/red",
+            "colors_2000-01-02-03h04/dark/black",
+            "foo_2000-01-02-03h04",
+            "bar.md_2000-01-02-03h04",
+            "--b a z_2000-01-02-03h04",
+        ]);
     }
 
     #[test]
     fn fail_if_src_path_does_not_have_a_name() {
-        check_story!(
-            Create dirs (["empty"]).
-            Then create files (["foo"]).
-            Then launch work on paths (["empty", "foo", ".."])
-            on (datetime!(2000-01-02 03:04:05 UTC)).
-            Then check the success is (false)
-            and the following dirs exist: ([])
-            and the following files exist: ([])
-            and the following paths do not exist: ([
-                "empty_2000-01-02-03h04",
-                "foo_2000-01-02-03h04",
-            ]).
-        );
+        let story = Story::new();
+        story.create_dirs(["empty"]);
+        story.create_files(["foo"]);
+        let result =
+            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2000-01-02 03:04:05 UTC));
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist([
+            "empty_2000-01-02-03h04",
+            "foo_2000-01-02-03h04",
+        ]);
     }
 
     #[test]
     fn fail_if_src_path_does_not_exist() {
-        check_story!(
-            Create dirs (["empty"]).
-            Then create files (["foo"]).
-            Then launch work on paths (["empty", "foo", "bar.md"])
-            on (datetime!(2000-01-02 03:04:05 UTC)).
-            Then check the success is (false)
-            and the following dirs exist: ([])
-            and the following files exist: ([])
-            and the following paths do not exist: ([
-                "empty_2000-01-02-03h04",
-                "foo_2000-01-02-03h04",
-            ]).
+        let story = Story::new();
+        story.create_dirs(["empty"]);
+        story.create_files(["foo"]);
+        let result = story.launch_work_on_paths(
+            ["empty", "foo", "bar.md"],
+            datetime!(2000-01-02 03:04:05 UTC),
         );
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist([
+            "empty_2000-01-02-03h04",
+            "foo_2000-01-02-03h04",
+        ]);
     }
 
     #[test]
     fn fail_if_dir_dst_path_already_exists() {
-        check_story!(
-            Create dirs (["empty", "empty_2000-01-02-03h04"]).
-            Then create files (["foo", "bar.md"]).
-            Then launch work on paths (["foo", "bar.md", "empty"])
-            on (datetime!(2000-01-02 03:04:05 UTC)).
-            Then check the success is (false)
-            and the following dirs exist: ([])
-            and the following files exist: ([])
-            and the following paths do not exist: ([
-                "foo_2000-01-02-03h04",
-                "bar.md_2000-01-02-03h04",
-            ]).
+        let story = Story::new();
+        story.create_dirs(["empty", "empty_2000-01-02-03h04"]);
+        story.create_files(["foo", "bar.md"]);
+        let result = story.launch_work_on_paths(
+            ["foo", "bar.md", "empty"],
+            datetime!(2000-01-02 03:04:05 UTC),
         );
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist([
+            "foo_2000-01-02-03h04",
+            "bar.md_2000-01-02-03h04",
+        ]);
     }
 
     #[test]
     fn fail_if_file_dst_path_already_exists() {
-        check_story!(
-            Create dirs (["empty"]).
-            Then create files (["foo", "bar.md", "bar.md_2000-01-02-03h04"]).
-            Then launch work on paths (["empty", "foo", "bar.md"])
-            on (datetime!(2000-01-02 03:04:05 UTC)).
-            Then check the success is (false)
-            and the following dirs exist: ([])
-            and the following files exist: ([])
-            and the following paths do not exist: ([
-                "empty_2000-01-02-03h04",
-                "foo_2000-01-02-03h04",
-            ]).
+        let story = Story::new();
+        story.create_dirs(["empty"]);
+        story.create_files(["foo", "bar.md", "bar.md_2000-01-02-03h04"]);
+        let result = story.launch_work_on_paths(
+            ["empty", "foo", "bar.md"],
+            datetime!(2000-01-02 03:04:05 UTC),
         );
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist([
+            "empty_2000-01-02-03h04",
+            "foo_2000-01-02-03h04",
+        ]);
+    }
+
+    struct Story {
+        tmp_dir: TempDir,
+    }
+
+    impl Story {
+        fn new() -> Story {
+            Story {
+                tmp_dir: tempdir().unwrap(),
+            }
+        }
+
+        fn create_dirs<const N: usize>(&self, dirs_to_create: [&'static str; N]) {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in dirs_to_create {
+                fs::create_dir(tmp_dir_path.join(path)).unwrap();
+                println!("Created dir: {:?}", tmp_dir_path.join(path));
+            }
+        }
+
+        fn create_files<const N: usize>(&self, files_to_create: [&'static str; N]) {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in files_to_create {
+                File::create(tmp_dir_path.join(path)).unwrap();
+                println!("Created file: {:?}", tmp_dir_path.join(path));
+            }
+        }
+
+        fn launch_work_on_paths<const N: usize>(
+            &self,
+            arg_paths: [&'static str; N],
+            now: OffsetDateTime,
+        ) -> anyhow::Result<()> {
+            let tmp_dir_path = self.tmp_dir.path();
+            let src_paths = arg_paths.iter().map(|path| tmp_dir_path.join(path));
+            work(src_paths, now)
+        }
+
+        fn check_the_following_dirs_exist<const N: usize>(
+            &self,
+            dirs_which_should_exist: [&'static str; N],
+        ) {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in dirs_which_should_exist {
+                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_dir());
+            }
+        }
+
+        fn check_the_following_files_exist<const N: usize>(
+            &self,
+            files_which_should_exist: [&'static str; N],
+        ) {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in files_which_should_exist {
+                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_file());
+            }
+        }
+
+        fn check_the_following_paths_do_not_exist<const N: usize>(
+            &self,
+            paths_which_should_not_exist: [&'static str; N],
+        ) {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in paths_which_should_not_exist {
+                assert!(fs::metadata(tmp_dir_path.join(path)).is_err());
+            }
+        }
     }
 }
