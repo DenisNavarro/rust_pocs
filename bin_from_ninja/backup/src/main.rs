@@ -66,6 +66,9 @@ fn check_if_copy_seems_possible(
     file_name.push(dst_path_suffix);
     let mut dst_path = src_path.clone();
     dst_path.set_file_name(&file_name);
+    if fs::metadata(&dst_path).is_ok() {
+        bail!("{dst_path:?} already exists");
+    }
     Ok(CopyAction {
         src: src_path,
         dst: dst_path,
@@ -199,6 +202,40 @@ mod tests {
         check_story!(
             Create dirs (["empty"]).
             Then create files (["foo"]).
+            Then launch work on paths (["empty", "foo", "bar.md"])
+            on (datetime!(2000-01-02 03:04:05 UTC)).
+            Then check the success is (false)
+            and the following dirs exist: ([])
+            and the following files exist: ([])
+            and the following paths do not exist: ([
+                "empty_2000-01-02-03h04",
+                "foo_2000-01-02-03h04",
+            ]).
+        );
+    }
+
+    #[test]
+    fn fail_if_dir_dst_path_already_exists() {
+        check_story!(
+            Create dirs (["empty", "empty_2000-01-02-03h04"]).
+            Then create files (["foo", "bar.md"]).
+            Then launch work on paths (["foo", "bar.md", "empty"])
+            on (datetime!(2000-01-02 03:04:05 UTC)).
+            Then check the success is (false)
+            and the following dirs exist: ([])
+            and the following files exist: ([])
+            and the following paths do not exist: ([
+                "foo_2000-01-02-03h04",
+                "bar.md_2000-01-02-03h04",
+            ]).
+        );
+    }
+
+    #[test]
+    fn fail_if_file_dst_path_already_exists() {
+        check_story!(
+            Create dirs (["empty"]).
+            Then create files (["foo", "bar.md", "bar.md_2000-01-02-03h04"]).
             Then launch work on paths (["empty", "foo", "bar.md"])
             on (datetime!(2000-01-02 03:04:05 UTC)).
             Then check the success is (false)
