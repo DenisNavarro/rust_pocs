@@ -15,15 +15,15 @@ use time::{format_description, OffsetDateTime};
 /// `/path/to/directory` to `/path/to/directory_2022-12-20-13h14` and
 /// `/path/to/file` to `/path/to/file_2022-12-20-13h14`.
 ///
-/// `backup` follows symbolic links.
+/// `backup` follows command-line symlinks.
 struct Cli {
-    paths: Vec<PathBuf>,
+    src_paths: Vec<PathBuf>,
 }
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     let now = OffsetDateTime::now_local().context("could not determine the local offset")?;
-    work(cli.paths, now)
+    work(cli.src_paths, now)
 }
 
 fn work(src_paths: impl IntoIterator<Item = PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
@@ -79,7 +79,7 @@ fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     if *is_dir {
         // TODO: Find an easy cross-plateform way to copy recursively a directory.
         let status = Command::new("cp")
-            .arg("-rL")
+            .arg("-rH")
             .arg("--")
             .arg(src)
             .arg(dst)
@@ -270,4 +270,6 @@ mod tests {
             }
         }
     }
+
+    // TODO: add unit tests with symlinks.
 }

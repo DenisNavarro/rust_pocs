@@ -11,11 +11,9 @@ There is a finished POC and an unfinished one:
     binaries to `$HOME/bin` with a nice workflow, with a combination of make and [Ninja][].
     Current status:
 
-    - [x] Finish the code of the [`backup`][] project: DONE.
-    - [ ] Finish the code of the `synchronize_backup` project: TODO.
-    - [ ] Improve the code which writes the `build.ninja` file: TODO.
-
-    For now, I just published the `backup` project, but I will publish the rest soon.
+    - [x] Publish the [`backup`][] project: DONE.
+    - [ ] Publish the `synchronize_backup` project: TODO. The first version is not finished yet.
+    - [ ] Publish the code which writes the `build.ninja` file: TODO. Improve it before.
 
 [`structured_concurrency`]: ./structured_concurrency
 [the code]: https://github.com/rust-lang/book/tree/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code
