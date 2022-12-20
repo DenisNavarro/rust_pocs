@@ -6,6 +6,8 @@
 //! For example, on 2000-01-02 03:04:05, `backup /path/to/directory /path/to/file` copies:
 //! - `/path/to/directory` to `/path/to/directory_2000-01-02-03h04` and
 //! - `/path/to/file` to `/path/to/file_2000-01-02-03h04`.
+//!
+//! `backup` follows symbolic links.
 
 use anyhow::{bail, Context};
 use clap::Parser;
@@ -74,8 +76,9 @@ fn check_if_copy_seems_possible(
 fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     let CopyAction { src, dst, is_dir } = copy_action;
     if *is_dir {
+        // TODO: Find an easy cross-plateform way to copy recursively a directory.
         let status = Command::new("cp")
-            .arg("-r")
+            .arg("-rL")
             .arg("--")
             .arg(src)
             .arg(dst)
@@ -134,9 +137,11 @@ mod tests {
                 assert!(result.is_err());
             }
             for path in $dirs_which_should_exist {
+                let path: &'static str = path; // help the compiler to infer type
                 assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_dir());
             }
             for path in $files_which_should_exist {
+                let path: &'static str = path; // help the compiler to infer type
                 assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_file());
             }
             for path in $paths_which_should_not_exist {
@@ -149,28 +154,24 @@ mod tests {
     #[test]
     fn ok() {
         check_story!(
-            Create dirs (["empty", "colors", "colors/dark"]).
-            Then create files (["colors/red", "colors/dark/black", "foo", "bar.md"]).
-            Then launch work on paths (["empty", "colors", "foo", "bar.md"])
+            Create dirs (["empty", "colors", "colors/dark", "--", "-"]).
+            Then create files (["colors/red", "colors/dark/black", "foo", "bar.md", "--b a z"]).
+            Then launch work on paths (["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"])
             on (datetime!(2000-01-02 03:04:05 UTC)).
             Then check the success is (true)
             and the following dirs exist: ([
-                "empty",
-                "colors",
-                "colors/dark",
                 "empty_2000-01-02-03h04",
                 "colors_2000-01-02-03h04",
                 "colors_2000-01-02-03h04/dark",
+                "--_2000-01-02-03h04",
+                "-_2000-01-02-03h04",
             ])
             and the following files exist: ([
-                "colors/red",
-                "colors/dark/black",
-                "foo",
-                "bar.md",
                 "colors_2000-01-02-03h04/red",
                 "colors_2000-01-02-03h04/dark/black",
                 "foo_2000-01-02-03h04",
                 "bar.md_2000-01-02-03h04",
+                "--b a z_2000-01-02-03h04",
             ])
             and the following paths do not exist: ([]).
         );
@@ -184,8 +185,8 @@ mod tests {
             Then launch work on paths (["empty", "foo", ".."])
             on (datetime!(2000-01-02 03:04:05 UTC)).
             Then check the success is (false)
-            and the following dirs exist: (["empty"])
-            and the following files exist: (["foo"])
+            and the following dirs exist: ([])
+            and the following files exist: ([])
             and the following paths do not exist: ([
                 "empty_2000-01-02-03h04",
                 "foo_2000-01-02-03h04",
@@ -201,8 +202,8 @@ mod tests {
             Then launch work on paths (["empty", "foo", "bar.md"])
             on (datetime!(2000-01-02 03:04:05 UTC)).
             Then check the success is (false)
-            and the following dirs exist: (["empty"])
-            and the following files exist: (["foo"])
+            and the following dirs exist: ([])
+            and the following files exist: ([])
             and the following paths do not exist: ([
                 "empty_2000-01-02-03h04",
                 "foo_2000-01-02-03h04",
