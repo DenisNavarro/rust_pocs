@@ -11,9 +11,9 @@ use time::{format_description, OffsetDateTime};
 /// Copy directories and files by adding a suffix which depends on the current datetime.
 /// Tested on Linux.
 ///
-/// For example, on 2022-12-20 13:14:15, `backup /path/to/directory /path/to/file` copies
-/// `/path/to/directory` to `/path/to/directory_2022-12-20-13h14` and
-/// `/path/to/file` to `/path/to/file_2022-12-20-13h14`.
+/// For example, on 2022-12-13 14:15:16, `backup /path/to/directory /path/to/file` copies
+/// `/path/to/directory` to `/path/to/directory_2022-12-13-14h15` and
+/// `/path/to/file` to `/path/to/file_2022-12-13-14h15`.
 ///
 /// `backup` follows command-line symlinks.
 struct Cli {
@@ -122,22 +122,22 @@ mod tests {
         ]);
         let result = story.launch_work_on_paths(
             ["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"],
-            datetime!(2022-12-20 13:14:15 UTC),
+            datetime!(2022-12-13 14:15:16 UTC),
         );
         result.unwrap();
         story.check_the_following_dirs_exist([
-            "empty_2022-12-20-13h14",
-            "colors_2022-12-20-13h14",
-            "colors_2022-12-20-13h14/dark",
-            "--_2022-12-20-13h14",
-            "-_2022-12-20-13h14",
+            "empty_2022-12-13-14h15",
+            "colors_2022-12-13-14h15",
+            "colors_2022-12-13-14h15/dark",
+            "--_2022-12-13-14h15",
+            "-_2022-12-13-14h15",
         ]);
         story.check_the_following_files_exist([
-            "colors_2022-12-20-13h14/red",
-            "colors_2022-12-20-13h14/dark/black",
-            "foo_2022-12-20-13h14",
-            "bar.md_2022-12-20-13h14",
-            "--b a z_2022-12-20-13h14",
+            "colors_2022-12-13-14h15/red",
+            "colors_2022-12-13-14h15/dark/black",
+            "foo_2022-12-13-14h15",
+            "bar.md_2022-12-13-14h15",
+            "--b a z_2022-12-13-14h15",
         ]);
     }
 
@@ -147,11 +147,11 @@ mod tests {
         story.create_dirs(["empty"]);
         story.create_files(["foo"]);
         let result =
-            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2022-12-20 13:14:15 UTC));
+            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-20-13h14",
-            "foo_2022-12-20-13h14",
+            "empty_2022-12-13-14h15",
+            "foo_2022-12-13-14h15",
         ]);
     }
 
@@ -162,28 +162,28 @@ mod tests {
         story.create_files(["foo"]);
         let result = story.launch_work_on_paths(
             ["empty", "foo", "bar.md"],
-            datetime!(2022-12-20 13:14:15 UTC),
+            datetime!(2022-12-13 14:15:16 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-20-13h14",
-            "foo_2022-12-20-13h14",
+            "empty_2022-12-13-14h15",
+            "foo_2022-12-13-14h15",
         ]);
     }
 
     #[test]
     fn fail_if_dir_dst_path_already_exists() {
         let story = Story::new();
-        story.create_dirs(["empty", "empty_2022-12-20-13h14"]);
+        story.create_dirs(["empty", "empty_2022-12-13-14h15"]);
         story.create_files(["foo", "bar.md"]);
         let result = story.launch_work_on_paths(
             ["foo", "bar.md", "empty"],
-            datetime!(2022-12-20 13:14:15 UTC),
+            datetime!(2022-12-13 14:15:16 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "foo_2022-12-20-13h14",
-            "bar.md_2022-12-20-13h14",
+            "foo_2022-12-13-14h15",
+            "bar.md_2022-12-13-14h15",
         ]);
     }
 
@@ -191,15 +191,15 @@ mod tests {
     fn fail_if_file_dst_path_already_exists() {
         let story = Story::new();
         story.create_dirs(["empty"]);
-        story.create_files(["foo", "bar.md", "bar.md_2022-12-20-13h14"]);
+        story.create_files(["foo", "bar.md", "bar.md_2022-12-13-14h15"]);
         let result = story.launch_work_on_paths(
             ["empty", "foo", "bar.md"],
-            datetime!(2022-12-20 13:14:15 UTC),
+            datetime!(2022-12-13 14:15:16 UTC),
         );
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-20-13h14",
-            "foo_2022-12-20-13h14",
+            "empty_2022-12-13-14h15",
+            "foo_2022-12-13-14h15",
         ]);
     }
 
