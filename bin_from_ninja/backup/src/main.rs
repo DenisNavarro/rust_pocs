@@ -22,7 +22,7 @@ struct Cli {
 
 fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
-    let now = OffsetDateTime::now_local().context("could not determine the local offset")?;
+    let now = OffsetDateTime::now_local().context("failed to determine the local offset")?;
     work(cli.src_paths, now)
 }
 
@@ -64,7 +64,7 @@ fn check_if_copy_seems_possible(
     file_name.push(dst_path_suffix);
     let mut dst_path = src_path.clone();
     dst_path.set_file_name(&file_name);
-    if fs::metadata(&dst_path).is_ok() {
+    if dst_path.exists() {
         bail!("{dst_path:?} already exists");
     }
     Ok(CopyAction {
@@ -246,7 +246,7 @@ mod tests {
         ) {
             let tmp_dir_path = self.tmp_dir.path();
             for path in dirs_which_should_exist {
-                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_dir());
+                assert!(tmp_dir_path.join(path).is_dir());
             }
         }
 
@@ -256,7 +256,7 @@ mod tests {
         ) {
             let tmp_dir_path = self.tmp_dir.path();
             for path in files_which_should_exist {
-                assert!(fs::metadata(tmp_dir_path.join(path)).unwrap().is_file());
+                assert!(tmp_dir_path.join(path).is_file());
             }
         }
 
@@ -266,7 +266,7 @@ mod tests {
         ) {
             let tmp_dir_path = self.tmp_dir.path();
             for path in paths_which_should_not_exist {
-                assert!(fs::metadata(tmp_dir_path.join(path)).is_err());
+                assert!(!tmp_dir_path.join(path).exists());
             }
         }
     }
