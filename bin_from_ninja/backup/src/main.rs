@@ -131,22 +131,10 @@ mod tests {
         story.create_dirs(["colors", "colors/dark"])?;
         story.create_files(["colors/red", "colors/dark/black", "sky"])?;
         story.create_symlinks([
-            SymLink {
-                from: "words",
-                to: "colors",
-            },
-            SymLink {
-                from: "colors/not_light",
-                to: "dark",
-            },
-            SymLink {
-                from: "colors/blue",
-                to: "../sky",
-            },
-            SymLink {
-                from: "picture",
-                to: "sky",
-            },
+            ("words", "colors"),
+            ("colors/not_light", "dark"),
+            ("colors/blue", "../sky"),
+            ("picture", "sky"),
         ])?;
         story.launch_work_on_paths(
             ["colors", "words", "sky", "picture"],
@@ -247,12 +235,6 @@ mod tests {
         story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
-    #[cfg(unix)]
-    struct SymLink {
-        from: &'static str,
-        to: &'static str,
-    }
-
     struct Story {
         tmp_dir: TempDir,
     }
@@ -270,7 +252,7 @@ mod tests {
                 let path = tmp_dir_path.join(path);
                 fs::create_dir(&path)
                     .with_context(|| format!("failed to create directory {path:?}"))?;
-                println!("Created dir: {path:?}");
+                println!("Created dir: {path:?}.");
             }
             Ok(())
         }
@@ -280,19 +262,22 @@ mod tests {
             for path in paths {
                 let path = tmp_dir_path.join(path);
                 File::create(&path).with_context(|| format!("failed to create file {path:?}"))?;
-                println!("Created file: {path:?}");
+                println!("Created file: {path:?}.");
             }
             Ok(())
         }
 
         #[cfg(unix)]
-        fn create_symlinks<const N: usize>(&self, symlinks: [SymLink; N]) -> anyhow::Result<()> {
+        fn create_symlinks<const N: usize>(
+            &self,
+            symlinks: [(&'static str, &'static str); N],
+        ) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for SymLink { from, to } in symlinks {
+            for (from, to) in symlinks {
                 let path = tmp_dir_path.join(from);
                 std::os::unix::fs::symlink(to, &path)
                     .with_context(|| format!("failed to create symlink from {path:?} to {to:?}"))?;
-                println!("Created symlink from {path:?} to {to:?}");
+                println!("Created symlink from {path:?} to {to:?}.");
             }
             Ok(())
         }
