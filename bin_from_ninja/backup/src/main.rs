@@ -77,12 +77,10 @@ fn check_if_copy_seems_possible(
 fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     let CopyAction { src, dst, is_dir } = copy_action;
     if *is_dir {
-        // TODO: Find an easy cross-plateform way to copy recursively a directory.
+        // TODO: Make the code cross-plateform.
         let status = Command::new("cp")
-            .arg("-rH")
-            .arg("--")
-            .arg(src)
-            .arg(dst)
+            .args(["-rH", "--"])
+            .args([src, dst])
             .status()
             .with_context(|| {
                 format!("failed to copy {src:?} to {dst:?}: failed to execute process")
@@ -110,97 +108,149 @@ mod tests {
     use time::macros::datetime;
 
     #[test]
-    fn ok() {
+    fn simple_demo() -> anyhow::Result<()> {
         let story = Story::new();
-        story.create_dirs(["empty", "colors", "colors/dark", "--", "-"]);
-        story.create_files([
-            "colors/red",
-            "colors/dark/black",
-            "foo",
-            "bar.md",
-            "--b a z",
-        ]);
-        let result = story.launch_work_on_paths(
-            ["empty", "colors", "foo", "bar.md", "--b a z", "--", "-"],
-            datetime!(2022-12-13 14:15:16 UTC),
-        );
-        result.unwrap();
-        story.check_the_following_dirs_exist([
-            "empty_2022-12-13-14h15",
+        story.create_dirs(["colors", "colors/dark"])?;
+        story.create_files(["colors/red", "colors/dark/black", "sky"])?;
+        story.launch_work_on_paths(["colors", "sky"], datetime!(2022-12-13 14:15:16 UTC))?;
+        story.check_the_following_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
-            "--_2022-12-13-14h15",
-            "-_2022-12-13-14h15",
-        ]);
-        story.check_the_following_files_exist([
+        ])?;
+        story.check_the_following_files_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15/red",
             "colors_2022-12-13-14h15/dark/black",
-            "foo_2022-12-13-14h15",
-            "bar.md_2022-12-13-14h15",
-            "--b a z_2022-12-13-14h15",
-        ]);
+            "sky_2022-12-13-14h15",
+        ])
     }
 
     #[test]
-    fn fail_if_src_path_does_not_have_a_name() {
+    #[cfg(unix)]
+    fn demo_with_symlinks() -> anyhow::Result<()> {
         let story = Story::new();
-        story.create_dirs(["empty"]);
-        story.create_files(["foo"]);
-        let result =
-            story.launch_work_on_paths(["empty", "foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
-        story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-13-14h15",
-            "foo_2022-12-13-14h15",
-        ]);
-    }
-
-    #[test]
-    fn fail_if_src_path_does_not_exist() {
-        let story = Story::new();
-        story.create_dirs(["empty"]);
-        story.create_files(["foo"]);
-        let result = story.launch_work_on_paths(
-            ["empty", "foo", "bar.md"],
+        story.create_dirs(["colors", "colors/dark"])?;
+        story.create_files(["colors/red", "colors/dark/black", "sky"])?;
+        story.create_symlinks([
+            SymLink {
+                from: "words",
+                to: "colors",
+            },
+            SymLink {
+                from: "colors/not_light",
+                to: "dark",
+            },
+            SymLink {
+                from: "colors/blue",
+                to: "../sky",
+            },
+            SymLink {
+                from: "picture",
+                to: "sky",
+            },
+        ])?;
+        story.launch_work_on_paths(
+            ["colors", "words", "sky", "picture"],
             datetime!(2022-12-13 14:15:16 UTC),
-        );
-        assert!(result.is_err());
-        story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-13-14h15",
-            "foo_2022-12-13-14h15",
-        ]);
+        )?;
+        // `backup` follows command-line symlinks only, so "words_2022-12-13-14h15" and
+        // "picture_2022-12-13-14h15" are not symlinks, but the copies of "not_light" and "blue"
+        // are symlinks.
+        story.check_the_following_dirs_exist_and_are_not_symlinks([
+            "colors_2022-12-13-14h15",
+            "colors_2022-12-13-14h15/dark",
+            "words_2022-12-13-14h15",
+            "words_2022-12-13-14h15/dark",
+        ])?;
+        story.check_the_following_files_exist_and_are_not_symlinks([
+            "colors_2022-12-13-14h15/red",
+            "colors_2022-12-13-14h15/dark/black",
+            "words_2022-12-13-14h15/red",
+            "words_2022-12-13-14h15/dark/black",
+            "sky_2022-12-13-14h15",
+            "picture_2022-12-13-14h15",
+        ])?;
+        story.check_the_following_symlinks_exist([
+            "colors_2022-12-13-14h15/not_light",
+            "colors_2022-12-13-14h15/blue",
+            "words_2022-12-13-14h15/not_light",
+            "words_2022-12-13-14h15/blue",
+        ])
     }
 
     #[test]
-    fn fail_if_dir_dst_path_already_exists() {
+    fn fancy_dir_names() -> anyhow::Result<()> {
         let story = Story::new();
-        story.create_dirs(["empty", "empty_2022-12-13-14h15"]);
-        story.create_files(["foo", "bar.md"]);
-        let result = story.launch_work_on_paths(
-            ["foo", "bar.md", "empty"],
+        story.create_dirs(["foo.abc.xyz", " ", "--b a r", "--", "-"])?;
+        story.launch_work_on_paths(
+            ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
-        );
-        assert!(result.is_err());
-        story.check_the_following_paths_do_not_exist([
-            "foo_2022-12-13-14h15",
-            "bar.md_2022-12-13-14h15",
-        ]);
+        )?;
+        story.check_the_following_dirs_exist_and_are_not_symlinks([
+            "foo.abc.xyz_2022-12-13-14h15",
+            " _2022-12-13-14h15",
+            "--b a r_2022-12-13-14h15",
+            "--_2022-12-13-14h15",
+            "-_2022-12-13-14h15",
+        ])
     }
 
     #[test]
-    fn fail_if_file_dst_path_already_exists() {
+    fn fancy_file_names() -> anyhow::Result<()> {
         let story = Story::new();
-        story.create_dirs(["empty"]);
-        story.create_files(["foo", "bar.md", "bar.md_2022-12-13-14h15"]);
-        let result = story.launch_work_on_paths(
-            ["empty", "foo", "bar.md"],
+        story.create_files(["foo.abc.xyz", " ", "--b a r", "--", "-"])?;
+        story.launch_work_on_paths(
+            ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
-        );
+        )?;
+        story.check_the_following_files_exist_and_are_not_symlinks([
+            "foo.abc.xyz_2022-12-13-14h15",
+            " _2022-12-13-14h15",
+            "--b a r_2022-12-13-14h15",
+            "--_2022-12-13-14h15",
+            "-_2022-12-13-14h15",
+        ])
+    }
+
+    #[test]
+    fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
+        let story = Story::new();
+        story.create_dirs(["foo"])?;
+        let result = story.launch_work_on_paths(["foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
-        story.check_the_following_paths_do_not_exist([
-            "empty_2022-12-13-14h15",
-            "foo_2022-12-13-14h15",
-        ]);
+        story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+    }
+
+    #[test]
+    fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
+        let story = Story::new();
+        story.create_dirs(["foo"])?;
+        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+    }
+
+    #[test]
+    fn fail_if_dir_dst_path_already_exists() -> anyhow::Result<()> {
+        let story = Story::new();
+        story.create_dirs(["foo", "bar", "bar_2022-12-13-14h15"])?;
+        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+    }
+
+    #[test]
+    fn fail_if_file_dst_path_already_exists() -> anyhow::Result<()> {
+        let story = Story::new();
+        story.create_files(["foo", "bar", "bar_2022-12-13-14h15"])?;
+        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        assert!(result.is_err());
+        story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+    }
+
+    #[cfg(unix)]
+    struct SymLink {
+        from: &'static str,
+        to: &'static str,
     }
 
     struct Story {
@@ -214,20 +264,37 @@ mod tests {
             }
         }
 
-        fn create_dirs<const N: usize>(&self, dirs_to_create: [&'static str; N]) {
+        fn create_dirs<const N: usize>(&self, paths: [&'static str; N]) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for path in dirs_to_create {
-                fs::create_dir(tmp_dir_path.join(path)).unwrap();
-                println!("Created dir: {:?}", tmp_dir_path.join(path));
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                fs::create_dir(&path)
+                    .with_context(|| format!("failed to create directory {path:?}"))?;
+                println!("Created dir: {path:?}");
             }
+            Ok(())
         }
 
-        fn create_files<const N: usize>(&self, files_to_create: [&'static str; N]) {
+        fn create_files<const N: usize>(&self, paths: [&'static str; N]) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for path in files_to_create {
-                File::create(tmp_dir_path.join(path)).unwrap();
-                println!("Created file: {:?}", tmp_dir_path.join(path));
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                File::create(&path).with_context(|| format!("failed to create file {path:?}"))?;
+                println!("Created file: {path:?}");
             }
+            Ok(())
+        }
+
+        #[cfg(unix)]
+        fn create_symlinks<const N: usize>(&self, symlinks: [SymLink; N]) -> anyhow::Result<()> {
+            let tmp_dir_path = self.tmp_dir.path();
+            for SymLink { from, to } in symlinks {
+                let path = tmp_dir_path.join(from);
+                std::os::unix::fs::symlink(to, &path)
+                    .with_context(|| format!("failed to create symlink from {path:?} to {to:?}"))?;
+                println!("Created symlink from {path:?} to {to:?}");
+            }
+            Ok(())
         }
 
         fn launch_work_on_paths<const N: usize>(
@@ -240,36 +307,66 @@ mod tests {
             work(src_paths, now)
         }
 
-        fn check_the_following_dirs_exist<const N: usize>(
+        fn check_the_following_dirs_exist_and_are_not_symlinks<const N: usize>(
             &self,
-            dirs_which_should_exist: [&'static str; N],
-        ) {
+            paths: [&'static str; N],
+        ) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for path in dirs_which_should_exist {
-                assert!(tmp_dir_path.join(path).is_dir());
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                let metadata = fs::symlink_metadata(&path)
+                    .with_context(|| format!("failed to read metadata from {path:?}"))?;
+                if !metadata.is_dir() {
+                    bail!("{path:?} is not a directory")
+                }
             }
+            Ok(())
         }
 
-        fn check_the_following_files_exist<const N: usize>(
+        fn check_the_following_files_exist_and_are_not_symlinks<const N: usize>(
             &self,
-            files_which_should_exist: [&'static str; N],
-        ) {
+            paths: [&'static str; N],
+        ) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for path in files_which_should_exist {
-                assert!(tmp_dir_path.join(path).is_file());
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                let metadata = fs::symlink_metadata(&path)
+                    .with_context(|| format!("failed to read metadata from {path:?}"))?;
+                if !metadata.is_file() {
+                    bail!("{path:?} is not a file")
+                }
             }
+            Ok(())
+        }
+
+        fn check_the_following_symlinks_exist<const N: usize>(
+            &self,
+            paths: [&'static str; N],
+        ) -> anyhow::Result<()> {
+            let tmp_dir_path = self.tmp_dir.path();
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                let metadata = fs::symlink_metadata(&path)
+                    .with_context(|| format!("failed to read metadata from {path:?}"))?;
+                if !metadata.is_symlink() {
+                    bail!("{path:?} is not a symlink")
+                }
+            }
+            Ok(())
         }
 
         fn check_the_following_paths_do_not_exist<const N: usize>(
             &self,
-            paths_which_should_not_exist: [&'static str; N],
-        ) {
+            paths: [&'static str; N],
+        ) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            for path in paths_which_should_not_exist {
-                assert!(!tmp_dir_path.join(path).exists());
+            for path in paths {
+                let path = tmp_dir_path.join(path);
+                if path.exists() {
+                    bail!("{path:?} exists")
+                }
             }
+            Ok(())
         }
     }
-
-    // TODO: add unit tests with symlinks.
 }
