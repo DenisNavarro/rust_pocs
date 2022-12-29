@@ -116,10 +116,10 @@ mod tests {
         // │  ├── dark
         // │  │  └── black
         // │  └── red
-        // ├── sky
+        // ├── sea
         story.create_dirs(["colors", "colors/dark"])?;
-        story.create_files(["colors/red", "colors/dark/black", "sky"])?;
-        story.launch_work_on_paths(["colors", "sky"], datetime!(2022-12-13 14:15:16 UTC))?;
+        story.create_files(["colors/red", "colors/dark/black", "sea"])?;
+        story.launch_work_on_paths(["colors", "sea"], datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
         // ├── colors
@@ -130,8 +130,8 @@ mod tests {
         // │  ├── dark
         // │  │  └── black
         // │  └── red
-        // ├── sky
-        // ├── sky_2022-12-13-14h15
+        // ├── sea
+        // ├── sea_2022-12-13-14h15
         story.check_the_following_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
@@ -139,7 +139,7 @@ mod tests {
         story.check_the_following_files_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15/red",
             "colors_2022-12-13-14h15/dark/black",
-            "sky_2022-12-13-14h15",
+            "sea_2022-12-13-14h15",
         ])
     }
 
@@ -150,47 +150,47 @@ mod tests {
         // Before:
         // .
         // ├── colors
-        // │  ├── blue -> ../sky
+        // │  ├── blue -> ../sea
         // │  ├── dark
         // │  │  └── black
         // │  ├── not_light -> dark
         // │  └── red
-        // ├── picture -> sky
-        // ├── sky
+        // ├── picture -> sea
+        // ├── sea
         // └── words -> colors
         story.create_dirs(["colors", "colors/dark"])?;
-        story.create_files(["colors/red", "colors/dark/black", "sky"])?;
+        story.create_files(["colors/red", "colors/dark/black", "sea"])?;
         story.create_symlinks([
             ("words", "colors"),
             ("colors/not_light", "dark"),
-            ("colors/blue", "../sky"),
-            ("picture", "sky"),
+            ("colors/blue", "../sea"),
+            ("picture", "sea"),
         ])?;
         story.launch_work_on_paths(
-            ["colors", "words", "sky", "picture"],
+            ["colors", "words", "sea", "picture"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
         // After:
         // .
         // ├── colors
-        // │  ├── blue -> ../sky
+        // │  ├── blue -> ../sea
         // │  ├── dark
         // │  │  └── black
         // │  ├── not_light -> dark
         // │  └── red
         // ├── colors_2022-12-13-14h15
-        // │  ├── blue -> ../sky
+        // │  ├── blue -> ../sea
         // │  ├── dark
         // │  │  └── black
         // │  ├── not_light -> dark
         // │  └── red
-        // ├── picture -> sky
+        // ├── picture -> sea
         // ├── picture_2022-12-13-14h15
-        // ├── sky
-        // ├── sky_2022-12-13-14h15
+        // ├── sea
+        // ├── sea_2022-12-13-14h15
         // ├── words -> colors
         // └── words_2022-12-13-14h15
-        //    ├── blue -> ../sky
+        //    ├── blue -> ../sea
         //    ├── dark
         //    │  └── black
         //    ├── not_light -> dark
@@ -210,7 +210,7 @@ mod tests {
             "colors_2022-12-13-14h15/dark/black",
             "words_2022-12-13-14h15/red",
             "words_2022-12-13-14h15/dark/black",
-            "sky_2022-12-13-14h15",
+            "sea_2022-12-13-14h15",
             "picture_2022-12-13-14h15",
         ])?;
         story.check_the_following_symlinks_exist([
@@ -308,7 +308,7 @@ mod tests {
                 let path = tmp_dir_path.join(path);
                 fs::create_dir(&path)
                     .with_context(|| format!("failed to create directory {path:?}"))?;
-                println!("Created dir: {path:?}.");
+                println!("Created directory {path:?}.");
             }
             Ok(())
         }
@@ -318,7 +318,7 @@ mod tests {
             for path in paths {
                 let path = tmp_dir_path.join(path);
                 File::create(&path).with_context(|| format!("failed to create file {path:?}"))?;
-                println!("Created file: {path:?}.");
+                println!("Created file {path:?}.");
             }
             Ok(())
         }
