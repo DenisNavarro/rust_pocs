@@ -103,16 +103,35 @@ struct CopyAction {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::{self, File};
+    use std::fs::File;
     use tempfile::{tempdir, TempDir};
     use time::macros::datetime;
 
     #[test]
     fn simple_demo() -> anyhow::Result<()> {
         let story = Story::new();
+        // Before:
+        // .
+        // ├── colors
+        // │  ├── dark
+        // │  │  └── black
+        // │  └── red
+        // ├── sky
         story.create_dirs(["colors", "colors/dark"])?;
         story.create_files(["colors/red", "colors/dark/black", "sky"])?;
         story.launch_work_on_paths(["colors", "sky"], datetime!(2022-12-13 14:15:16 UTC))?;
+        // After:
+        // .
+        // ├── colors
+        // │  ├── dark
+        // │  │  └── black
+        // │  └── red
+        // ├── colors_2022-12-13-14h15
+        // │  ├── dark
+        // │  │  └── black
+        // │  └── red
+        // ├── sky
+        // ├── sky_2022-12-13-14h15
         story.check_the_following_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
@@ -128,6 +147,17 @@ mod tests {
     #[cfg(unix)]
     fn demo_with_symlinks() -> anyhow::Result<()> {
         let story = Story::new();
+        // Before:
+        // .
+        // ├── colors
+        // │  ├── blue -> ../sky
+        // │  ├── dark
+        // │  │  └── black
+        // │  ├── not_light -> dark
+        // │  └── red
+        // ├── picture -> sky
+        // ├── sky
+        // └── words -> colors
         story.create_dirs(["colors", "colors/dark"])?;
         story.create_files(["colors/red", "colors/dark/black", "sky"])?;
         story.create_symlinks([
@@ -140,7 +170,33 @@ mod tests {
             ["colors", "words", "sky", "picture"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
-        // `backup` follows command-line symlinks only, so "words_2022-12-13-14h15" and
+        // After:
+        // .
+        // ├── colors
+        // │  ├── blue -> ../sky
+        // │  ├── dark
+        // │  │  └── black
+        // │  ├── not_light -> dark
+        // │  └── red
+        // ├── colors_2022-12-13-14h15
+        // │  ├── blue -> ../sky
+        // │  ├── dark
+        // │  │  └── black
+        // │  ├── not_light -> dark
+        // │  └── red
+        // ├── picture -> sky
+        // ├── picture_2022-12-13-14h15
+        // ├── sky
+        // ├── sky_2022-12-13-14h15
+        // ├── words -> colors
+        // └── words_2022-12-13-14h15
+        //    ├── blue -> ../sky
+        //    ├── dark
+        //    │  └── black
+        //    ├── not_light -> dark
+        //    └── red
+        //
+        // Remark: `backup` follows command-line symlinks only, so "words_2022-12-13-14h15" and
         // "picture_2022-12-13-14h15" are not symlinks, but the copies of "not_light" and "blue"
         // are symlinks.
         story.check_the_following_dirs_exist_and_are_not_symlinks([
