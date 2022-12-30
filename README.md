@@ -12,7 +12,7 @@ There is a finished POC and an unfinished one:
     Current status:
 
     - [x] Publish the [`backup`][] project: DONE.
-    - [ ] Publish the `synchronize_backup` project: TODO. The first version is not finished yet.
+    - [x] Publish the [`synchronize_backup`][] project: DONE.
     - [ ] Publish the code which writes the `build.ninja` file: TODO. Improve it before.
 
 [`structured_concurrency`]: ./structured_concurrency
@@ -21,3 +21,4 @@ There is a finished POC and an unfinished one:
 [`bin_from_ninja`]: ./bin_from_ninja
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./bin_from_ninja/backup
+[`synchronize_backup`]: ./bin_from_ninja/synchronize_backup
