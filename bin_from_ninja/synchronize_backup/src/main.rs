@@ -245,80 +245,80 @@ mod tests {
         // Before:
         // .
         // ├── bar
-        // │  └── words_2022-08-09-10h11
+        // │  └── colors_2022-08-09-10h11
         // │     ├── green
         // │     └── light
         // │        └── white
-        // ├── dest -> bar
+        // ├── dst -> bar
         // └── foo
-        //    ├── colors
-        //    │  ├── blue -> ../sea
-        //    │  ├── dark
-        //    │  │  └── black
-        //    │  ├── not_light -> dark
-        //    │  └── red
+        //    ├── colors -> words
         //    ├── sea
-        //    └── words -> colors
+        //    └── words
+        //       ├── blue -> ../sea
+        //       ├── dark
+        //       │  └── black
+        //       ├── not_light -> dark
+        //       └── red
         story.create_dirs([
             "foo",
-            "foo/colors",
-            "foo/colors/dark",
+            "foo/words",
+            "foo/words/dark",
             "bar",
-            "bar/words_2022-08-09-10h11",
-            "bar/words_2022-08-09-10h11/light",
+            "bar/colors_2022-08-09-10h11",
+            "bar/colors_2022-08-09-10h11/light",
         ])?;
         story.create_files([
-            "foo/colors/red",
-            "foo/colors/dark/black",
-            "bar/words_2022-08-09-10h11/green",
-            "bar/words_2022-08-09-10h11/light/white",
+            "foo/words/red",
+            "foo/words/dark/black",
+            "bar/colors_2022-08-09-10h11/green",
+            "bar/colors_2022-08-09-10h11/light/white",
         ])?;
         story.create_symlinks([
-            ("dest", "bar"),
-            ("foo/words", "colors"),
-            ("foo/colors/not_light", "dark"),
-            ("foo/colors/blue", "../sea"),
+            ("dst", "bar"),
+            ("foo/colors", "words"),
+            ("foo/words/not_light", "dark"),
+            ("foo/words/blue", "../sea"),
         ])?;
-        story.launch_work("foo/words", "dest", datetime!(2022-12-13 14:15:16 UTC))?;
+        story.launch_work("foo/colors", "dst", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
         // ├── bar
-        // │  └── words_2022-12-13-14h15
+        // │  └── colors_2022-12-13-14h15
         // │     ├── blue -> ../sea
         // │     ├── dark
         // │     │  └── black
         // │     ├── not_light -> dark
         // │     └── red
-        // ├── dest -> bar
+        // ├── dst -> bar
         // └── foo
-        //    ├── colors
-        //    │  ├── blue -> ../sea
-        //    │  ├── dark
-        //    │  │  └── black
-        //    │  ├── not_light -> dark
-        //    │  └── red
+        //    ├── colors -> words
         //    ├── sea
-        //    └── words -> colors
+        //    └── words
+        //       ├── blue -> ../sea
+        //       ├── dark
+        //       │  └── black
+        //       ├── not_light -> dark
+        //       └── red
         //
         // Remark: `synchronize_backup` follows command-line symlinks only, so
-        // "words_2022-12-13-14h15" is not a symlink, but the copies of "not_light" and "blue" are
-        // symlinks. Note that "words_2022-12-13-14h15/blue" points to an unexisting path.
+        // "colors_2022-12-13-14h15" is not a symlink, but the copies of "not_light" and "blue"
+        // are symlinks. Note that "colors_2022-12-13-14h15/blue" points to an unexisting path.
         story.check_the_following_dirs_exist_and_are_not_symlinks([
-            "bar/words_2022-12-13-14h15",
-            "bar/words_2022-12-13-14h15/dark",
+            "bar/colors_2022-12-13-14h15",
+            "bar/colors_2022-12-13-14h15/dark",
         ])?;
         story.check_the_following_files_exist_and_are_not_symlinks([
-            "bar/words_2022-12-13-14h15/red",
-            "bar/words_2022-12-13-14h15/dark/black",
+            "bar/colors_2022-12-13-14h15/red",
+            "bar/colors_2022-12-13-14h15/dark/black",
         ])?;
         story.check_the_following_symlinks_exist([
-            "bar/words_2022-12-13-14h15/not_light",
-            "bar/words_2022-12-13-14h15/blue",
+            "bar/colors_2022-12-13-14h15/not_light",
+            "bar/colors_2022-12-13-14h15/blue",
         ])?;
         story.check_the_following_paths_do_not_exist([
-            "bar/words_2022-08-09-10h11",
-            "bar/words_2022-12-13-14h15/light",
-            "bar/words_2022-12-13-14h15/green",
+            "bar/colors_2022-08-09-10h11",
+            "bar/colors_2022-12-13-14h15/light",
+            "bar/colors_2022-12-13-14h15/green",
         ])
     }
 
@@ -385,10 +385,27 @@ mod tests {
         story.create_files(file_candidate)?;
         story.launch_work("foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         story.check_the_following_paths_do_not_exist(valid_candidate)?;
-        story
-            .check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])?;
+        story.check_the_following_files_exist_and_are_not_symlinks(file_candidate)?;
         story.check_the_following_dirs_exist_and_are_not_symlinks(invalid_dir_candidates)?;
-        story.check_the_following_files_exist_and_are_not_symlinks(file_candidate)
+        story.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn symlink_is_invalid_candidate() -> anyhow::Result<()> {
+        let story = Story::new();
+        story.create_dirs([
+            "foo",
+            "foo/colors",
+            "bar",
+            "bar/colors_2022-08-09-10h11",
+            "bar/baz",
+        ])?;
+        story.create_symlinks([("bar/colors_2022-09-10-11h12", "baz")])?;
+        story.launch_work("foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
+        story.check_the_following_paths_do_not_exist(["bar/colors_2022-08-09-10h11"])?;
+        story.check_the_following_symlinks_exist(["bar/colors_2022-09-10-11h12"])?;
+        story.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
     }
 
     #[test]
