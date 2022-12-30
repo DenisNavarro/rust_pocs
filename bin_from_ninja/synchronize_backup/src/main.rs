@@ -38,7 +38,7 @@ fn main() -> anyhow::Result<()> {
 
 fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> anyhow::Result<()> {
     let src_dir_name = check_src_dir_is_ok(src_dir_path.as_ref())?;
-    let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path, now);
+    let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
     println!("Synchronize {src_dir_path:?} with {final_dst_path:?}.");
     synchronize(src_dir_path, &final_dst_path)
@@ -59,11 +59,13 @@ fn check_src_dir_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
     Ok(src_dir_name)
 }
 
-fn get_final_dst_path(src_dir_name: &str, dst_dir_path: &Path, now: OffsetDateTime) -> PathBuf {
+fn get_final_dst_path(src_dir_name: &str, dst_dir_path: PathBuf, now: OffsetDateTime) -> PathBuf {
     let format = format_description::parse("_[year]-[month]-[day]-[hour]h[minute]").unwrap();
     let suffix = now.format(&format).unwrap();
     let dst_dir_name = format!("{src_dir_name}{suffix}");
-    dst_dir_path.join(dst_dir_name)
+    let mut result = dst_dir_path;
+    result.push(dst_dir_name);
+    result
 }
 
 fn maybe_rename_a_candidate_to_final_dst(
