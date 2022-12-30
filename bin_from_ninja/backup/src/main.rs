@@ -116,10 +116,10 @@ mod tests {
         // │  ├── dark
         // │  │  └── black
         // │  └── red
-        // ├── sea
+        // └── sea
         story.create_dirs(["colors", "colors/dark"])?;
         story.create_files(["colors/red", "colors/dark/black", "sea"])?;
-        story.launch_work_on_paths(["colors", "sea"], datetime!(2022-12-13 14:15:16 UTC))?;
+        story.launch_work(["colors", "sea"], datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
         // ├── colors
@@ -131,7 +131,7 @@ mod tests {
         // │  │  └── black
         // │  └── red
         // ├── sea
-        // ├── sea_2022-12-13-14h15
+        // └── sea_2022-12-13-14h15
         story.check_the_following_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
@@ -166,7 +166,7 @@ mod tests {
             ("colors/blue", "../sea"),
             ("picture", "sea"),
         ])?;
-        story.launch_work_on_paths(
+        story.launch_work(
             ["colors", "words", "sea", "picture"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
@@ -225,7 +225,7 @@ mod tests {
     fn fancy_dir_names() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_dirs(["foo.abc.xyz", " ", "--b a r", "--", "-"])?;
-        story.launch_work_on_paths(
+        story.launch_work(
             ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
@@ -242,7 +242,7 @@ mod tests {
     fn fancy_file_names() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_files(["foo.abc.xyz", " ", "--b a r", "--", "-"])?;
-        story.launch_work_on_paths(
+        story.launch_work(
             ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
@@ -259,7 +259,7 @@ mod tests {
     fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_dirs(["foo"])?;
-        let result = story.launch_work_on_paths(["foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
+        let result = story.launch_work(["foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
@@ -268,7 +268,7 @@ mod tests {
     fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_dirs(["foo"])?;
-        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        let result = story.launch_work(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
@@ -277,7 +277,7 @@ mod tests {
     fn fail_if_dir_dst_path_already_exists() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_dirs(["foo", "bar", "bar_2022-12-13-14h15"])?;
-        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        let result = story.launch_work(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
@@ -286,7 +286,7 @@ mod tests {
     fn fail_if_file_dst_path_already_exists() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_files(["foo", "bar", "bar_2022-12-13-14h15"])?;
-        let result = story.launch_work_on_paths(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        let result = story.launch_work(["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
@@ -338,7 +338,7 @@ mod tests {
             Ok(())
         }
 
-        fn launch_work_on_paths<const N: usize>(
+        fn launch_work<const N: usize>(
             &self,
             arg_paths: [&'static str; N],
             now: OffsetDateTime,
