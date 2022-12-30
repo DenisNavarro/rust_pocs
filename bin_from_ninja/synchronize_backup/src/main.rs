@@ -316,7 +316,7 @@ mod tests {
             "bar/words_2022-12-13-14h15/blue",
         ])?;
         story.check_the_following_paths_do_not_exist([
-            "bar/colors_2022-08-09-10h11",
+            "bar/words_2022-08-09-10h11",
             "bar/words_2022-12-13-14h15/light",
             "bar/words_2022-12-13-14h15/green",
         ])
@@ -333,25 +333,18 @@ mod tests {
     #[test]
     fn fancy_dir_names() -> anyhow::Result<()> {
         let story = Story::new();
-        story.create_dirs([
-            "foo",
-            "foo/colors.abc.xyz",
-            "bar.abc.xyz",
-            "foo/ ",
-            " ",
-            "foo/c --o l o r s",
-            "--b a r",
-            "foo/co -- lors",
-            "--",
-            "foo/-",
-            "-",
-        ])?;
         let now = datetime!(2022-12-13 14:15:16 UTC);
-        story.launch_work("foo/colors.abc.xyz", "bar.abc.xyz", now)?;
-        story.launch_work("foo/ ", " ", now)?;
-        story.launch_work("foo/c --o l o r s", "--b a r", now)?;
-        story.launch_work("foo/co -- lors", "--", now)?;
-        story.launch_work("foo/-", "-", now)?;
+        story.create_dirs(["foo"])?;
+        for (src, dst) in [
+            ("foo/colors.abc.xyz", "bar.abc.xyz"),
+            ("foo/ ", " "),
+            ("foo/c --o l o r s", "--b a r"),
+            ("foo/co -- lors", "--"),
+            ("foo/-", "-"),
+        ] {
+            story.create_dirs([src, dst])?;
+            story.launch_work(src, dst, now)?;
+        }
         story.check_the_following_dirs_exist_and_are_not_symlinks([
             "bar.abc.xyz/colors.abc.xyz_2022-12-13-14h15",
             " / _2022-12-13-14h15",
@@ -377,7 +370,7 @@ mod tests {
     fn valid_and_invalid_candidates() -> anyhow::Result<()> {
         let story = Story::new();
         let valid_candidate = ["bar/colors_2022-08-09-10h11"];
-        let invalid_candidates = [
+        let invalid_dir_candidates = [
             "bar/some_colors_2022-08-09-10h11",
             "bar/colors2022-08-09-10h11",
             "bar/colors_222-08-09-10h11",
@@ -388,13 +381,13 @@ mod tests {
         let file_candidate = ["bar/colors_2022-09-10-11h12"]; // file, so invalid
         story.create_dirs(["foo", "foo/colors", "bar"])?;
         story.create_dirs(valid_candidate)?;
-        story.create_dirs(invalid_candidates)?;
+        story.create_dirs(invalid_dir_candidates)?;
         story.create_files(file_candidate)?;
         story.launch_work("foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         story.check_the_following_paths_do_not_exist(valid_candidate)?;
         story
             .check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])?;
-        story.check_the_following_dirs_exist_and_are_not_symlinks(invalid_candidates)?;
+        story.check_the_following_dirs_exist_and_are_not_symlinks(invalid_dir_candidates)?;
         story.check_the_following_files_exist_and_are_not_symlinks(file_candidate)
     }
 
