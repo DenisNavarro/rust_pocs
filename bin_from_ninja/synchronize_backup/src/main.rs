@@ -247,6 +247,7 @@ mod tests {
         // │     ├── green
         // │     └── light
         // │        └── white
+        // ├── dest -> bar
         // └── foo
         //    ├── colors
         //    │  ├── blue -> ../sea
@@ -271,11 +272,12 @@ mod tests {
             "bar/words_2022-08-09-10h11/light/white",
         ])?;
         story.create_symlinks([
+            ("dest", "bar"),
             ("foo/words", "colors"),
             ("foo/colors/not_light", "dark"),
             ("foo/colors/blue", "../sea"),
         ])?;
-        story.launch_work("foo/words", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
+        story.launch_work("foo/words", "dest", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
         // ├── bar
@@ -285,6 +287,7 @@ mod tests {
         // │     │  └── black
         // │     ├── not_light -> dark
         // │     └── red
+        // ├── dest -> bar
         // └── foo
         //    ├── colors
         //    │  ├── blue -> ../sea
