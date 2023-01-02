@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "backup",
+    "ninja_bootstrap",
+    "synchronize_backup",
+]

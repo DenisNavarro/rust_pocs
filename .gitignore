@@ -1,6 +1,11 @@
 
-bin_from_ninja/backup/target
-bin_from_ninja/synchronize_backup/target
+bin_from_ninja/target
+bin_from_ninja/*/clippy.ninjatarget
+bin_from_ninja/*/fmt.ninjatarget
+bin_from_ninja/*/test.ninjatarget
+bin_from_ninja/.ninja_deps
+bin_from_ninja/.ninja_log
+bin_from_ninja/build.ninja
 structured_concurrency/target
 structured_concurrency/clippy.maketarget
 structured_concurrency/fmt.maketarget
