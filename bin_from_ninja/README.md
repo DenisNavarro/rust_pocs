@@ -41,7 +41,7 @@ In the current POC, the [`ninja_bootstrap`][] program writes the `build.ninja` f
 Remark for projects with more complex workflows: If a complex workflow can be automated with a
 `Makefile` which uses advanced features of Make and if, like Matt Rickard, you think that
 [every sufficiently advanced configuration language is wrong][], then you may prefer to use a
-regular programming language which writes a Ninja build file.
+regular programming language to write a code which writes a Ninja build file.
 
 ## [`backup`][]
 
@@ -89,5 +89,5 @@ To make the `main.rs` code concise, I wrote builders in `lib.rs`, but the builde
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./backup/src/main.rs
 [`synchronize_backup`]: ./synchronize_backup/src/main.rs
-[`ninja_bootstrap`]: ./ninja_bootstrap
+[`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
