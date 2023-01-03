@@ -1,23 +1,25 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 #![allow(clippy::missing_errors_doc)]
 
-//! The current module contains builders to call the functions from the `ninja_dump` module in a
-//! more readable way.
+//! Builders to call the functions from the `ninja_dump` module in a more readable way
 
 mod ninja_dump;
 
-use ninja_dump::{dump_build, dump_rule};
 use std::collections::BTreeMap;
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::iter;
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, Copy)]
-pub struct RuleName<'r>(&'r [u8]);
+pub fn rule(name: &(impl AsRef<[u8]> + ?Sized)) -> Rule<'_> {
+    Rule(name.as_ref())
+}
 
 #[derive(Debug, Clone, Copy)]
-pub struct Rule<'r, 'c> {
+pub struct Rule<'r>(&'r [u8]);
+
+#[derive(Debug, Clone, Copy)]
+pub struct RuleWithCommand<'r, 'c> {
     name: &'r [u8],
     command: &'c [u8],
 }
@@ -41,23 +43,19 @@ where
     variables: BTreeMap<Vec<u8>, Vec<u8>>,
 }
 
-pub fn rule_name(name: &(impl AsRef<[u8]> + ?Sized)) -> RuleName<'_> {
-    RuleName(name.as_ref())
-}
-
 type Empty = iter::Empty<Vec<u8>>;
 
-impl<'r> RuleName<'r> {
+impl<'r> Rule<'r> {
     #[must_use]
-    pub fn command(self, command: &(impl AsRef<[u8]> + ?Sized)) -> Rule<'r, '_> {
-        Rule {
+    pub fn command(self, command: &(impl AsRef<[u8]> + ?Sized)) -> RuleWithCommand<'r, '_> {
+        RuleWithCommand {
             name: self.0,
             command: command.as_ref(),
         }
     }
 
     #[must_use]
-    pub const fn build_outputs<O>(self, outputs: O) -> Build<'r, O, Empty, Empty, Empty>
+    pub const fn outputs<O>(self, outputs: O) -> Build<'r, O, Empty, Empty, Empty>
     where
         O: IntoIterator,
         O::Item: Into<Vec<u8>>,
@@ -74,11 +72,11 @@ impl<'r> RuleName<'r> {
 
     #[cfg(unix)]
     #[must_use]
-    pub fn build_output_paths(
+    pub fn output_paths(
         self,
         outputs: impl IntoIterator<Item = impl Into<PathBuf>>,
     ) -> Build<'r, impl IntoIterator<Item = impl Into<Vec<u8>>>, Empty, Empty, Empty> {
-        self.build_outputs(
+        self.outputs(
             outputs
                 .into_iter()
                 .map(|path| std::os::unix::ffi::OsStringExt::into_vec(OsString::from(path.into()))),
@@ -86,9 +84,9 @@ impl<'r> RuleName<'r> {
     }
 }
 
-impl<'r, 'c> Rule<'r, 'c> {
-    pub fn dump(self, writer: impl Write) -> io::Result<()> {
-        dump_rule(writer, self.name, self.command)
+impl<'r, 'c> RuleWithCommand<'r, 'c> {
+    pub fn dump_rule(self, writer: impl Write) -> io::Result<()> {
+        ninja_dump::dump_rule(writer, self.name, self.command)
     }
 }
 
@@ -186,8 +184,8 @@ where
         self
     }
 
-    pub fn dump(self, writer: impl Write) -> io::Result<()> {
-        dump_build(
+    pub fn dump_build(self, writer: impl Write) -> io::Result<()> {
+        ninja_dump::dump_build(
             writer,
             self.outputs,
             self.rule_name,
