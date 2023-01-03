@@ -5,27 +5,8 @@
 //! A lot of features are missing. Currently, only the one useful to build `ninja_bootstrap` are
 //! implemented.
 
+use std::collections::BTreeMap;
 use std::io::{self, Write};
-
-pub fn dump_rule_and_build(
-    mut writer: impl Write,
-    rule_name: &[u8],
-    command: &[u8],
-    outputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-    inputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-    implicit_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-    order_only_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-) -> io::Result<()> {
-    dump_rule(&mut writer, rule_name, command)?;
-    dump_build(
-        &mut writer,
-        outputs,
-        rule_name,
-        inputs,
-        implicit_dependencies,
-        order_only_dependencies,
-    )
-}
 
 pub fn dump_rule(mut writer: impl Write, rule_name: &[u8], command: &[u8]) -> io::Result<()> {
     for bytes in [b"rule ", rule_name, b"\n  command = ", command, b"\n"] {
@@ -41,6 +22,7 @@ pub fn dump_build(
     inputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
     implicit_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
     order_only_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    variables: BTreeMap<Vec<u8>, Vec<u8>>,
 ) -> io::Result<()> {
     writer.write_all(b"build")?;
     for output in outputs {
@@ -69,6 +51,11 @@ pub fn dump_build(
         for dependency in order_only_dependencies {
             writer.write_all(b" ")?;
             dump_escaped_path(&mut writer, &dependency.into())?;
+        }
+    }
+    for (variable, value) in variables {
+        for bytes in [b"\n  ", &variable[..], b" = ", &value[..]] {
+            writer.write_all(bytes)?;
         }
     }
     writer.write_all(b"\n")
