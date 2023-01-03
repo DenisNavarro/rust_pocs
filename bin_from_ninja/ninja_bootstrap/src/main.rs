@@ -14,7 +14,6 @@ fn main() -> anyhow::Result<()> {
     let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
-    rule_name("copy").command("cp -- $in $out").dump(&mut out)?;
     rule_name("create_directory")
         .command("mkdir -p -- $out")
         .dump(&mut out)?;
@@ -33,6 +32,7 @@ fn main() -> anyhow::Result<()> {
     rule_name("release")
         .command("cargo build --release -p $bin_name && touch $out")
         .dump(&mut out)?;
+    rule_name("copy").command("cp -- $in $out").dump(&mut out)?;
     for &bin_name in &binary_names {
         let fmt_ninjatarget = format!("{bin_name}/fmt.ninjatarget");
         let clippy_ninjatarget = format!("{bin_name}/clippy.ninjatarget");
