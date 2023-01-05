@@ -5,6 +5,8 @@
 //! A lot of features are missing. Currently, only the one useful to build `ninja_bootstrap` are
 //! implemented.
 
+use thiserror::Error;
+
 use std::collections::BTreeMap;
 use std::io::{self, Write};
 
@@ -15,42 +17,60 @@ pub fn dump_rule(mut writer: impl Write, rule_name: &[u8], command: &[u8]) -> io
     Ok(())
 }
 
-pub fn dump_build(
+#[derive(Error, Debug)]
+pub enum DumpBuildError<OE, IE, IDE, OODE> {
+    #[error("io error")]
+    Io(#[from] io::Error),
+    #[error("input error")]
+    Output(OE),
+    #[error("input error")]
+    Input(IE),
+    #[error("implicit dependency")]
+    ImplicitDependency(IDE),
+    #[error("order-only dependency")]
+    OrderOnlyDependency(OODE),
+}
+
+pub fn dump_build<OE, IE, IDE, OODE>(
     mut writer: impl Write,
-    outputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    outputs: impl Iterator<Item = Result<Vec<u8>, OE>>,
     rule_name: &[u8],
-    inputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-    implicit_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
-    order_only_dependencies: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    inputs: impl Iterator<Item = Result<Vec<u8>, IE>>,
+    mut implicit_dependencies: impl Iterator<Item = Result<Vec<u8>, IDE>>,
+    mut order_only_dependencies: impl Iterator<Item = Result<Vec<u8>, OODE>>,
     variables: BTreeMap<Vec<u8>, Vec<u8>>,
-) -> io::Result<()> {
+) -> Result<(), DumpBuildError<OE, IE, IDE, OODE>> {
     writer.write_all(b"build")?;
     for output in outputs {
+        let output = output.map_err(DumpBuildError::Output)?;
         writer.write_all(b" ")?;
-        dump_escaped_path(&mut writer, &output.into())?;
+        dump_escaped_path(&mut writer, &output)?;
     }
     writer.write_all(b": ")?;
     writer.write_all(rule_name)?;
     for input in inputs {
+        let input = input.map_err(DumpBuildError::Input)?;
         writer.write_all(b" ")?;
-        dump_escaped_path(&mut writer, &input.into())?;
+        dump_escaped_path(&mut writer, &input)?;
     }
-    let mut implicit_dependencies = implicit_dependencies.into_iter();
     if let Some(dependency) = implicit_dependencies.next() {
+        let dependency = dependency.map_err(DumpBuildError::ImplicitDependency)?;
         writer.write_all(b" | ")?;
-        dump_escaped_path(&mut writer, &dependency.into())?;
+        dump_escaped_path(&mut writer, &dependency)?;
         for dependency in implicit_dependencies {
+            let dependency = dependency.map_err(DumpBuildError::ImplicitDependency)?;
             writer.write_all(b" ")?;
-            dump_escaped_path(&mut writer, &dependency.into())?;
+            dump_escaped_path(&mut writer, &dependency)?;
         }
     }
-    let mut order_only_dependencies = order_only_dependencies.into_iter();
     if let Some(dependency) = order_only_dependencies.next() {
+        let dependency = dependency.map_err(DumpBuildError::OrderOnlyDependency)?;
         writer.write_all(b" || ")?;
-        dump_escaped_path(&mut writer, &dependency.into())?;
+        dump_escaped_path(&mut writer, &dependency)?;
         for dependency in order_only_dependencies {
+            let dependency = dependency.map_err(DumpBuildError::OrderOnlyDependency)?;
             writer.write_all(b" ")?;
-            dump_escaped_path(&mut writer, &dependency.into())?;
+            dump_escaped_path(&mut writer, &dependency)?;
         }
     }
     for (variable, value) in variables {
@@ -58,7 +78,8 @@ pub fn dump_build(
             writer.write_all(bytes)?;
         }
     }
-    writer.write_all(b"\n")
+    writer.write_all(b"\n")?;
+    Ok(())
 }
 
 /// Dump an escaped path by adding `b'$'` before the bytes in `b"$ :|#\n"`.

@@ -5,7 +5,10 @@
 
 mod ninja_dump;
 
+use ninja_dump::DumpBuildError;
+
 use std::collections::BTreeMap;
+use std::convert::Infallible;
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::iter;
@@ -20,20 +23,16 @@ pub struct Rule<'r>(&'r [u8]);
 
 #[derive(Debug, Clone, Copy)]
 pub struct RuleWithCommand<'r, 'c> {
-    name: &'r [u8],
+    rule_name: &'r [u8],
     command: &'c [u8],
 }
 
-pub struct Build<'r, O, I, ID, OOD>
+pub struct Build<'r, O, OE, I, IE, ID, IDE, OOD, OODE>
 where
-    O: IntoIterator,
-    I: IntoIterator,
-    ID: IntoIterator,
-    OOD: IntoIterator,
-    O::Item: Into<Vec<u8>>,
-    I::Item: Into<Vec<u8>>,
-    ID::Item: Into<Vec<u8>>,
-    OOD::Item: Into<Vec<u8>>,
+    O: Iterator<Item = Result<Vec<u8>, OE>>,
+    I: Iterator<Item = Result<Vec<u8>, IE>>,
+    ID: Iterator<Item = Result<Vec<u8>, IDE>>,
+    OOD: Iterator<Item = Result<Vec<u8>, OODE>>,
 {
     outputs: O,
     rule_name: &'r [u8],
@@ -43,25 +42,34 @@ where
     variables: BTreeMap<Vec<u8>, Vec<u8>>,
 }
 
-type Empty = iter::Empty<Vec<u8>>;
+type Empty = iter::Empty<Result<Vec<u8>, Infallible>>;
 
 impl<'r> Rule<'r> {
     #[must_use]
     pub fn command(self, command: &(impl AsRef<[u8]> + ?Sized)) -> RuleWithCommand<'r, '_> {
         RuleWithCommand {
-            name: self.0,
+            rule_name: self.0,
             command: command.as_ref(),
         }
     }
 
     #[must_use]
-    pub const fn outputs<O>(self, outputs: O) -> Build<'r, O, Empty, Empty, Empty>
-    where
-        O: IntoIterator,
-        O::Item: Into<Vec<u8>>,
-    {
+    pub fn outputs(
+        self,
+        outputs: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    ) -> Build<
+        'r,
+        impl Iterator<Item = Result<Vec<u8>, Infallible>>,
+        Infallible,
+        Empty,
+        Infallible,
+        Empty,
+        Infallible,
+        Empty,
+        Infallible,
+    > {
         Build {
-            outputs,
+            outputs: outputs.into_iter().map(|x| Ok(x.into())),
             rule_name: self.0,
             inputs: iter::empty(),
             implicit_dependencies: iter::empty(),
@@ -75,43 +83,64 @@ impl<'r> Rule<'r> {
     pub fn output_paths(
         self,
         outputs: impl IntoIterator<Item = impl Into<PathBuf>>,
-    ) -> Build<'r, impl IntoIterator<Item = impl Into<Vec<u8>>>, Empty, Empty, Empty> {
-        self.outputs(
-            outputs
-                .into_iter()
-                .map(|path| std::os::unix::ffi::OsStringExt::into_vec(OsString::from(path.into()))),
-        )
+    ) -> Build<
+        'r,
+        impl Iterator<Item = Result<Vec<u8>, Infallible>>,
+        Infallible,
+        Empty,
+        Infallible,
+        Empty,
+        Infallible,
+        Empty,
+        Infallible,
+    > {
+        Build {
+            outputs: outputs.into_iter().map(|x| {
+                Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(
+                    x.into(),
+                )))
+            }),
+            rule_name: self.0,
+            inputs: iter::empty(),
+            implicit_dependencies: iter::empty(),
+            order_only_dependencies: iter::empty(),
+            variables: BTreeMap::new(),
+        }
     }
 }
 
 impl<'r, 'c> RuleWithCommand<'r, 'c> {
     pub fn dump_rule(self, writer: impl Write) -> io::Result<()> {
-        ninja_dump::dump_rule(writer, self.name, self.command)
+        ninja_dump::dump_rule(writer, self.rule_name, self.command)
     }
 }
 
-impl<'r, O, I, ID, OOD> Build<'r, O, I, ID, OOD>
+impl<'r, O, OE, I, IE, ID, IDE, OOD, OODE> Build<'r, O, OE, I, IE, ID, IDE, OOD, OODE>
 where
-    O: IntoIterator,
-    I: IntoIterator,
-    ID: IntoIterator,
-    OOD: IntoIterator,
-    O::Item: Into<Vec<u8>>,
-    I::Item: Into<Vec<u8>>,
-    ID::Item: Into<Vec<u8>>,
-    OOD::Item: Into<Vec<u8>>,
+    O: Iterator<Item = Result<Vec<u8>, OE>>,
+    I: Iterator<Item = Result<Vec<u8>, IE>>,
+    ID: Iterator<Item = Result<Vec<u8>, IDE>>,
+    OOD: Iterator<Item = Result<Vec<u8>, OODE>>,
 {
-    #[allow(clippy::missing_const_for_fn)] // false positive from Clippy 0.1.66
     #[must_use]
-    pub fn inputs<T>(self, new_value: T) -> Build<'r, O, T, ID, OOD>
-    where
-        T: IntoIterator,
-        T::Item: Into<Vec<u8>>,
-    {
+    pub fn inputs(
+        self,
+        new_value: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    ) -> Build<
+        'r,
+        O,
+        OE,
+        impl Iterator<Item = Result<Vec<u8>, Infallible>>,
+        Infallible,
+        ID,
+        IDE,
+        OOD,
+        OODE,
+    > {
         Build {
             outputs: self.outputs,
             rule_name: self.rule_name,
-            inputs: new_value,
+            inputs: new_value.into_iter().map(|x| Ok(x.into())),
             implicit_dependencies: self.implicit_dependencies,
             order_only_dependencies: self.order_only_dependencies,
             variables: self.variables,
@@ -120,47 +149,43 @@ where
 
     #[cfg(unix)]
     #[must_use]
-    pub fn input_paths(
+    pub fn input_path_results<E>(
         self,
-        new_value: impl IntoIterator<Item = impl Into<PathBuf>>,
-    ) -> Build<'r, O, impl IntoIterator<Item = impl Into<Vec<u8>>>, ID, OOD> {
-        self.inputs(
-            new_value
-                .into_iter()
-                .map(|path| std::os::unix::ffi::OsStringExt::into_vec(OsString::from(path.into()))),
-        )
-    }
-
-    #[allow(clippy::missing_const_for_fn)] // false positive from Clippy 0.1.66
-    #[must_use]
-    pub fn implicit_dependencies<T>(self, new_value: T) -> Build<'r, O, I, T, OOD>
-    where
-        T: IntoIterator,
-        T::Item: Into<Vec<u8>>,
-    {
+        new_value: impl IntoIterator<Item = Result<PathBuf, E>>,
+    ) -> Build<'r, O, OE, impl Iterator<Item = Result<Vec<u8>, E>>, E, ID, IDE, OOD, OODE> {
         Build {
             outputs: self.outputs,
             rule_name: self.rule_name,
-            inputs: self.inputs,
-            implicit_dependencies: new_value,
+            inputs: new_value.into_iter().map(|x| {
+                x.map(|path| std::os::unix::ffi::OsStringExt::into_vec(OsString::from(path)))
+            }),
+            implicit_dependencies: self.implicit_dependencies,
             order_only_dependencies: self.order_only_dependencies,
             variables: self.variables,
         }
     }
 
-    #[allow(clippy::missing_const_for_fn)] // false positive from Clippy 0.1.66
     #[must_use]
-    pub fn order_only_dependencies<T>(self, new_value: T) -> Build<'r, O, I, ID, T>
-    where
-        T: IntoIterator,
-        T::Item: Into<Vec<u8>>,
-    {
+    pub fn implicit_dependencies(
+        self,
+        new_value: impl IntoIterator<Item = impl Into<Vec<u8>>>,
+    ) -> Build<
+        'r,
+        O,
+        OE,
+        I,
+        IE,
+        impl Iterator<Item = Result<Vec<u8>, Infallible>>,
+        Infallible,
+        OOD,
+        OODE,
+    > {
         Build {
             outputs: self.outputs,
             rule_name: self.rule_name,
             inputs: self.inputs,
-            implicit_dependencies: self.implicit_dependencies,
-            order_only_dependencies: new_value,
+            implicit_dependencies: new_value.into_iter().map(|x| Ok(x.into())),
+            order_only_dependencies: self.order_only_dependencies,
             variables: self.variables,
         }
     }
@@ -170,12 +195,29 @@ where
     pub fn order_only_dependency_paths(
         self,
         new_value: impl IntoIterator<Item = impl Into<PathBuf>>,
-    ) -> Build<'r, O, I, ID, impl IntoIterator<Item = impl Into<Vec<u8>>>> {
-        self.order_only_dependencies(
-            new_value
-                .into_iter()
-                .map(|path| std::os::unix::ffi::OsStringExt::into_vec(OsString::from(path.into()))),
-        )
+    ) -> Build<
+        'r,
+        O,
+        OE,
+        I,
+        IE,
+        ID,
+        IDE,
+        impl Iterator<Item = Result<Vec<u8>, Infallible>>,
+        Infallible,
+    > {
+        Build {
+            outputs: self.outputs,
+            rule_name: self.rule_name,
+            inputs: self.inputs,
+            implicit_dependencies: self.implicit_dependencies,
+            order_only_dependencies: new_value.into_iter().map(|x| {
+                Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(
+                    x.into(),
+                )))
+            }),
+            variables: self.variables,
+        }
     }
 
     #[must_use]
@@ -184,7 +226,7 @@ where
         self
     }
 
-    pub fn dump_build(self, writer: impl Write) -> io::Result<()> {
+    pub fn dump_build(self, writer: impl Write) -> Result<(), DumpBuildError<OE, IE, IDE, OODE>> {
         ninja_dump::dump_build(
             writer,
             self.outputs,
