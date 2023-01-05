@@ -21,7 +21,7 @@ pub fn dump_rule(mut writer: impl Write, rule_name: &[u8], command: &[u8]) -> io
 pub enum DumpBuildError<OE, IE, IDE, OODE> {
     #[error("io error")]
     Io(#[from] io::Error),
-    #[error("input error")]
+    #[error("output error")]
     Output(OE),
     #[error("input error")]
     Input(IE),
