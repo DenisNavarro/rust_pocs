@@ -2,10 +2,11 @@
 
 use anyhow::{bail, Context};
 use clap::Parser;
+use time::{format_description, OffsetDateTime};
+
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
-use time::{format_description, OffsetDateTime};
 
 #[derive(Parser)]
 /// Copy directories and files by adding a suffix which depends on the current datetime.

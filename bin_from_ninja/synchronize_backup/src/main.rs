@@ -3,11 +3,12 @@
 use anyhow::{bail, Context};
 use clap::Parser;
 use regex::Regex;
+use time::{format_description, OffsetDateTime};
+
 use std::borrow::Cow;
 use std::fs::{self, DirEntry, Metadata};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use time::{format_description, OffsetDateTime};
 
 #[derive(Parser)]
 /// Synchronize a directory with a backup directory by renaming a suffix and calling rsync.
