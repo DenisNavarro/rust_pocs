@@ -19,15 +19,15 @@ pub fn dump_rule(mut writer: impl Write, rule_name: &[u8], command: &[u8]) -> io
 
 #[derive(Error, Debug)]
 pub enum DumpBuildError<OE, IE, IDE, OODE> {
-    #[error("io error")]
+    #[error("io error: {0:?}")]
     Io(#[from] io::Error),
-    #[error("output error")]
+    #[error("output error: {0:?}")]
     Output(OE),
-    #[error("input error")]
+    #[error("input error: {0:?}")]
     Input(IE),
-    #[error("implicit dependency")]
+    #[error("implicit dependency: {0:?}")]
     ImplicitDependency(IDE),
-    #[error("order-only dependency")]
+    #[error("order-only dependency: {0:?}")]
     OrderOnlyDependency(OODE),
 }
 

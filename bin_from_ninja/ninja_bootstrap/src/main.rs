@@ -7,12 +7,14 @@ use ninja_bootstrap::rule;
 use anyhow::anyhow;
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
+use serde::Deserialize;
 
+use std::fs;
 use std::io;
 
 fn main() -> anyhow::Result<()> {
-    // TODO: read the content of binary_names from the top-level Cargo.toml.
-    let binary_names = ["ninja_bootstrap", "backup", "synchronize_backup"];
+    let cargo_toml = fs::read_to_string("Cargo.toml")?;
+    let binary_names = toml::from_str::<CargoToml>(&cargo_toml)?.workspace.members;
     let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
@@ -35,7 +37,7 @@ fn main() -> anyhow::Result<()> {
         .command("cargo build --release -p $bin_name && touch $out")
         .dump_rule(&mut out)?;
     rule("copy").command("cp -- $in $out").dump_rule(&mut out)?;
-    for &bin_name in &binary_names {
+    for bin_name in binary_names.iter().map(String::as_str) {
         let fmt_ninjatarget = format!("{bin_name}/fmt.ninjatarget");
         let clippy_ninjatarget = format!("{bin_name}/clippy.ninjatarget");
         let test_ninjatarget = format!("{bin_name}/test.ninjatarget");
@@ -74,12 +76,12 @@ fn main() -> anyhow::Result<()> {
         .inputs(
             binary_names
                 .iter()
-                .map(|&bin_name| format!("{bin_name}/fmt.ninjatarget")),
+                .map(|bin_name| format!("{bin_name}/fmt.ninjatarget")),
         )
         .dump_build(&mut out)?;
     rule("phony")
         .outputs(["check"])
-        .inputs(binary_names.iter().flat_map(|&bin_name| {
+        .inputs(binary_names.iter().flat_map(|bin_name| {
             [
                 format!("{bin_name}/clippy.ninjatarget"),
                 format!("{bin_name}/test.ninjatarget"),
@@ -87,4 +89,14 @@ fn main() -> anyhow::Result<()> {
         }))
         .dump_build(&mut out)?;
     Ok(())
+}
+
+#[derive(Deserialize)]
+struct CargoToml {
+    workspace: Workspace,
+}
+
+#[derive(Deserialize)]
+struct Workspace {
+    members: Vec<String>,
 }
