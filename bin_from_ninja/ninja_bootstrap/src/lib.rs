@@ -77,7 +77,7 @@ impl<'r> Rule<'r> {
 
     #[cfg(unix)]
     #[must_use]
-    pub fn output_paths(
+    pub fn output_unix_paths(
         self,
         outputs: impl IntoIterator<Item = impl Into<PathBuf>>,
     ) -> Build<
@@ -187,7 +187,7 @@ where
 
     #[cfg(unix)]
     #[must_use]
-    pub fn order_only_dependency_paths(
+    pub fn order_only_dependency_unix_paths(
         self,
         new_value: impl IntoIterator<Item = impl Into<PathBuf>>,
     ) -> Build<

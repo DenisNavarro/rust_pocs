@@ -27,7 +27,7 @@ fn main() -> anyhow::Result<()> {
     work(cli.src_paths, now)
 }
 
-fn work(src_paths: impl IntoIterator<Item = PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
+fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let dst_path_suffix = get_dst_path_suffix(now, "_[year]-[month]-[day]-[hour]h[minute]");
     let copy_actions: Vec<_> = check_if_each_copy_seems_possible(src_paths, &dst_path_suffix)?;
     for copy_action in copy_actions {
@@ -43,7 +43,7 @@ fn get_dst_path_suffix(now: OffsetDateTime, format: &str) -> String {
 }
 
 fn check_if_each_copy_seems_possible(
-    src_paths: impl IntoIterator<Item = PathBuf>,
+    src_paths: Vec<PathBuf>,
     dst_path_suffix: &str,
 ) -> anyhow::Result<Vec<CopyAction>> {
     src_paths
@@ -63,8 +63,7 @@ fn check_if_copy_seems_possible(
     let metadata = fs::metadata(&src_path)
         .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
     file_name.push(dst_path_suffix);
-    let mut dst_path = src_path.clone();
-    dst_path.set_file_name(&file_name);
+    let dst_path = src_path.with_file_name(&file_name);
     if dst_path.exists() {
         bail!("{dst_path:?} already exists");
     }
@@ -329,7 +328,7 @@ mod tests {
 
         fn launch_work(&self, arg_paths: &[&str], now: OffsetDateTime) -> anyhow::Result<()> {
             let tmp_dir_path = self.tmp_dir.path();
-            let src_paths = arg_paths.iter().map(|path| tmp_dir_path.join(path));
+            let src_paths = arg_paths.iter().map(|path| tmp_dir_path.join(path)).collect();
             work(src_paths, now)
         }
 
