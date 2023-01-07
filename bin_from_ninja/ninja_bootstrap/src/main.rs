@@ -2,15 +2,16 @@
 
 //! Write a Ninja build file in stdout
 
-use ninja_bootstrap::rule;
+use std::fs;
+use std::io;
+use std::iter;
 
 use anyhow::anyhow;
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
 
-use std::fs;
-use std::io;
+use ninja_bootstrap::rule;
 
 fn main() -> anyhow::Result<()> {
     let cargo_toml = fs::read_to_string("Cargo.toml")?;
@@ -18,21 +19,13 @@ fn main() -> anyhow::Result<()> {
     let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
-    rule("create_directory")
-        .command("mkdir -p -- $out")
-        .dump_rule(&mut out)?;
-    rule("create_directory")
-        .output_paths([bin_path.clone()])
-        .dump_build(&mut out)?;
-    rule("fmt")
-        .command("cargo fmt -p $bin_name && touch $out")
-        .dump_rule(&mut out)?;
+    rule("create_directory").command("mkdir -p -- $out").dump_rule(&mut out)?;
+    rule("create_directory").output_paths([bin_path.clone()]).dump_build(&mut out)?;
+    rule("fmt").command("cargo fmt -p $bin_name && touch $out").dump_rule(&mut out)?;
     rule("clippy")
         .command("cargo clippy -p $bin_name -- -D warnings && touch $out")
         .dump_rule(&mut out)?;
-    rule("test")
-        .command("cargo test -p $bin_name && touch $out")
-        .dump_rule(&mut out)?;
+    rule("test").command("cargo test -p $bin_name && touch $out").dump_rule(&mut out)?;
     rule("release")
         .command("cargo build --release -p $bin_name && touch $out")
         .dump_rule(&mut out)?;
@@ -43,7 +36,10 @@ fn main() -> anyhow::Result<()> {
         let test_ninjatarget = format!("{bin_name}/test.ninjatarget");
         rule("fmt")
             .outputs([fmt_ninjatarget.clone()])
-            .input_path_results(glob(&format!("{bin_name}/src/**/*.rs")).unwrap())
+            .input_path_results(
+                iter::once(Ok("rustfmt.toml".into()))
+                    .chain(glob(&format!("{bin_name}/src/**/*.rs")).unwrap()),
+            )
             .variable("bin_name", bin_name)
             .dump_build(&mut out)?;
         rule("clippy")
@@ -73,19 +69,12 @@ fn main() -> anyhow::Result<()> {
     }
     rule("phony")
         .outputs(["fmt"])
-        .inputs(
-            binary_names
-                .iter()
-                .map(|bin_name| format!("{bin_name}/fmt.ninjatarget")),
-        )
+        .inputs(binary_names.iter().map(|bin_name| format!("{bin_name}/fmt.ninjatarget")))
         .dump_build(&mut out)?;
     rule("phony")
         .outputs(["check"])
         .inputs(binary_names.iter().flat_map(|bin_name| {
-            [
-                format!("{bin_name}/clippy.ninjatarget"),
-                format!("{bin_name}/test.ninjatarget"),
-            ]
+            [format!("{bin_name}/clippy.ninjatarget"), format!("{bin_name}/test.ninjatarget")]
         }))
         .dump_build(&mut out)?;
     Ok(())

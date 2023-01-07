@@ -5,10 +5,10 @@
 //! A lot of features are missing. Currently, only the one useful to build `ninja_bootstrap` are
 //! implemented.
 
-use thiserror::Error;
-
 use std::collections::BTreeMap;
 use std::io::{self, Write};
+
+use thiserror::Error;
 
 pub fn dump_rule(mut writer: impl Write, rule_name: &[u8], command: &[u8]) -> io::Result<()> {
     for bytes in [b"rule ", rule_name, b"\n  command = ", command, b"\n"] {

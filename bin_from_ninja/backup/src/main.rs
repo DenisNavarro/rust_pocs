@@ -1,12 +1,12 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 
-use anyhow::{bail, Context};
-use clap::Parser;
-use time::{format_description, OffsetDateTime};
-
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
+
+use anyhow::{bail, Context};
+use clap::Parser;
+use time::{format_description, OffsetDateTime};
 
 #[derive(Parser)]
 /// Copy directories and files by adding a suffix which depends on the current datetime.
@@ -68,24 +68,17 @@ fn check_if_copy_seems_possible(
     if dst_path.exists() {
         bail!("{dst_path:?} already exists");
     }
-    Ok(CopyAction {
-        src: src_path,
-        dst: dst_path,
-        is_dir: metadata.is_dir(),
-    })
+    Ok(CopyAction { src: src_path, dst: dst_path, is_dir: metadata.is_dir() })
 }
 
 fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     let CopyAction { src, dst, is_dir } = copy_action;
     if *is_dir {
         // TODO: Make the code cross-plateform.
-        let status = Command::new("cp")
-            .args(["-rH", "--"])
-            .args([src, dst])
-            .status()
-            .with_context(|| {
-                format!("failed to copy {src:?} to {dst:?}: failed to execute process")
-            })?;
+        let status =
+            Command::new("cp").args(["-rH", "--"]).args([src, dst]).status().with_context(
+                || format!("failed to copy {src:?} to {dst:?}: failed to execute process"),
+            )?;
         if !status.success() {
             bail!("failed to copy {src:?} to {dst:?}: {status}");
         }
@@ -298,9 +291,7 @@ mod tests {
 
     impl Story {
         fn new() -> Story {
-            Story {
-                tmp_dir: tempdir().unwrap(),
-            }
+            Story { tmp_dir: tempdir().unwrap() }
         }
 
         fn create_dirs(&self, paths: &[&str]) -> anyhow::Result<()> {

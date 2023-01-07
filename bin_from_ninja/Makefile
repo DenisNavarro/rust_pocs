@@ -19,8 +19,8 @@ fmt : build.ninja
 all : build.ninja
 	ninja -v
 
-build.ninja : $(ninja_bootstrap_code) | $(ninja_bootstrap)
-	$| > $@
+build.ninja : Cargo.toml $(ninja_bootstrap_code) | $(ninja_bootstrap)
+	RUST_LIB_BACKTRACE=1 $| > $@
 
 $(ninja_bootstrap) : $(ninja_bootstrap_code)
 	cargo build -p ninja_bootstrap

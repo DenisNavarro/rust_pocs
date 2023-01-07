@@ -1,14 +1,14 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 
-use anyhow::{bail, Context};
-use clap::Parser;
-use regex::Regex;
-use time::{format_description, OffsetDateTime};
-
 use std::borrow::Cow;
 use std::fs::{self, DirEntry, Metadata};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+
+use anyhow::{bail, Context};
+use clap::Parser;
+use regex::Regex;
+use time::{format_description, OffsetDateTime};
 
 #[derive(Parser)]
 /// Synchronize a directory with a backup directory by renaming a suffix and calling rsync.
@@ -98,9 +98,8 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
     for entry_or_err in entries_and_errors {
         let entry =
             entry_or_err.with_context(|| format!("failed to read an entry in {dst_dir_path:?}"))?;
-        let metadata = entry
-            .metadata()
-            .with_context(|| format!("failed to read metadata from {entry:?}"))?;
+        let metadata =
+            entry.metadata().with_context(|| format!("failed to read metadata from {entry:?}"))?;
         if is_candidate(&entry, &metadata, src_dir_name, &re) {
             result.push(entry.path());
         }
@@ -413,11 +412,8 @@ mod tests {
     fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
         let story = Story::new();
         story.create_dirs(&["foo", "foo/colors", "foo/colors/dark", "bar"])?;
-        let result = story.launch_work(
-            "foo/colors/dark/..",
-            "bar",
-            datetime!(2022-12-13 14:15:16 UTC),
-        );
+        let result =
+            story.launch_work("foo/colors/dark/..", "bar", datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         story.check_the_following_paths_do_not_exist(&["bar/colors_2022-12-13-14h15"])
     }
@@ -447,9 +443,7 @@ mod tests {
 
     impl Story {
         fn new() -> Story {
-            Story {
-                tmp_dir: tempdir().unwrap(),
-            }
+            Story { tmp_dir: tempdir().unwrap() }
         }
 
         fn create_dirs(&self, paths: &[&str]) -> anyhow::Result<()> {

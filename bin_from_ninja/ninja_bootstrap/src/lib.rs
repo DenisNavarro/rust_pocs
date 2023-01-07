@@ -5,14 +5,14 @@
 
 mod ninja_dump;
 
-use ninja_dump::DumpBuildError;
-
 use std::collections::BTreeMap;
 use std::convert::Infallible;
 use std::ffi::OsString;
 use std::io::{self, Write};
 use std::iter;
 use std::path::PathBuf;
+
+use ninja_dump::DumpBuildError;
 
 pub fn rule(name: &(impl AsRef<[u8]> + ?Sized)) -> Rule<'_> {
     Rule(name.as_ref())
@@ -47,10 +47,7 @@ type Empty = iter::Empty<Result<Vec<u8>, Infallible>>;
 impl<'r> Rule<'r> {
     #[must_use]
     pub fn command(self, command: &(impl AsRef<[u8]> + ?Sized)) -> RuleWithCommand<'r, '_> {
-        RuleWithCommand {
-            rule_name: self.0,
-            command: command.as_ref(),
-        }
+        RuleWithCommand { rule_name: self.0, command: command.as_ref() }
     }
 
     #[must_use]
@@ -95,11 +92,9 @@ impl<'r> Rule<'r> {
         Infallible,
     > {
         Build {
-            outputs: outputs.into_iter().map(|x| {
-                Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(
-                    x.into(),
-                )))
-            }),
+            outputs: outputs
+                .into_iter()
+                .map(|x| Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(x.into())))),
             rule_name: self.0,
             inputs: iter::empty(),
             implicit_dependencies: iter::empty(),
@@ -211,11 +206,9 @@ where
             rule_name: self.rule_name,
             inputs: self.inputs,
             implicit_dependencies: self.implicit_dependencies,
-            order_only_dependencies: new_value.into_iter().map(|x| {
-                Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(
-                    x.into(),
-                )))
-            }),
+            order_only_dependencies: new_value
+                .into_iter()
+                .map(|x| Ok(std::os::unix::ffi::OsStringExt::into_vec(OsString::from(x.into())))),
             variables: self.variables,
         }
     }
