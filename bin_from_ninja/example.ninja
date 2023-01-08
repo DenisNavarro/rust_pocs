@@ -1,5 +1,6 @@
-# `make build.ninja` creates a file which looks like this, except that `/home/denis` will be
-# replaced with your home directory.
+# `make build.ninja` creates a file `build.ninja` identical to the current one, except that:
+# - `/home/denis` will be replaced with your home directory and
+# - the 3 lines of the current comment are not there.
 rule create_directory
   command = mkdir -p -- $out
 build /home/denis/bin: create_directory
