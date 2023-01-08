@@ -38,8 +38,8 @@ written by a program instead of by a human.
 
 In the current POC, the [`ninja_bootstrap`][] program writes the `build.ninja` file.
 
-Remark for projects with more complex workflows: If a complex workflow can be automated with a
-`Makefile` which uses advanced features of Make and if, like Matt Rickard, you think that
+Remark: If a complex workflow can be automated with a `Makefile` which uses advanced features of
+Make and if, like Matt Rickard, you think that
 [every sufficiently advanced configuration language is wrong][], then you may prefer to use a
 regular programming language to write a code which writes a Ninja build file.
 

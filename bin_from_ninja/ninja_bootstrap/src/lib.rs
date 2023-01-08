@@ -144,7 +144,7 @@ where
 
     #[cfg(unix)]
     #[must_use]
-    pub fn input_path_results<E>(
+    pub fn input_unix_path_results<E>(
         self,
         new_value: impl IntoIterator<Item = Result<PathBuf, E>>,
     ) -> Build<'r, O, OE, impl Iterator<Item = Result<Vec<u8>, E>>, E, ID, IDE, OOD, OODE> {

@@ -5,11 +5,14 @@
 use std::fs;
 use std::io;
 use std::iter;
+use std::path::PathBuf;
 
-use anyhow::anyhow;
+use anyhow::{anyhow, Context};
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
+use toml::value::Table;
+use toml::Value;
 
 use ninja_bootstrap::rule;
 
@@ -31,38 +34,51 @@ fn main() -> anyhow::Result<()> {
         .dump_rule(&mut out)?;
     rule("copy").command("cp -- $in $out").dump_rule(&mut out)?;
     for project in projects.iter().map(String::as_str) {
-        let fmt_ninjatarget = format!("{project}/fmt.ninjatarget");
-        let clippy_ninjatarget = format!("{project}/clippy.ninjatarget");
-        let test_ninjatarget = format!("{project}/test.ninjatarget");
         rule("fmt")
-            .outputs([fmt_ninjatarget.clone()])
-            .input_path_results(
+            .outputs([format!("{project}/fmt.ninjatarget")])
+            .input_unix_path_results(
                 iter::once(Ok("rustfmt.toml".into()))
                     .chain(glob(&format!("{project}/src/**/*.rs")).unwrap()),
             )
             .variable("project", project)
             .dump_build(&mut out)?;
+        let local_dependencies = get_local_dependencies(project, &projects)?;
+        let fmt_ninjatargets: Vec<String> = iter::once(project)
+            .chain(local_dependencies.normal_dependencies.iter().map(String::as_str))
+            .chain(local_dependencies.dev_dependencies.iter().map(String::as_str))
+            .map(|project| format!("{project}/fmt.ninjatarget"))
+            .collect();
         rule("clippy")
-            .outputs([clippy_ninjatarget.clone()])
-            .inputs([fmt_ninjatarget.clone()])
+            .outputs([format!("{project}/clippy.ninjatarget")])
+            .inputs(fmt_ninjatargets.iter().cloned())
             .variable("project", project)
             .dump_build(&mut out)?;
         rule("test")
-            .outputs([test_ninjatarget.clone()])
-            .inputs([fmt_ninjatarget.clone()])
+            .outputs([format!("{project}/test.ninjatarget")])
+            .inputs(fmt_ninjatargets)
             .variable("project", project)
             .dump_build(&mut out)?;
-        if project != "ninja_bootstrap" {
+        if has_a_binary_to_deploy(project) {
             let release_path = format!("target/release/{project}");
+            let project_and_normal_dependencies: Vec<String> =
+                iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
             rule("release")
                 .outputs([release_path.clone()])
-                .inputs([format!("{project}/Cargo.toml"), fmt_ninjatarget])
+                .inputs(
+                    iter::once(format!("{project}/Cargo.toml")).chain(
+                        project_and_normal_dependencies
+                            .iter()
+                            .map(|project| format!("{project}/fmt.ninjatarget")),
+                    ),
+                )
                 .variable("project", project)
                 .dump_build(&mut out)?;
             rule("copy")
                 .output_unix_paths([bin_path.join(project)])
                 .inputs([release_path])
-                .implicit_dependencies([clippy_ninjatarget, test_ninjatarget])
+                .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(|project| {
+                    [format!("{project}/clippy.ninjatarget"), format!("{project}/test.ninjatarget")]
+                }))
                 .order_only_dependency_unix_paths([bin_path.clone()])
                 .dump_build(&mut out)?;
         }
@@ -88,4 +104,49 @@ struct CargoToml {
 #[derive(Deserialize)]
 struct Workspace {
     members: Vec<String>,
+}
+
+fn has_a_binary_to_deploy(project: &str) -> bool {
+    project != "ninja_bootstrap" && PathBuf::from(format!("{project}/src/main.rs")).is_file()
+}
+
+fn get_local_dependencies(
+    project: &str,
+    local_projects: &[String],
+) -> anyhow::Result<Dependencies> {
+    let cargo_toml_path = format!("{project}/Cargo.toml");
+    get_local_dependencies_impl(local_projects, &cargo_toml_path)
+        .with_context(|| format!("error with {cargo_toml_path:?}"))
+}
+
+fn get_local_dependencies_impl(
+    local_projects: &[String],
+    cargo_toml_path: &str,
+) -> anyhow::Result<Dependencies> {
+    let cargo_toml = fs::read_to_string(cargo_toml_path)?;
+    let value = cargo_toml.parse::<Value>()?;
+    let table = value.as_table().ok_or_else(|| anyhow!("not a table: {value:?}"))?;
+    let normal_dependencies = get_local_projects_from(table, "dependencies", local_projects)?;
+    let dev_dependencies = get_local_projects_from(table, "dev-dependencies", local_projects)?;
+    Ok(Dependencies { normal_dependencies, dev_dependencies })
+}
+
+fn get_local_projects_from(
+    table: &Table,
+    key: &str,
+    local_projects: &[String],
+) -> anyhow::Result<Vec<String>> {
+    match table.get(key) {
+        Some(value) => {
+            let table =
+                value.as_table().ok_or_else(|| anyhow!("{key:?} is not a table: {value:?}"))?;
+            Ok(table.keys().filter(|name| local_projects.contains(name)).cloned().collect())
+        }
+        None => Ok(vec![]),
+    }
+}
+
+struct Dependencies {
+    normal_dependencies: Vec<String>,
+    dev_dependencies: Vec<String>,
 }

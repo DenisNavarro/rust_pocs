@@ -9,4 +9,4 @@ clap = { version = "4.0.32", features = ["derive"] }
 time = { version = "0.3.17", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]
-tempfile = "3.3.0"
+temporary_directory = { path = "../temporary_directory" }

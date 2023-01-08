@@ -56,7 +56,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
- "tempfile",
+ "temporary_directory",
  "time",
 ]
 
@@ -435,7 +435,7 @@ dependencies = [
  "camino",
  "clap",
  "regex",
- "tempfile",
+ "temporary_directory",
  "time",
 ]
 
@@ -451,6 +451,14 @@ dependencies = [
  "redox_syscall",
  "remove_dir_all",
  "winapi",
+]
+
+[[package]]
+name = "temporary_directory"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "tempfile",
 ]
 
 [[package]]
