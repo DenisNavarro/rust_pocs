@@ -5,7 +5,8 @@ use std::fs::{self, DirEntry, Metadata};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use anyhow::{bail, Context};
+use anyhow::{anyhow, bail, Context};
+use camino::Utf8Path;
 use clap::Parser;
 use regex::Regex;
 use time::{format_description, OffsetDateTime};
@@ -46,12 +47,9 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
 }
 
 fn check_src_dir_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
-    let src_dir_path: &Path = src_dir_path.as_ref();
-    let src_dir_name = src_dir_path
+    let src_dir_name = Utf8Path::new(src_dir_path)
         .file_name()
-        .with_context(|| format!("{src_dir_path:?} does not have a name"))?
-        .to_str()
-        .unwrap(); // src_dir_path is a valid UTF-8 sequence.
+        .ok_or_else(|| anyhow!("{src_dir_path:?} does not have a name"))?;
     let src_dir_metadata = fs::metadata(src_dir_path)
         .with_context(|| format!("failed to read metadata from {src_dir_path:?}"))?;
     if !src_dir_metadata.is_dir() {
@@ -535,7 +533,7 @@ mod tests {
             let tmp_dir_path = self.tmp_dir.path();
             for path in paths {
                 let path = tmp_dir_path.join(path);
-                if path.exists() {
+                if path.symlink_metadata().is_ok() {
                     bail!("{path:?} exists")
                 }
             }

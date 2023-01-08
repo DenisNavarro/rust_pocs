@@ -56,15 +56,14 @@ fn check_if_copy_seems_possible(
     src_path: PathBuf,
     dst_path_suffix: &str,
 ) -> anyhow::Result<CopyAction> {
-    let mut file_name = src_path
-        .file_name()
-        .with_context(|| format!("{src_path:?} does not have a name"))?
-        .to_owned();
+    let src_file_name =
+        src_path.file_name().with_context(|| format!("{src_path:?} does not have a name"))?;
     let metadata = fs::metadata(&src_path)
         .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
-    file_name.push(dst_path_suffix);
-    let dst_path = src_path.with_file_name(&file_name);
-    if dst_path.exists() {
+    let mut dst_file_name = src_file_name.to_owned();
+    dst_file_name.push(dst_path_suffix);
+    let dst_path = src_path.with_file_name(&dst_file_name);
+    if dst_path.symlink_metadata().is_ok() {
         bail!("{dst_path:?} already exists");
     }
     Ok(CopyAction { src: src_path, dst: dst_path, is_dir: metadata.is_dir() })
@@ -381,7 +380,7 @@ mod tests {
             let tmp_dir_path = self.tmp_dir.path();
             for path in paths {
                 let path = tmp_dir_path.join(path);
-                if path.exists() {
+                if path.symlink_metadata().is_ok() {
                     bail!("{path:?} exists")
                 }
             }
