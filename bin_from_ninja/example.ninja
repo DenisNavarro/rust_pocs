@@ -3,7 +3,6 @@
 # - the 3 lines of the current comment are not there.
 rule create_directory
   command = mkdir -p -- $out
-build /home/denis/bin: create_directory
 rule fmt
   command = cargo fmt -p $project && touch $out
 rule clippy
@@ -14,6 +13,7 @@ rule release
   command = cargo build --release -p $project && touch $out
 rule copy
   command = cp -- $in $out
+build /home/denis/bin: create_directory
 build backup/fmt.ninjatarget: fmt rustfmt.toml backup/src/main.rs
   project = backup
 build backup/clippy.ninjatarget: clippy backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget

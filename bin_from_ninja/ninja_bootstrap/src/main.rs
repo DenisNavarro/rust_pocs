@@ -23,7 +23,6 @@ fn main() -> anyhow::Result<()> {
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
     rule("create_directory").command("mkdir -p -- $out").dump_rule(&mut out)?;
-    rule("create_directory").output_unix_paths([bin_path.clone()]).dump_build(&mut out)?;
     rule("fmt").command("cargo fmt -p $project && touch $out").dump_rule(&mut out)?;
     rule("clippy")
         .command("cargo clippy -p $project -- -D warnings && touch $out")
@@ -33,6 +32,7 @@ fn main() -> anyhow::Result<()> {
         .command("cargo build --release -p $project && touch $out")
         .dump_rule(&mut out)?;
     rule("copy").command("cp -- $in $out").dump_rule(&mut out)?;
+    rule("create_directory").output_unix_paths([bin_path.clone()]).dump_build(&mut out)?;
     for project in projects.iter().map(String::as_str) {
         rule("fmt")
             .outputs([format!("{project}/fmt.ninjatarget")])

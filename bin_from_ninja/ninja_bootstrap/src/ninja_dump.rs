@@ -25,9 +25,9 @@ pub enum DumpBuildError<OE, IE, IDE, OODE> {
     Output(OE),
     #[error("input error: {0:?}")]
     Input(IE),
-    #[error("implicit dependency: {0:?}")]
+    #[error("implicit dependency error: {0:?}")]
     ImplicitDependency(IDE),
-    #[error("order-only dependency: {0:?}")]
+    #[error("order-only dependency error: {0:?}")]
     OrderOnlyDependency(OODE),
 }
 

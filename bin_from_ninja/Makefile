@@ -16,7 +16,7 @@ fmt : build.ninja
 all : build.ninja
 	ninja -v
 
-#: Write the build.ninja file, similar to example.ninja
+#: Write the build.ninja file, almost identical to example.ninja
 build.ninja : target/debug/ninja_bootstrap Cargo.toml $(wildcard */Cargo.toml)
 	RUST_LIB_BACKTRACE=1 target/debug/ninja_bootstrap > build.ninja
 
