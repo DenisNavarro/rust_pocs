@@ -1,6 +1,7 @@
 #![warn(clippy::nursery, clippy::pedantic)]
 
 use std::fs;
+use std::io::{self, Write};
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -32,7 +33,8 @@ fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let copy_actions: Vec<_> = check_if_each_copy_seems_possible(src_paths, &dst_path_suffix)?;
     for copy_action in copy_actions {
         do_copy(&copy_action)?;
-        println!("Copied {:?} to {:?}.", copy_action.src, copy_action.dst);
+        writeln!(io::stdout(), "Copied {:?} to {:?}.", copy_action.src, copy_action.dst)
+            .context("failed to write to stdout")?;
     }
     Ok(())
 }

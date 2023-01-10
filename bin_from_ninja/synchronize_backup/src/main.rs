@@ -2,6 +2,7 @@
 
 use std::borrow::Cow;
 use std::fs::{self, DirEntry, Metadata};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
@@ -42,7 +43,8 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
     let src_dir_name = check_src_dir_is_ok(src_dir_path.as_ref())?;
     let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
-    println!("Synchronize {src_dir_path:?} with {final_dst_path:?}.");
+    writeln!(io::stdout(), "Synchronize {src_dir_path:?} with {final_dst_path:?}.")
+        .context("failed to write to stdout")?;
     synchronize(src_dir_path, &final_dst_path)
 }
 
@@ -80,7 +82,8 @@ fn maybe_rename_a_candidate_to_final_dst(
     if let Some(candidate) = candidates.get(0) {
         fs::rename(candidate, final_dst_path)
             .with_context(|| format!("failed to renamed {candidate:?} to {final_dst_path:?}"))?;
-        println!("Renamed {candidate:?} to {final_dst_path:?}.");
+        writeln!(io::stdout(), "Renamed {candidate:?} to {final_dst_path:?}.")
+            .context("failed to write to stdout")?;
     }
     Ok(())
 }

@@ -2,6 +2,10 @@
 
 //! Write a Ninja build file in stdout
 
+// The current code uses the builder pattern.
+// After refactoring, the future code will probably use the typestate pattern instead.
+// TODO: refactor the code!
+
 use std::fs;
 use std::io;
 use std::iter;
@@ -17,8 +21,10 @@ use toml::Value;
 use ninja_bootstrap::rule;
 
 fn main() -> anyhow::Result<()> {
-    let cargo_toml = fs::read_to_string("Cargo.toml")?;
-    let projects = toml::from_str::<CargoToml>(&cargo_toml)?.workspace.members;
+    let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
+    let cargo_toml =
+        toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
+    let projects = cargo_toml.workspace.members;
     let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
@@ -115,20 +121,15 @@ fn get_local_dependencies(
     local_projects: &[String],
 ) -> anyhow::Result<Dependencies> {
     let cargo_toml_path = format!("{project}/Cargo.toml");
-    get_local_dependencies_impl(local_projects, &cargo_toml_path)
-        .with_context(|| format!("error with {cargo_toml_path:?}"))
-}
-
-fn get_local_dependencies_impl(
-    local_projects: &[String],
-    cargo_toml_path: &str,
-) -> anyhow::Result<Dependencies> {
-    let cargo_toml = fs::read_to_string(cargo_toml_path)?;
-    let value = cargo_toml.parse::<Value>()?;
-    let table = value.as_table().ok_or_else(|| anyhow!("not a table: {value:?}"))?;
-    let normal_dependencies = get_local_projects_from(table, "dependencies", local_projects)?;
-    let dev_dependencies = get_local_projects_from(table, "dev-dependencies", local_projects)?;
-    Ok(Dependencies { normal_dependencies, dev_dependencies })
+    (|| {
+        let cargo_toml = fs::read_to_string(&cargo_toml_path).context("failed to read the file")?;
+        let value = cargo_toml.parse::<Value>().context("invalid TOML")?;
+        let table = value.as_table().ok_or_else(|| anyhow!("not a table: {value:?}"))?;
+        let normal_dependencies = get_local_projects_from(table, "dependencies", local_projects)?;
+        let dev_dependencies = get_local_projects_from(table, "dev-dependencies", local_projects)?;
+        anyhow::Ok(Dependencies { normal_dependencies, dev_dependencies })
+    })()
+    .with_context(|| format!("error with {cargo_toml_path:?}"))
 }
 
 fn get_local_projects_from(
