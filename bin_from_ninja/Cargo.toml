@@ -5,3 +5,4 @@ members = [
     "synchronize_backup",
     "temporary_directory",
 ]
+resolver = "2"

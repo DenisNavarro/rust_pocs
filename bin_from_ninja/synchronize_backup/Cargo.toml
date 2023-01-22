@@ -8,7 +8,8 @@ anyhow = "1.0.68"
 camino = "1.1.2"
 clap = { version = "4.1.1", features = ["derive"] }
 regex = "1.7.1"
-time = { version = "0.3.17", features = ["formatting", "local-offset", "macros"] }
+time = { version = "0.3.17", features = ["formatting", "local-offset"] }
 
 [dev-dependencies]
 temporary_directory = { path = "../temporary_directory" }
+time = { version = "0.3.17", features = ["formatting", "local-offset", "macros"] }

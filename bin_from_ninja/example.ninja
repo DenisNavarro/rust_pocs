@@ -16,33 +16,33 @@ rule copy
 build /home/denis/bin: create_directory
 build backup/fmt.ninjatarget: fmt rustfmt.toml backup/src/main.rs
   project = backup
-build backup/clippy.ninjatarget: clippy backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget
+build backup/clippy.ninjatarget: clippy backup/fmt.ninjatarget backup/Cargo.toml temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = backup
-build backup/test.ninjatarget: test backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget
+build backup/test.ninjatarget: test backup/fmt.ninjatarget backup/Cargo.toml temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = backup
-build target/release/backup: release backup/Cargo.toml backup/fmt.ninjatarget
+build target/release/backup: release backup/fmt.ninjatarget backup/Cargo.toml
   project = backup
 build /home/denis/bin/backup: copy target/release/backup | backup/clippy.ninjatarget backup/test.ninjatarget || /home/denis/bin
 build ninja_bootstrap/fmt.ninjatarget: fmt rustfmt.toml ninja_bootstrap/src/lib.rs ninja_bootstrap/src/main.rs ninja_bootstrap/src/ninja_dump.rs
   project = ninja_bootstrap
-build ninja_bootstrap/clippy.ninjatarget: clippy ninja_bootstrap/fmt.ninjatarget
+build ninja_bootstrap/clippy.ninjatarget: clippy ninja_bootstrap/fmt.ninjatarget ninja_bootstrap/Cargo.toml
   project = ninja_bootstrap
-build ninja_bootstrap/test.ninjatarget: test ninja_bootstrap/fmt.ninjatarget
+build ninja_bootstrap/test.ninjatarget: test ninja_bootstrap/fmt.ninjatarget ninja_bootstrap/Cargo.toml
   project = ninja_bootstrap
 build synchronize_backup/fmt.ninjatarget: fmt rustfmt.toml synchronize_backup/src/main.rs
   project = synchronize_backup
-build synchronize_backup/clippy.ninjatarget: clippy synchronize_backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget
+build synchronize_backup/clippy.ninjatarget: clippy synchronize_backup/fmt.ninjatarget synchronize_backup/Cargo.toml temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = synchronize_backup
-build synchronize_backup/test.ninjatarget: test synchronize_backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget
+build synchronize_backup/test.ninjatarget: test synchronize_backup/fmt.ninjatarget synchronize_backup/Cargo.toml temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = synchronize_backup
-build target/release/synchronize_backup: release synchronize_backup/Cargo.toml synchronize_backup/fmt.ninjatarget
+build target/release/synchronize_backup: release synchronize_backup/fmt.ninjatarget synchronize_backup/Cargo.toml
   project = synchronize_backup
 build /home/denis/bin/synchronize_backup: copy target/release/synchronize_backup | synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget || /home/denis/bin
 build temporary_directory/fmt.ninjatarget: fmt rustfmt.toml temporary_directory/src/lib.rs
   project = temporary_directory
-build temporary_directory/clippy.ninjatarget: clippy temporary_directory/fmt.ninjatarget
+build temporary_directory/clippy.ninjatarget: clippy temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = temporary_directory
-build temporary_directory/test.ninjatarget: test temporary_directory/fmt.ninjatarget
+build temporary_directory/test.ninjatarget: test temporary_directory/fmt.ninjatarget temporary_directory/Cargo.toml
   project = temporary_directory
 build fmt: phony backup/fmt.ninjatarget ninja_bootstrap/fmt.ninjatarget synchronize_backup/fmt.ninjatarget temporary_directory/fmt.ninjatarget
 build check: phony backup/clippy.ninjatarget backup/test.ninjatarget ninja_bootstrap/clippy.ninjatarget ninja_bootstrap/test.ninjatarget synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget temporary_directory/clippy.ninjatarget temporary_directory/test.ninjatarget

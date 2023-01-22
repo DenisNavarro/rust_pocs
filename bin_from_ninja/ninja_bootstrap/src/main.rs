@@ -49,19 +49,21 @@ fn main() -> anyhow::Result<()> {
             .variable("project", project)
             .dump_build(&mut out)?;
         let local_dependencies = get_local_dependencies(project, &projects)?;
-        let fmt_ninjatargets: Vec<String> = iter::once(project)
+        let clippy_and_test_inputs: Vec<String> = iter::once(project)
             .chain(local_dependencies.normal_dependencies.iter().map(String::as_str))
             .chain(local_dependencies.dev_dependencies.iter().map(String::as_str))
-            .map(|project| format!("{project}/fmt.ninjatarget"))
+            .flat_map(|project| {
+                [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
+            })
             .collect();
         rule("clippy")
             .outputs([format!("{project}/clippy.ninjatarget")])
-            .inputs(fmt_ninjatargets.iter().cloned())
+            .inputs(clippy_and_test_inputs.iter().cloned())
             .variable("project", project)
             .dump_build(&mut out)?;
         rule("test")
             .outputs([format!("{project}/test.ninjatarget")])
-            .inputs(fmt_ninjatargets)
+            .inputs(clippy_and_test_inputs)
             .variable("project", project)
             .dump_build(&mut out)?;
         if has_a_binary_to_deploy(project) {
@@ -70,13 +72,9 @@ fn main() -> anyhow::Result<()> {
                 iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
             rule("release")
                 .outputs([release_path.clone()])
-                .inputs(
-                    iter::once(format!("{project}/Cargo.toml")).chain(
-                        project_and_normal_dependencies
-                            .iter()
-                            .map(|project| format!("{project}/fmt.ninjatarget")),
-                    ),
-                )
+                .inputs(project_and_normal_dependencies.iter().flat_map(|project| {
+                    [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
+                }))
                 .variable("project", project)
                 .dump_build(&mut out)?;
             rule("copy")
