@@ -73,19 +73,23 @@ fn check_if_copy_seems_possible(
 
 fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
     let CopyAction { src, dst, is_dir } = copy_action;
-    if *is_dir {
-        // TODO: Make the code cross-plateform.
-        let status =
-            Command::new("cp").args(["-rH", "--"]).args([src, dst]).status().with_context(
-                || format!("failed to copy {src:?} to {dst:?}: failed to execute process"),
-            )?;
-        if !status.success() {
-            bail!("failed to copy {src:?} to {dst:?}: {status}");
+    (|| {
+        if *is_dir {
+            // TODO: Make the code cross-plateform.
+            let status = Command::new("cp")
+                .args(["-rH", "--"])
+                .args([src, dst])
+                .status()
+                .context("failed to execute process")?;
+            if !status.success() {
+                bail!("error status: {status}");
+            }
+        } else {
+            fs::copy(src, dst)?;
         }
-    } else {
-        fs::copy(src, dst).with_context(|| format!("failed to copy {src:?} to {dst:?}"))?;
-    }
-    Ok(())
+        anyhow::Ok(())
+    })()
+    .with_context(|| format!("failed to copy {src:?} to {dst:?}"))
 }
 
 struct CopyAction {

@@ -126,17 +126,18 @@ fn synchronize(mut src: Cow<str>, dst: &Path) -> anyhow::Result<()> {
     if !src.as_ref().ends_with('/') {
         src.to_mut().push('/');
     }
-    let status = Command::new("time")
-        .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src.as_ref()])
-        .arg(dst)
-        .status()
-        .with_context(|| {
-            format!("failed to synchronize {src:?} with {dst:?}: failed to execute process")
-        })?;
-    if !status.success() {
-        bail!("failed to synchronize {src:?} with {dst:?}: {status}");
-    }
-    Ok(())
+    (|| {
+        let status = Command::new("time")
+            .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src.as_ref()])
+            .arg(dst)
+            .status()
+            .context("failed to execute process")?;
+        if !status.success() {
+            bail!("error status: {status}");
+        }
+        anyhow::Ok(())
+    })()
+    .with_context(|| format!("failed to synchronize {src:?} with {dst:?}"))
 }
 
 #[cfg(test)]
