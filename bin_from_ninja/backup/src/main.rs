@@ -117,7 +117,7 @@ mod tests {
         // │  └── red
         // └── sea
         tmp.create_dirs(["colors", "colors/dark"])?;
-        tmp.create_files(["colors/red", "colors/dark/black", "sea"])?;
+        tmp.create_files(["colors/dark/black", "colors/red", "sea"])?;
         launch_work(&tmp, ["colors", "sea"], datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
@@ -136,8 +136,8 @@ mod tests {
             "colors_2022-12-13-14h15/dark",
         ])?;
         tmp.check_the_following_files_exist_and_are_not_symlinks([
-            "colors_2022-12-13-14h15/red",
             "colors_2022-12-13-14h15/dark/black",
+            "colors_2022-12-13-14h15/red",
             "sea_2022-12-13-14h15",
         ])
     }
@@ -148,36 +148,27 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         // Before:
         // .
-        // ├── colors
-        // │  ├── blue -> ../sea
-        // │  ├── dark
-        // │  │  └── black
-        // │  ├── not_light -> dark
-        // │  └── red
+        // ├── colors -> words
         // ├── picture -> sea
         // ├── sea
-        // └── words -> colors
-        tmp.create_dirs(["colors", "colors/dark"])?;
-        tmp.create_files(["colors/red", "colors/dark/black", "sea"])?;
+        // └── words
+        //    ├── blue -> ../sea
+        //    ├── dark
+        //    │  └── black
+        //    ├── not_light -> dark
+        //    └── red
+        tmp.create_dirs(["words", "words/dark"])?;
+        tmp.create_files(["sea", "words/dark/black", "words/red"])?;
         tmp.create_symlinks([
-            ("words", "colors"),
-            ("colors/not_light", "dark"),
-            ("colors/blue", "../sea"),
+            ("colors", "words"),
             ("picture", "sea"),
+            ("words/blue", "../sea"),
+            ("words/not_light", "dark"),
         ])?;
-        launch_work(
-            &tmp,
-            ["colors", "words", "sea", "picture"],
-            datetime!(2022-12-13 14:15:16 UTC),
-        )?;
+        launch_work(&tmp, ["colors", "picture"], datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
-        // ├── colors
-        // │  ├── blue -> ../sea
-        // │  ├── dark
-        // │  │  └── black
-        // │  ├── not_light -> dark
-        // │  └── red
+        // ├── colors -> words
         // ├── colors_2022-12-13-14h15
         // │  ├── blue -> ../sea
         // │  ├── dark
@@ -187,38 +178,72 @@ mod tests {
         // ├── picture -> sea
         // ├── picture_2022-12-13-14h15
         // ├── sea
-        // ├── sea_2022-12-13-14h15
-        // ├── words -> colors
-        // └── words_2022-12-13-14h15
+        // └── words
         //    ├── blue -> ../sea
         //    ├── dark
         //    │  └── black
         //    ├── not_light -> dark
         //    └── red
         //
-        // Remark: `backup` follows command-line symlinks only, so "words_2022-12-13-14h15" and
+        // Remark: `backup` follows command-line symlinks only, so "colors_2022-12-13-14h15" and
         // "picture_2022-12-13-14h15" are not symlinks, but the copies of "not_light" and "blue"
         // are symlinks.
         tmp.check_the_following_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
-            "words_2022-12-13-14h15",
-            "words_2022-12-13-14h15/dark",
         ])?;
         tmp.check_the_following_files_exist_and_are_not_symlinks([
-            "colors_2022-12-13-14h15/red",
             "colors_2022-12-13-14h15/dark/black",
-            "words_2022-12-13-14h15/red",
-            "words_2022-12-13-14h15/dark/black",
-            "sea_2022-12-13-14h15",
+            "colors_2022-12-13-14h15/red",
             "picture_2022-12-13-14h15",
         ])?;
         tmp.check_the_following_symlinks_exist([
-            "colors_2022-12-13-14h15/not_light",
             "colors_2022-12-13-14h15/blue",
-            "words_2022-12-13-14h15/not_light",
-            "words_2022-12-13-14h15/blue",
+            "colors_2022-12-13-14h15/not_light",
         ])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn symlinks_to_symlinks() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // Before:
+        // .
+        // ├── colors -> things
+        // ├── picture -> place
+        // ├── place -> sea
+        // ├── sea
+        // ├── things -> words
+        // └── words
+        //    └── not_light -> non_existent_path
+        tmp.create_dirs(["words"])?;
+        tmp.create_files(["sea"])?;
+        tmp.create_symlinks([
+            ("colors", "things"),
+            ("picture", "place"),
+            ("place", "sea"),
+            ("things", "words"),
+            ("words/not_light", "non_existent_path"),
+        ])?;
+        launch_work(&tmp, ["colors", "picture"], datetime!(2022-12-13 14:15:16 UTC))?;
+        // After:
+        // .
+        // ├── colors -> things
+        // ├── colors_2022-12-13-14h15
+        // │  └── not_light -> non_existent_path
+        // ├── picture -> place
+        // ├── picture_2022-12-13-14h15
+        // ├── place -> sea
+        // ├── sea
+        // ├── things -> words
+        // └── words
+        //    └── not_light -> non_existent_path
+        //
+        // Remark: `backup` follows command-line symlinks only, so "colors_2022-12-13-14h15" and
+        // "picture_2022-12-13-14h15" are not symlinks, but the copy of "not_light" is a symlink.
+        tmp.check_the_following_dirs_exist_and_are_not_symlinks(["colors_2022-12-13-14h15"])?;
+        tmp.check_the_following_files_exist_and_are_not_symlinks(["picture_2022-12-13-14h15"])?;
+        tmp.check_the_following_symlinks_exist(["colors_2022-12-13-14h15/not_light"])
     }
 
     #[test]
@@ -270,6 +295,17 @@ mod tests {
     fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo"])?;
+        let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
+        assert!(result.is_err());
+        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn fail_if_src_path_is_broken_symlink() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        tmp.create_dirs(["foo"])?;
+        tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
