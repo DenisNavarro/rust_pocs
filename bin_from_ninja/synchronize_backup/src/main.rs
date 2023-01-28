@@ -270,6 +270,7 @@ mod tests {
         tmp.create_files([
             "baz/colors_2022-08-09-10h11/green",
             "baz/colors_2022-08-09-10h11/light/white",
+            "foo/sea",
             "foo/words/dark/black",
             "foo/words/red",
         ])?;
@@ -333,8 +334,6 @@ mod tests {
         // ├── baz
         // │  └── colors_2022-08-09-10h11
         // │     └── green
-        // ├── baz -> bar
-        // ├── dst -> baz
         // └── foo
         //    ├── colors -> things
         //    ├── things -> words
