@@ -106,13 +106,20 @@ mod tests {
 
     use temporary_directory::TemporaryDirectory;
 
+    // TODO: remove duplication between code and comments.
+    // The future code will probably write and check the directory content with YAML. Example:
+    // directory_name:
+    //   subdirectory_name:
+    //     file_name: "file content"
+    //   symlink_name: ["path/to/target"]
+
     #[test]
     fn simple_demo() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         // Before:
         // .
-        // ├── colors
-        // │  ├── dark
+        // ├── colors/
+        // │  ├── dark/
         // │  │  └── black
         // │  └── red
         // └── sea
@@ -121,12 +128,12 @@ mod tests {
         launch_work(&tmp, ["colors", "sea"], datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
-        // ├── colors
-        // │  ├── dark
+        // ├── colors/
+        // │  ├── dark/
         // │  │  └── black
         // │  └── red
-        // ├── colors_2022-12-13-14h15
-        // │  ├── dark
+        // ├── colors_2022-12-13-14h15/
+        // │  ├── dark/
         // │  │  └── black
         // │  └── red
         // ├── sea
@@ -151,9 +158,9 @@ mod tests {
         // ├── colors -> words
         // ├── picture -> sea
         // ├── sea
-        // └── words
+        // └── words/
         //    ├── blue -> ../sea
-        //    ├── dark
+        //    ├── dark/
         //    │  └── black
         //    ├── not_light -> dark
         //    └── red
@@ -169,18 +176,18 @@ mod tests {
         // After:
         // .
         // ├── colors -> words
-        // ├── colors_2022-12-13-14h15
+        // ├── colors_2022-12-13-14h15/
         // │  ├── blue -> ../sea
-        // │  ├── dark
+        // │  ├── dark/
         // │  │  └── black
         // │  ├── not_light -> dark
         // │  └── red
         // ├── picture -> sea
         // ├── picture_2022-12-13-14h15
         // ├── sea
-        // └── words
+        // └── words/
         //    ├── blue -> ../sea
-        //    ├── dark
+        //    ├── dark/
         //    │  └── black
         //    ├── not_light -> dark
         //    └── red
@@ -214,7 +221,7 @@ mod tests {
         // ├── place -> sea
         // ├── sea
         // ├── things -> words
-        // └── words
+        // └── words/
         //    └── not_light -> non_existent_path
         tmp.create_dirs(["words"])?;
         tmp.create_files(["sea"])?;
@@ -229,14 +236,14 @@ mod tests {
         // After:
         // .
         // ├── colors -> things
-        // ├── colors_2022-12-13-14h15
+        // ├── colors_2022-12-13-14h15/
         // │  └── not_light -> non_existent_path
         // ├── picture -> place
         // ├── picture_2022-12-13-14h15
         // ├── place -> sea
         // ├── sea
         // ├── things -> words
-        // └── words
+        // └── words/
         //    └── not_light -> non_existent_path
         //
         // Remark: `backup` follows command-line symlinks only, so "colors_2022-12-13-14h15" and
@@ -285,8 +292,8 @@ mod tests {
     #[test]
     fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo"])?;
-        let result = launch_work(&tmp, ["foo", ".."], datetime!(2022-12-13 14:15:16 UTC));
+        tmp.create_dirs(["foo", "bar", "bar/baz"])?;
+        let result = launch_work(&tmp, ["foo", "bar/baz/.."], datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }

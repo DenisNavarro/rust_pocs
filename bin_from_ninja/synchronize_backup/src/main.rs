@@ -145,15 +145,22 @@ mod tests {
 
     use temporary_directory::TemporaryDirectory;
 
+    // TODO: remove duplication between code and comments.
+    // The future code will probably write and check the directory content with YAML. Example:
+    // directory_name:
+    //   subdirectory_name:
+    //     file_name: "file content"
+    //   symlink_name: ["path/to/target"]
+
     #[test]
     fn demo_without_update() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         // Before:
         // .
-        // ├── bar
-        // └── foo
-        //    └── colors
-        //       ├── dark
+        // ├── bar/
+        // └── foo/
+        //    └── colors/
+        //       ├── dark/
         //       │  └── black
         //       └── red
         tmp.create_dirs(["bar", "foo", "foo/colors", "foo/colors/dark"])?;
@@ -161,14 +168,14 @@ mod tests {
         launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
-        // ├── bar
-        // │  └── colors_2022-12-13-14h15
-        // │     ├── dark
+        // ├── bar/
+        // │  └── colors_2022-12-13-14h15/
+        // │     ├── dark/
         // │     │  └── black
         // │     └── red
-        // └── foo
-        //    └── colors
-        //       ├── dark
+        // └── foo/
+        //    └── colors/
+        //       ├── dark/
         //       │  └── black
         //       └── red
         tmp.check_the_following_dirs_exist_and_are_not_symlinks([
@@ -186,14 +193,14 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         // Before:
         // .
-        // ├── bar
-        // │  └── colors_2022-08-09-10h11
+        // ├── bar/
+        // │  └── colors_2022-08-09-10h11/
         // │     ├── green
-        // │     └── light
+        // │     └── light/
         // │        └── white
-        // └── foo
-        //    └── colors
-        //       ├── dark
+        // └── foo/
+        //    └── colors/
+        //       ├── dark/
         //       │  └── black
         //       └── red
         tmp.create_dirs([
@@ -213,14 +220,14 @@ mod tests {
         launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
-        // ├── bar
-        // │  └── colors_2022-12-13-14h15
-        // │     ├── dark
+        // ├── bar/
+        // │  └── colors_2022-12-13-14h15/
+        // │     ├── dark/
         // │     │  └── black
         // │     └── red
-        // └── foo
-        //    └── colors
-        //       ├── dark
+        // └── foo/
+        //    └── colors/
+        //       ├── dark/
         //       │  └── black
         //       └── red
         tmp.check_the_following_dirs_exist_and_are_not_symlinks([
@@ -245,17 +252,17 @@ mod tests {
         // Before:
         // .
         // ├── bar -> baz
-        // ├── baz
-        // │  └── colors_2022-08-09-10h11
+        // ├── baz/
+        // │  └── colors_2022-08-09-10h11/
         // │     ├── green
-        // │     └── light
+        // │     └── light/
         // │        └── white
-        // └── foo
+        // └── foo/
         //    ├── colors -> words
         //    ├── sea
-        //    └── words
+        //    └── words/
         //       ├── blue -> ../sea
-        //       ├── dark
+        //       ├── dark/
         //       │  └── black
         //       ├── not_light -> dark
         //       └── red
@@ -284,19 +291,19 @@ mod tests {
         // After:
         // .
         // ├── bar -> baz
-        // ├── baz
-        // │  └── colors_2022-12-13-14h15
+        // ├── baz/
+        // │  └── colors_2022-12-13-14h15/
         // │     ├── blue -> ../sea
-        // │     ├── dark
+        // │     ├── dark/
         // │     │  └── black
         // │     ├── not_light -> dark
         // │     └── red
-        // └── foo
+        // └── foo/
         //    ├── colors -> words
         //    ├── sea
-        //    └── words
+        //    └── words/
         //       ├── blue -> ../sea
-        //       ├── dark
+        //       ├── dark/
         //       │  └── black
         //       ├── not_light -> dark
         //       └── red
@@ -318,8 +325,8 @@ mod tests {
         ])?;
         tmp.check_the_following_paths_do_not_exist([
             "baz/colors_2022-08-09-10h11",
-            "baz/colors_2022-12-13-14h15/light",
             "baz/colors_2022-12-13-14h15/green",
+            "baz/colors_2022-12-13-14h15/light",
         ])
     }
 
@@ -331,13 +338,13 @@ mod tests {
         // .
         // ├── bar -> bay
         // ├── bay -> baz
-        // ├── baz
-        // │  └── colors_2022-08-09-10h11
+        // ├── baz/
+        // │  └── colors_2022-08-09-10h11/
         // │     └── green
-        // └── foo
+        // └── foo/
         //    ├── colors -> things
         //    ├── things -> words
-        //    └── words
+        //    └── words/
         //       └── not_light -> non_existent_path
         tmp.create_dirs(["baz", "baz/colors_2022-08-09-10h11", "foo", "foo/words"])?;
         tmp.create_files(["baz/colors_2022-08-09-10h11/green"])?;
@@ -353,13 +360,13 @@ mod tests {
         // .
         // ├── bar -> bay
         // ├── bay -> baz
-        // ├── baz
-        // │  └── colors_2022-12-13-14h15
+        // ├── baz/
+        // │  └── colors_2022-12-13-14h15/
         // │     └── not_light -> non_existent_path
-        // └── foo
+        // └── foo/
         //    ├── colors -> things
         //    ├── things -> words
-        //    └── words
+        //    └── words/
         //       └── not_light -> non_existent_path
         //
         // Remark: `synchronize_backup` follows command-line symlinks only, so
@@ -486,12 +493,12 @@ mod tests {
     fn fail_if_src_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         // .
-        // ├── bar
-        // │  └── colors_2022-08-09-10h11
-        // └── foo
+        // ├── bar/
+        // │  └── colors_2022-08-09-10h11/
+        // └── foo/
         //    ├── colors -> words
         //    └── words -> non_existent_path
-        tmp.create_dirs(["foo", "bar", "bar/colors_2022-08-09-10h11"])?;
+        tmp.create_dirs(["bar", "bar/colors_2022-08-09-10h11", "foo"])?;
         tmp.create_symlinks([("foo/colors", "words"), ("foo/words", "non_existent_path")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         assert!(result.is_err());
@@ -507,8 +514,8 @@ mod tests {
         // .
         // ├── bar -> baz
         // ├── baz -> non_existent_path
-        // └── foo
-        //    └── colors
+        // └── foo/
+        //    └── colors/
         //       └── red
         tmp.create_dirs(["foo", "foo/colors"])?;
         tmp.create_files(["foo/colors/red"])?;
