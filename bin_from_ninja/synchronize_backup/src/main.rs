@@ -483,7 +483,7 @@ mod tests {
 
     #[test]
     #[cfg(unix)]
-    fn fail_if_src_path_is_broken_symlink() -> anyhow::Result<()> {
+    fn fail_if_src_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         // .
         // ├── bar
@@ -501,7 +501,7 @@ mod tests {
 
     #[test]
     #[cfg(unix)]
-    fn fail_if_dst_path_is_broken_symlink() -> anyhow::Result<()> {
+    fn fail_if_dst_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         // Before:
         // .

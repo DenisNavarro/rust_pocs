@@ -302,7 +302,7 @@ mod tests {
 
     #[test]
     #[cfg(unix)]
-    fn fail_if_src_path_is_broken_symlink() -> anyhow::Result<()> {
+    fn fail_if_src_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo"])?;
         tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
