@@ -510,7 +510,6 @@ mod tests {
     #[cfg(unix)]
     fn fail_if_dst_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        // Before:
         // .
         // ├── bar -> baz
         // ├── baz -> non_existent_path
