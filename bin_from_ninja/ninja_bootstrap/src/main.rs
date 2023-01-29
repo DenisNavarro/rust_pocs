@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 #![warn(clippy::nursery, clippy::pedantic)]
 
 //! Write a Ninja build file in stdout
