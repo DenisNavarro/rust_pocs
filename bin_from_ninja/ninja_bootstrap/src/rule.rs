@@ -59,7 +59,7 @@ pub struct AfterCommand<W: Write> {
 }
 
 impl<W: Write> AfterRule<W> {
-    pub fn command(self, command: &(impl AsRef<[u8]> + ?Sized)) -> Result<AfterCommand<W>, Error> {
+    pub fn command(self, command: impl AsRef<[u8]>) -> Result<AfterCommand<W>, Error> {
         write_command(self.writer, command.as_ref())
     }
 }

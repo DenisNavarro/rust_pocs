@@ -206,28 +206,25 @@ pub struct AfterVariableAndValue<W: Write> {
 }
 
 impl<W: Write> AfterBuild<W> {
-    pub fn output(self, output: &(impl AsRef<[u8]> + ?Sized)) -> Result<AfterOutput<W>, Error> {
+    pub fn output(self, output: impl AsRef<[u8]>) -> Result<AfterOutput<W>, Error> {
         write_output(self.writer, output.as_ref())
     }
 
     #[cfg(unix)]
-    pub fn output_unix_str(
-        self,
-        output: &(impl AsRef<OsStr> + ?Sized),
-    ) -> Result<AfterOutput<W>, Error> {
+    pub fn output_unix_str(self, output: impl AsRef<OsStr>) -> Result<AfterOutput<W>, Error> {
         let output = std::os::unix::ffi::OsStrExt::as_bytes(output.as_ref());
         write_output(self.writer, output)
     }
 }
 
 impl<W: Write> AfterOutput<W> {
-    pub fn rule(self, rule_name: &(impl AsRef<[u8]> + ?Sized)) -> Result<AfterRule<W>, Error> {
+    pub fn rule(self, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<W>, Error> {
         write_rule(self.writer, rule_name.as_ref())
     }
 }
 
 impl<W: Write> AfterRule<W> {
-    pub fn input(self, input: &(impl AsRef<[u8]> + ?Sized)) -> Result<AfterInput<W>, Error> {
+    pub fn input(self, input: impl AsRef<[u8]>) -> Result<AfterInput<W>, Error> {
         write_input(self.writer, input.as_ref())
     }
 
@@ -251,7 +248,7 @@ impl<W: Write> AfterRule<W> {
 }
 
 impl<W: Write> AfterInput<W> {
-    fn input(self, input: &(impl AsRef<[u8]> + ?Sized)) -> Result<Self, Error> {
+    fn input(self, input: impl AsRef<[u8]>) -> Result<Self, Error> {
         write_input(self.writer, input.as_ref())
     }
 
@@ -277,7 +274,7 @@ impl<W: Write> AfterInput<W> {
 
     fn implicit_dependency(
         self,
-        dependency: &(impl AsRef<[u8]> + ?Sized),
+        dependency: impl AsRef<[u8]>,
     ) -> Result<AfterImplicitDependency<W>, Error> {
         write_first_implicit_dependency(self.writer, dependency.as_ref())
     }
@@ -298,8 +295,8 @@ impl<W: Write> AfterInput<W> {
 
     pub fn variable_and_value(
         self,
-        variable: &(impl AsRef<[u8]> + ?Sized),
-        value: &(impl AsRef<[u8]> + ?Sized),
+        variable: impl AsRef<[u8]>,
+        value: impl AsRef<[u8]>,
     ) -> Result<AfterVariableAndValue<W>, Error> {
         write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
     }
@@ -308,8 +305,8 @@ impl<W: Write> AfterInput<W> {
 impl<W: Write> AfterAllInputs<W> {
     pub fn variable_and_value(
         self,
-        variable: &(impl AsRef<[u8]> + ?Sized),
-        value: &(impl AsRef<[u8]> + ?Sized),
+        variable: impl AsRef<[u8]>,
+        value: impl AsRef<[u8]>,
     ) -> Result<AfterVariableAndValue<W>, Error> {
         write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
     }
@@ -320,7 +317,7 @@ impl<W: Write> AfterAllInputs<W> {
 }
 
 impl<W: Write> AfterImplicitDependency<W> {
-    fn implicit_dependency(self, dependency: &(impl AsRef<[u8]> + ?Sized)) -> Result<Self, Error> {
+    fn implicit_dependency(self, dependency: impl AsRef<[u8]>) -> Result<Self, Error> {
         write_extra_implicit_dependency(self.writer, dependency.as_ref())
     }
 
@@ -339,7 +336,7 @@ impl<W: Write> AfterAllImplicitDependencies<W> {
     #[cfg(unix)]
     pub fn order_only_dependency_unix_str(
         self,
-        dependency: &(impl AsRef<OsStr> + ?Sized),
+        dependency: impl AsRef<OsStr>,
     ) -> Result<AfterOrderOnlyDependency<W>, Error> {
         let dependency = std::os::unix::ffi::OsStrExt::as_bytes(dependency.as_ref());
         write_first_order_only_dependency(self.writer, dependency)
