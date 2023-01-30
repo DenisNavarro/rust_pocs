@@ -234,7 +234,7 @@ impl<W: Write> AfterRule<W> {
     ) -> Result<AfterAllInputs<W>, Error> {
         let mut inputs = inputs.into_iter();
         if let Some(input) = inputs.next() {
-            let step = self.input(&input)?;
+            let step = self.input(input)?;
             let step = step.inputs(inputs)?;
             Ok(AfterAllInputs { writer: step.writer })
         } else {
@@ -254,7 +254,7 @@ impl<W: Write> AfterInput<W> {
 
     fn inputs(mut self, inputs: impl IntoIterator<Item = impl AsRef<[u8]>>) -> Result<Self, Error> {
         for input in inputs {
-            self = self.input(&input)?;
+            self = self.input(input)?;
         }
         Ok(self)
     }
@@ -285,7 +285,7 @@ impl<W: Write> AfterInput<W> {
     ) -> Result<AfterAllImplicitDependencies<W>, Error> {
         let mut dependencies = dependencies.into_iter();
         if let Some(dependency) = dependencies.next() {
-            let step = self.implicit_dependency(&dependency)?;
+            let step = self.implicit_dependency(dependency)?;
             let step = step.implicit_dependencies(dependencies)?;
             Ok(AfterAllImplicitDependencies { writer: step.writer })
         } else {
@@ -326,7 +326,7 @@ impl<W: Write> AfterImplicitDependency<W> {
         dependencies: impl IntoIterator<Item = impl AsRef<[u8]>>,
     ) -> Result<Self, Error> {
         for dependency in dependencies {
-            self = self.implicit_dependency(&dependency)?;
+            self = self.implicit_dependency(dependency)?;
         }
         Ok(self)
     }

@@ -46,7 +46,7 @@ fn main() -> anyhow::Result<()> {
     build(&mut out)?.output_unix_str(&bin_path)?.rule("create_directory")?.end()?;
     for project in &projects {
         build(&mut out)?
-            .output(&format!("{project}/fmt.ninjatarget"))?
+            .output(format!("{project}/fmt.ninjatarget"))?
             .rule("fmt")?
             .input("rustfmt.toml")?
             .input_unix_str_results(glob(&format!("{project}/src/**/*.rs")).unwrap())?
@@ -61,13 +61,13 @@ fn main() -> anyhow::Result<()> {
             })
             .collect();
         build(&mut out)?
-            .output(&format!("{project}/clippy.ninjatarget"))?
+            .output(format!("{project}/clippy.ninjatarget"))?
             .rule("clippy")?
             .inputs(clippy_and_test_inputs.iter())?
             .variable_and_value("project", project)?
             .end()?;
         build(&mut out)?
-            .output(&format!("{project}/test.ninjatarget"))?
+            .output(format!("{project}/test.ninjatarget"))?
             .rule("test")?
             .inputs(clippy_and_test_inputs.iter())?
             .variable_and_value("project", project)?
@@ -85,9 +85,9 @@ fn main() -> anyhow::Result<()> {
                 .variable_and_value("project", project)?
                 .end()?;
             build(&mut out)?
-                .output_unix_str(&bin_path.join(project))?
+                .output_unix_str(bin_path.join(project))?
                 .rule("copy")?
-                .input(&release_path)?
+                .input(release_path)?
                 .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(
                     |project| {
                         [

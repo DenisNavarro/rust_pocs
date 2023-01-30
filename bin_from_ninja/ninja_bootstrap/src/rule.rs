@@ -22,10 +22,7 @@ enum InnerError {
 }
 
 #[allow(clippy::module_name_repetitions)]
-pub fn rule<W: Write>(
-    mut writer: W,
-    rule_name: &(impl AsRef<[u8]> + ?Sized),
-) -> Result<AfterRule<W>, Error> {
+pub fn rule<W: Write>(mut writer: W, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<W>, Error> {
     let rule_name = rule_name.as_ref();
     writer
         .write_all(b"rule ")
