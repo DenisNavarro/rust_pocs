@@ -1,11 +1,16 @@
 #![forbid(unsafe_code)]
 #![warn(clippy::nursery, clippy::pedantic)]
 
-//! Write a Ninja build file in stdout
+//! Write a Ninja build file to stdout
+//!
+//! In the `bin_from_ninja` POC, `make build.ninja` calls
+//! `RUST_LIB_BACKTRACE=1 target/debug/ninja_bootstrap > build.ninja`.
+//!
+//! `build.ninja` is in the `.gitignore`, but you can look at `example.ninja`, which is almost a
+//! copy of `build.ninja`.
 
-// The current code uses the builder pattern.
-// After refactoring, the future code will probably use the typestate pattern instead.
-// TODO: refactor the code!
+mod build;
+mod rule;
 
 use std::fs;
 use std::io;
@@ -19,7 +24,8 @@ use serde::Deserialize;
 use toml::value::Table;
 use toml::Value;
 
-use ninja_bootstrap::rule;
+use build::build;
+use rule::rule;
 
 fn main() -> anyhow::Result<()> {
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
@@ -29,75 +35,83 @@ fn main() -> anyhow::Result<()> {
     let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
-    rule("create_directory").command("mkdir -p -- $out").dump_rule(&mut out)?;
-    rule("fmt").command("cargo fmt -p $project && touch $out").dump_rule(&mut out)?;
-    rule("clippy")
-        .command("cargo clippy -p $project -- -D warnings && touch $out")
-        .dump_rule(&mut out)?;
-    rule("test").command("cargo test -p $project && touch $out").dump_rule(&mut out)?;
-    rule("release")
-        .command("cargo build --release -p $project && touch $out")
-        .dump_rule(&mut out)?;
-    rule("copy").command("cp -- $in $out").dump_rule(&mut out)?;
-    rule("create_directory").output_unix_paths([bin_path.clone()]).dump_build(&mut out)?;
-    for project in projects.iter().map(String::as_str) {
-        rule("fmt")
-            .outputs([format!("{project}/fmt.ninjatarget")])
-            .input_unix_path_results(
-                iter::once(Ok("rustfmt.toml".into()))
-                    .chain(glob(&format!("{project}/src/**/*.rs")).unwrap()),
-            )
-            .variable("project", project)
-            .dump_build(&mut out)?;
+    rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
+    rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
+    rule(&mut out, "clippy")?
+        .command("cargo clippy -p $project -- -D warnings && touch $out")?
+        .end()?;
+    rule(&mut out, "test")?.command("cargo test -p $project && touch $out")?.end()?;
+    rule(&mut out, "release")?.command("cargo build --release -p $project && touch $out")?.end()?;
+    rule(&mut out, "copy")?.command("cp -- $in $out")?.end()?;
+    build(&mut out)?.output_unix_str(&bin_path)?.rule("create_directory")?.end()?;
+    for project in &projects {
+        build(&mut out)?
+            .output(&format!("{project}/fmt.ninjatarget"))?
+            .rule("fmt")?
+            .input("rustfmt.toml")?
+            .input_unix_str_results(glob(&format!("{project}/src/**/*.rs")).unwrap())?
+            .variable_and_value("project", project)?
+            .end()?;
         let local_dependencies = get_local_dependencies(project, &projects)?;
         let clippy_and_test_inputs: Vec<String> = iter::once(project)
-            .chain(local_dependencies.normal_dependencies.iter().map(String::as_str))
-            .chain(local_dependencies.dev_dependencies.iter().map(String::as_str))
+            .chain(local_dependencies.normal_dependencies.iter())
+            .chain(local_dependencies.dev_dependencies.iter())
             .flat_map(|project| {
                 [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
             })
             .collect();
-        rule("clippy")
-            .outputs([format!("{project}/clippy.ninjatarget")])
-            .inputs(clippy_and_test_inputs.iter().cloned())
-            .variable("project", project)
-            .dump_build(&mut out)?;
-        rule("test")
-            .outputs([format!("{project}/test.ninjatarget")])
-            .inputs(clippy_and_test_inputs)
-            .variable("project", project)
-            .dump_build(&mut out)?;
+        build(&mut out)?
+            .output(&format!("{project}/clippy.ninjatarget"))?
+            .rule("clippy")?
+            .inputs(clippy_and_test_inputs.iter())?
+            .variable_and_value("project", project)?
+            .end()?;
+        build(&mut out)?
+            .output(&format!("{project}/test.ninjatarget"))?
+            .rule("test")?
+            .inputs(clippy_and_test_inputs.iter())?
+            .variable_and_value("project", project)?
+            .end()?;
         if has_a_binary_to_deploy(project) {
             let release_path = format!("target/release/{project}");
             let project_and_normal_dependencies: Vec<String> =
                 iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
-            rule("release")
-                .outputs([release_path.clone()])
+            build(&mut out)?
+                .output(&release_path)?
+                .rule("release")?
                 .inputs(project_and_normal_dependencies.iter().flat_map(|project| {
                     [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
-                }))
-                .variable("project", project)
-                .dump_build(&mut out)?;
-            rule("copy")
-                .output_unix_paths([bin_path.join(project)])
-                .inputs([release_path])
-                .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(|project| {
-                    [format!("{project}/clippy.ninjatarget"), format!("{project}/test.ninjatarget")]
-                }))
-                .order_only_dependency_unix_paths([bin_path.clone()])
-                .dump_build(&mut out)?;
+                }))?
+                .variable_and_value("project", project)?
+                .end()?;
+            build(&mut out)?
+                .output_unix_str(&bin_path.join(project))?
+                .rule("copy")?
+                .input(&release_path)?
+                .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(
+                    |project| {
+                        [
+                            format!("{project}/clippy.ninjatarget"),
+                            format!("{project}/test.ninjatarget"),
+                        ]
+                    },
+                ))?
+                .order_only_dependency_unix_str(&bin_path)?
+                .end()?;
         }
     }
-    rule("phony")
-        .outputs(["fmt"])
-        .inputs(projects.iter().map(|project| format!("{project}/fmt.ninjatarget")))
-        .dump_build(&mut out)?;
-    rule("phony")
-        .outputs(["check"])
+    build(&mut out)?
+        .output("fmt")?
+        .rule("phony")?
+        .inputs(projects.iter().map(|project| format!("{project}/fmt.ninjatarget")))?
+        .end()?;
+    build(&mut out)?
+        .output("check")?
+        .rule("phony")?
         .inputs(projects.iter().flat_map(|project| {
             [format!("{project}/clippy.ninjatarget"), format!("{project}/test.ninjatarget")]
-        }))
-        .dump_build(&mut out)?;
+        }))?
+        .end()?;
     Ok(())
 }
 

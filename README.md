@@ -8,7 +8,8 @@ Currently, there are 2 POCs:
     but has a few differences. Notably, it uses the structured concurrency paradigm.
 
   - [`bin_from_ninja`] combines Make and [Ninja][] to compile and check the Rust programs
-    [`backup`][] and [`synchronize_backup`][] and deploy the binaries to `$HOME/bin`.  
+    [`backup`][] and [`synchronize_backup`][] and deploy the binaries to `$HOME/bin`, thanks to
+    the `build.ninja` file written by [`ninja_bootstrap`][].  
     Requirements: Unix, Make, Ninja, `cp` (for `backup`) and `rsync` (for `synchronize_backup`).
 
 [`structured_concurrency`]: ./structured_concurrency
@@ -18,3 +19,4 @@ Currently, there are 2 POCs:
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./bin_from_ninja/backup/src/main.rs
 [`synchronize_backup`]: ./bin_from_ninja/synchronize_backup/src/main.rs
+[`ninja_bootstrap`]: ./bin_from_ninja/ninja_bootstrap/src/main.rs

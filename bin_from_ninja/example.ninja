@@ -23,7 +23,7 @@ build backup/test.ninjatarget: test backup/fmt.ninjatarget backup/Cargo.toml tem
 build target/release/backup: release backup/fmt.ninjatarget backup/Cargo.toml
   project = backup
 build /home/denis/bin/backup: copy target/release/backup | backup/clippy.ninjatarget backup/test.ninjatarget || /home/denis/bin
-build ninja_bootstrap/fmt.ninjatarget: fmt rustfmt.toml ninja_bootstrap/src/lib.rs ninja_bootstrap/src/main.rs ninja_bootstrap/src/ninja_dump.rs
+build ninja_bootstrap/fmt.ninjatarget: fmt rustfmt.toml ninja_bootstrap/src/build.rs ninja_bootstrap/src/main.rs ninja_bootstrap/src/rule.rs
   project = ninja_bootstrap
 build ninja_bootstrap/clippy.ninjatarget: clippy ninja_bootstrap/fmt.ninjatarget ninja_bootstrap/Cargo.toml
   project = ninja_bootstrap

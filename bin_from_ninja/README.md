@@ -3,7 +3,8 @@
 ================
 
 This POC combines Make and [Ninja][] to compile and check the Rust programs [`backup`][] and
-[`synchronize_backup`][] and deploy the binaries to `$HOME/bin`.
+[`synchronize_backup`][] and deploy the binaries to `$HOME/bin`, thanks to the `build.ninja` file
+written by [`ninja_bootstrap`][].
 
 Requirements: Unix, Make, Ninja, `cp` (for `backup`) and `rsync` (for `synchronize_backup`).
 
@@ -84,10 +85,13 @@ This is a simple CLI I execute every evening.
 
 This program writes the `build.ninja` file.
 
-To make the `main.rs` code concise, I wrote builders in `lib.rs`, but the builder code is very big.
+`build.ninja` is in the [`.gitignore`][], but you can look at [`example.ninja`][], which is almost
+a copy of `build.ninja`.
 
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./backup/src/main.rs
 [`synchronize_backup`]: ./synchronize_backup/src/main.rs
 [`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
+[`.gitignore`]: ../.gitignore
+[`example.ninja`]: ./example.ninja
