@@ -43,13 +43,13 @@ fn main() -> anyhow::Result<()> {
     rule(&mut out, "test")?.command("cargo test -p $project && touch $out")?.end()?;
     rule(&mut out, "release")?.command("cargo build --release -p $project && touch $out")?.end()?;
     rule(&mut out, "copy")?.command("cp -- $in $out")?.end()?;
-    build(&mut out)?.output_unix_str(&bin_path)?.rule("create_directory")?.end()?;
+    build(&mut out)?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
     for project in &projects {
         build(&mut out)?
             .output(format!("{project}/fmt.ninjatarget"))?
             .rule("fmt")?
             .input("rustfmt.toml")?
-            .input_unix_str_results(glob(&format!("{project}/src/**/*.rs")).unwrap())?
+            .unix_input_results(glob(&format!("{project}/src/**/*.rs")).unwrap())?
             .variable_and_value("project", project)?
             .end()?;
         let local_dependencies = get_local_dependencies(project, &projects)?;
@@ -85,7 +85,7 @@ fn main() -> anyhow::Result<()> {
                 .variable_and_value("project", project)?
                 .end()?;
             build(&mut out)?
-                .output_unix_str(bin_path.join(project))?
+                .unix_output(bin_path.join(project))?
                 .rule("copy")?
                 .input(release_path)?
                 .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(
@@ -96,7 +96,7 @@ fn main() -> anyhow::Result<()> {
                         ]
                     },
                 ))?
-                .order_only_dependency_unix_str(&bin_path)?
+                .unix_order_only_dependency(&bin_path)?
                 .end()?;
         }
     }

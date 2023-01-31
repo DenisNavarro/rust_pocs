@@ -135,7 +135,7 @@ fn write_end(mut writer: impl Write) -> Result<(), Error> {
     Ok(())
 }
 
-/// Dump an escaped path by adding `b'$'` before the bytes in `b"$ :|#\n"`.
+/// Write an escaped path by adding `b'$'` before the bytes in `b"$ :|#\n"`.
 ///
 /// In the GitHub repository of Ninja, `ninja_syntax.py` escapes `'$'`, `' '` and `':'`:
 /// <https://github.com/ninja-build/ninja/blob/v1.11.1/misc/ninja_syntax.py#L27-L28>
@@ -211,7 +211,7 @@ impl<W: Write> AfterBuild<W> {
     }
 
     #[cfg(unix)]
-    pub fn output_unix_str(self, output: impl AsRef<OsStr>) -> Result<AfterOutput<W>, Error> {
+    pub fn unix_output(self, output: impl AsRef<OsStr>) -> Result<AfterOutput<W>, Error> {
         let output = std::os::unix::ffi::OsStrExt::as_bytes(output.as_ref());
         write_output(self.writer, output)
     }
@@ -260,7 +260,7 @@ impl<W: Write> AfterInput<W> {
     }
 
     #[cfg(unix)]
-    pub fn input_unix_str_results<E: error::Error + 'static>(
+    pub fn unix_input_results<E: error::Error + 'static>(
         mut self,
         inputs: impl IntoIterator<Item = Result<impl AsRef<OsStr>, E>>,
     ) -> Result<Self, ErrorOr<E>> {
@@ -334,7 +334,7 @@ impl<W: Write> AfterImplicitDependency<W> {
 
 impl<W: Write> AfterAllImplicitDependencies<W> {
     #[cfg(unix)]
-    pub fn order_only_dependency_unix_str(
+    pub fn unix_order_only_dependency(
         self,
         dependency: impl AsRef<OsStr>,
     ) -> Result<AfterOrderOnlyDependency<W>, Error> {
