@@ -112,7 +112,7 @@ mod tests {
     // directory_name:
     //   subdirectory_name:
     //     file_name: "file content"
-    //   symlink_name: ["path/to/target"]
+    //   symlink_name: [{"symlink_to": "path/to/target"}]
 
     #[test]
     fn simple_demo() -> anyhow::Result<()> {
