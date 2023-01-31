@@ -30,6 +30,7 @@ edit :
 	@codium Makefile
 
 .PHONY: help
+#: Print the help with remake from https://remake.readthedocs.io/
 help :
 	@remake --tasks
 
