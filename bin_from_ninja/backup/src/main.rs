@@ -3,7 +3,7 @@
 
 use std::fs;
 use std::io::{self, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use anyhow::{bail, Context};
@@ -31,10 +31,10 @@ fn main() -> anyhow::Result<()> {
 
 fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let dst_path_suffix = get_dst_path_suffix(now, "_[year]-[month]-[day]-[hour]h[minute]");
-    let copy_actions: Vec<_> = check_if_each_copy_seems_possible(src_paths, &dst_path_suffix)?;
-    for copy_action in copy_actions {
-        do_copy(&copy_action)?;
-        writeln!(io::stdout(), "Copied {:?} to {:?}.", copy_action.src, copy_action.dst)
+    let copy_actions: Vec<_> = check_all_copies_seem_possible(src_paths, &dst_path_suffix)?;
+    for CopyAction { src_path, dst_path, src_is_dir } in copy_actions {
+        copy(&src_path, &dst_path, src_is_dir)?;
+        writeln!(io::stdout(), "Copied {src_path:?} to {dst_path:?}.")
             .context("failed to write to stdout")?;
     }
     Ok(())
@@ -45,58 +45,55 @@ fn get_dst_path_suffix(now: OffsetDateTime, format: &str) -> String {
     now.format(&format).unwrap()
 }
 
-fn check_if_each_copy_seems_possible(
+fn check_all_copies_seem_possible(
     src_paths: Vec<PathBuf>,
     dst_path_suffix: &str,
 ) -> anyhow::Result<Vec<CopyAction>> {
     src_paths
         .into_iter()
-        .map(|src_path| check_if_copy_seems_possible(src_path, dst_path_suffix))
+        .map(|src_path| {
+            let src_file_name = src_path
+                .file_name()
+                .with_context(|| format!("{src_path:?} does not have a name"))?;
+            let src_metadata = fs::metadata(&src_path)
+                .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
+            let dst_path = {
+                let mut dst_file_name = src_file_name.to_owned();
+                dst_file_name.push(dst_path_suffix);
+                src_path.with_file_name(&dst_file_name)
+            };
+            if dst_path.symlink_metadata().is_ok() {
+                bail!("{dst_path:?} already exists");
+            }
+            Ok(CopyAction { src_path, dst_path, src_is_dir: src_metadata.is_dir() })
+        })
         .collect()
 }
 
-fn check_if_copy_seems_possible(
-    src_path: PathBuf,
-    dst_path_suffix: &str,
-) -> anyhow::Result<CopyAction> {
-    let src_file_name =
-        src_path.file_name().with_context(|| format!("{src_path:?} does not have a name"))?;
-    let metadata = fs::metadata(&src_path)
-        .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
-    let mut dst_file_name = src_file_name.to_owned();
-    dst_file_name.push(dst_path_suffix);
-    let dst_path = src_path.with_file_name(&dst_file_name);
-    if dst_path.symlink_metadata().is_ok() {
-        bail!("{dst_path:?} already exists");
-    }
-    Ok(CopyAction { src: src_path, dst: dst_path, is_dir: metadata.is_dir() })
-}
-
-fn do_copy(copy_action: &CopyAction) -> anyhow::Result<()> {
-    let CopyAction { src, dst, is_dir } = copy_action;
+fn copy(src_path: &Path, dst_path: &Path, src_is_dir: bool) -> anyhow::Result<()> {
     (|| {
-        if *is_dir {
+        if src_is_dir {
             // TODO: Make the code cross-plateform.
             let status = Command::new("cp")
                 .args(["-rH", "--"])
-                .args([src, dst])
+                .args([src_path, dst_path])
                 .status()
                 .context("failed to execute process")?;
             if !status.success() {
                 bail!("error status: {status}");
             }
         } else {
-            fs::copy(src, dst)?;
+            fs::copy(src_path, dst_path)?;
         }
         anyhow::Ok(())
     })()
-    .with_context(|| format!("failed to copy {src:?} to {dst:?}"))
+    .with_context(|| format!("failed to copy {src_path:?} to {dst_path:?}"))
 }
 
 struct CopyAction {
-    src: PathBuf,
-    dst: PathBuf,
-    is_dir: bool,
+    src_path: PathBuf,
+    dst_path: PathBuf,
+    src_is_dir: bool,
 }
 
 #[cfg(test)]

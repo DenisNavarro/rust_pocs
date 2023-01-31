@@ -41,7 +41,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> anyhow::Result<()> {
-    let src_dir_name = check_src_dir_is_ok(src_dir_path.as_ref())?;
+    let src_dir_name = check_src_dir_path_is_ok(src_dir_path.as_ref())?;
     let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
     writeln!(io::stdout(), "Synchronize {src_dir_path:?} with {final_dst_path:?}.")
@@ -49,7 +49,7 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
     synchronize(src_dir_path, &final_dst_path)
 }
 
-fn check_src_dir_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
+fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
     let src_dir_name = Utf8Path::new(src_dir_path)
         .file_name()
         .ok_or_else(|| anyhow!("{src_dir_path:?} does not have a name"))?;
@@ -90,7 +90,7 @@ fn maybe_rename_a_candidate_to_final_dst(
 }
 
 fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec<PathBuf>> {
-    let re = Regex::new(
+    let regex = Regex::new(
         r"^(.*)_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{2}h[[:digit:]]{2}$",
     )
     .unwrap();
@@ -102,14 +102,14 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
             entry_or_err.with_context(|| format!("failed to read an entry in {dst_dir_path:?}"))?;
         let metadata =
             entry.metadata().with_context(|| format!("failed to read metadata from {entry:?}"))?;
-        if is_candidate(&entry, &metadata, src_dir_name, &re) {
+        if is_candidate(&entry, &metadata, src_dir_name, &regex) {
             result.push(entry.path());
         }
     }
     Ok(result)
 }
 
-fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, re: &Regex) -> bool {
+fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex: &Regex) -> bool {
     if !metadata.is_dir() {
         return false;
     };
@@ -117,25 +117,25 @@ fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, re: &
     let Some(dir_name) = dir_name.to_str() else {
         return false;
     };
-    let Some(capture) = re.captures(dir_name) else {
+    let Some(capture) = regex.captures(dir_name) else {
         return false;
     };
     &capture[1] == src_dir_name
 }
 
-fn synchronize(mut src: Cow<str>, dst: &Path) -> anyhow::Result<()> {
-    if !src.as_ref().ends_with('/') {
-        src.to_mut().push('/');
+fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
+    if !src_path.as_ref().ends_with('/') {
+        src_path.to_mut().push('/');
     }
     Command::new("time")
-        .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src.as_ref()])
-        .arg(dst)
+        .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
+        .arg(dst_path)
         .status()
         .context("failed to execute process")
         .and_then(|status| {
             status.success().then_some(()).ok_or_else(|| anyhow!("error status: {status}"))
         })
-        .with_context(|| format!("failed to synchronize {src:?} with {dst:?}"))
+        .with_context(|| format!("failed to synchronize {src_path:?} with {dst_path:?}"))
 }
 
 #[cfg(test)]
@@ -393,15 +393,15 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         let now = datetime!(2022-12-13 14:15:16 UTC);
         tmp.create_dirs(["foo"])?;
-        for (src, dst) in [
+        for (src_path, dst_path) in [
             ("foo/colors.abc.xyz", "bar.abc.xyz"),
             ("foo/ ", " "),
             ("foo/c --o l o r s", "--b a r"),
             ("foo/co -- lors", "--"),
             ("foo/-", "-"),
         ] {
-            tmp.create_dirs([src, dst])?;
-            launch_work(&tmp, src, dst, now)?;
+            tmp.create_dirs([src_path, dst_path])?;
+            launch_work(&tmp, src_path, dst_path, now)?;
         }
         tmp.check_the_following_dirs_exist_and_are_not_symlinks([
             "bar.abc.xyz/colors.abc.xyz_2022-12-13-14h15",
@@ -527,13 +527,13 @@ mod tests {
 
     fn launch_work(
         tmp: &TemporaryDirectory,
-        src: &str,
-        dst: &str,
+        src_path: &str,
+        dst_path: &str,
         now: OffsetDateTime,
     ) -> anyhow::Result<()> {
-        let src_dir_path = tmp.get_path(src);
+        let src_dir_path = tmp.get_path(src_path);
         let src_dir_path = src_dir_path.to_str().unwrap(); // hoping the path is an UTF-8 sequence
-        let dst_dir_path = tmp.get_path(dst);
+        let dst_dir_path = tmp.get_path(dst_path);
         work(src_dir_path.into(), &dst_dir_path, now)
     }
 }
