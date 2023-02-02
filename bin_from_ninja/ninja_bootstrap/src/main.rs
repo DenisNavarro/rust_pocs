@@ -17,7 +17,7 @@ use std::io;
 use std::iter;
 use std::path::PathBuf;
 
-use anyhow::{anyhow, Context};
+use anyhow::Context;
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
@@ -32,7 +32,7 @@ fn main() -> anyhow::Result<()> {
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
     let projects = cargo_toml.workspace.members;
-    let home_path = home_dir().ok_or_else(|| anyhow!("failed to get the home directory path"))?;
+    let home_path = home_dir().context("failed to get the home directory path")?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
     rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
@@ -137,7 +137,7 @@ fn get_local_dependencies(
     (|| {
         let cargo_toml = fs::read_to_string(&cargo_toml_path).context("failed to read the file")?;
         let value = cargo_toml.parse::<Value>().context("invalid TOML")?;
-        let table = value.as_table().ok_or_else(|| anyhow!("not a table: {value:?}"))?;
+        let table = value.as_table().with_context(|| format!("not a table: {value:?}"))?;
         let normal_dependencies = get_local_projects_from(table, "dependencies", local_projects)?;
         let dev_dependencies = get_local_projects_from(table, "dev-dependencies", local_projects)?;
         anyhow::Ok(Dependencies { normal_dependencies, dev_dependencies })
@@ -153,7 +153,7 @@ fn get_local_projects_from(
     match table.get(key) {
         Some(value) => {
             let table =
-                value.as_table().ok_or_else(|| anyhow!("{key:?} is not a table: {value:?}"))?;
+                value.as_table().with_context(|| format!("{key:?} is not a table: {value:?}"))?;
             Ok(table.keys().filter(|name| local_projects.contains(name)).cloned().collect())
         }
         None => Ok(vec![]),

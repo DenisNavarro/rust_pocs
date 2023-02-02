@@ -7,7 +7,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use anyhow::{anyhow, bail, Context};
+use anyhow::{bail, Context};
 use camino::Utf8Path;
 use clap::Parser;
 use regex::Regex;
@@ -52,7 +52,7 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
 fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
     let src_dir_name = Utf8Path::new(src_dir_path)
         .file_name()
-        .ok_or_else(|| anyhow!("{src_dir_path:?} does not have a name"))?;
+        .with_context(|| format!("{src_dir_path:?} does not have a name"))?;
     let src_dir_metadata = fs::metadata(src_dir_path)
         .with_context(|| format!("failed to read metadata from {src_dir_path:?}"))?;
     if !src_dir_metadata.is_dir() {
@@ -133,7 +133,7 @@ fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
         .status()
         .context("failed to execute process")
         .and_then(|status| {
-            status.success().then_some(()).ok_or_else(|| anyhow!("error status: {status}"))
+            status.success().then_some(()).with_context(|| format!("error status: {status}"))
         })
         .with_context(|| format!("failed to synchronize {src_path:?} with {dst_path:?}"))
 }
