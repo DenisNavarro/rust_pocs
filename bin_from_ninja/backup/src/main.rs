@@ -79,9 +79,7 @@ fn copy(src_path: &Path, dst_path: &Path, src_is_dir: bool) -> anyhow::Result<()
                 .args([src_path, dst_path])
                 .status()
                 .context("failed to execute process")?;
-            if !status.success() {
-                bail!("error status: {status}");
-            }
+            status.success().then_some(()).with_context(|| format!("error status: {status}"))?;
         } else {
             fs::copy(src_path, dst_path)?;
         }
@@ -292,7 +290,7 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo", "bar", "bar/baz"])?;
         let result = launch_work(&tmp, ["foo", "bar/baz/.."], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "does not have a name")?;
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
@@ -301,7 +299,7 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo"])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "failed to read metadata")?;
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
@@ -312,7 +310,7 @@ mod tests {
         tmp.create_dirs(["foo"])?;
         tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "failed to read metadata")?;
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
@@ -321,7 +319,7 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo", "bar", "bar_2022-12-13-14h15"])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "already exists")?;
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
@@ -330,7 +328,7 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         tmp.create_files(["foo", "bar", "bar_2022-12-13-14h15"])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "already exists")?;
         tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
     }
 
@@ -341,5 +339,16 @@ mod tests {
     ) -> anyhow::Result<()> {
         let src_paths = arg_paths.iter().map(|path| tmp.get_path(path)).collect();
         work(src_paths, now)
+    }
+
+    fn check_err_contains<T, E>(result: Result<T, E>, text: impl AsRef<str>) -> anyhow::Result<()>
+    where
+        E: ToString,
+    {
+        let text = text.as_ref();
+        let msg = result.err().context("missing error")?.to_string();
+        msg.contains(text)
+            .then_some(())
+            .with_context(|| format!("the error message {msg:?} does not contain {text:?}"))
     }
 }

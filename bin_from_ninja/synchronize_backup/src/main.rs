@@ -419,7 +419,7 @@ mod tests {
         tmp.create_dirs(["foo", "foo/colors", "bar"])?;
         tmp.create_dirs(&valid_candidates)?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "there are several candidates")?;
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(&valid_candidates)?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
@@ -466,7 +466,7 @@ mod tests {
         tmp.create_dirs(["foo", "foo/colors", "foo/colors/dark", "bar"])?;
         let result =
             launch_work(&tmp, "foo/colors/dark/..", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "does not have a name")?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
 
@@ -475,7 +475,7 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         tmp.create_dirs(["foo", "bar"])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "failed to read metadata")?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
 
@@ -485,7 +485,7 @@ mod tests {
         tmp.create_dirs(["foo", "bar"])?;
         tmp.create_files(["foo/colors"])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "is not a directory")?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
 
@@ -502,7 +502,7 @@ mod tests {
         tmp.create_dirs(["bar", "bar/colors_2022-08-09-10h11", "foo"])?;
         tmp.create_symlinks([("foo/colors", "words"), ("foo/words", "non_existent_path")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "failed to read metadata")?;
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-08-09-10h11"])?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
@@ -521,7 +521,7 @@ mod tests {
         tmp.create_files(["foo/colors/red"])?;
         tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        assert!(result.is_err());
+        check_err_contains(result, "failed to look for candidates")?;
         tmp.check_the_following_symlinks_exist(["bar", "baz"])
     }
 
@@ -535,5 +535,16 @@ mod tests {
         let src_dir_path = src_dir_path.to_str().unwrap(); // hoping the path is an UTF-8 sequence
         let dst_dir_path = tmp.get_path(dst_path);
         work(src_dir_path.into(), &dst_dir_path, now)
+    }
+
+    fn check_err_contains<T, E>(result: Result<T, E>, text: impl AsRef<str>) -> anyhow::Result<()>
+    where
+        E: ToString,
+    {
+        let text = text.as_ref();
+        let msg = result.err().context("missing error")?.to_string();
+        msg.contains(text)
+            .then_some(())
+            .with_context(|| format!("the error message {msg:?} does not contain {text:?}"))
     }
 }
