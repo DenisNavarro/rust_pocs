@@ -6,7 +6,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use anyhow::{bail, Context};
+use anyhow::{ensure, Context};
 use clap::Parser;
 use time::{format_description, OffsetDateTime};
 
@@ -62,9 +62,7 @@ fn check_all_copies_seem_possible(
                 dst_file_name.push(dst_path_suffix);
                 src_path.with_file_name(&dst_file_name)
             };
-            if dst_path.symlink_metadata().is_ok() {
-                bail!("{dst_path:?} already exists");
-            }
+            ensure!(dst_path.symlink_metadata().is_err(), "{dst_path:?} already exists");
             Ok(CopyAction { src_path, dst_path, src_is_dir: src_metadata.is_dir() })
         })
         .collect()
@@ -79,7 +77,7 @@ fn copy(src_path: &Path, dst_path: &Path, src_is_dir: bool) -> anyhow::Result<()
                 .args([src_path, dst_path])
                 .status()
                 .context("failed to execute process")?;
-            status.success().then_some(()).with_context(|| format!("error status: {status}"))?;
+            ensure!(status.success(), "error status: {status}");
         } else {
             fs::copy(src_path, dst_path)?;
         }
@@ -347,8 +345,7 @@ mod tests {
     {
         let text = text.as_ref();
         let msg = result.err().context("missing error")?.to_string();
-        msg.contains(text)
-            .then_some(())
-            .with_context(|| format!("the error message {msg:?} does not contain {text:?}"))
+        ensure!(msg.contains(text), "the error message {msg:?} does not contain {text:?}");
+        Ok(())
     }
 }

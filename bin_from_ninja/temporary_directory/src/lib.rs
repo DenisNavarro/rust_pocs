@@ -7,7 +7,7 @@
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 
-use anyhow::{bail, Context};
+use anyhow::{ensure, Context};
 use tempfile::{tempdir, TempDir};
 
 pub struct TemporaryDirectory {
@@ -84,9 +84,7 @@ impl TemporaryDirectory {
             let path = tmp_dir_path.join(path);
             let metadata = fs::symlink_metadata(&path)
                 .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            if !metadata.is_dir() {
-                bail!("{path:?} is not a directory")
-            }
+            ensure!(metadata.is_dir(), "{path:?} is not a directory");
         }
         Ok(())
     }
@@ -100,9 +98,7 @@ impl TemporaryDirectory {
             let path = tmp_dir_path.join(path);
             let metadata = fs::symlink_metadata(&path)
                 .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            if !metadata.is_file() {
-                bail!("{path:?} is not a file")
-            }
+            ensure!(metadata.is_file(), "{path:?} is not a file");
         }
         Ok(())
     }
@@ -116,9 +112,7 @@ impl TemporaryDirectory {
             let path = tmp_dir_path.join(path);
             let metadata = fs::symlink_metadata(&path)
                 .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            if !metadata.is_symlink() {
-                bail!("{path:?} is not a symlink")
-            }
+            ensure!(metadata.is_symlink(), "{path:?} is not a symlink");
         }
         Ok(())
     }
@@ -130,9 +124,7 @@ impl TemporaryDirectory {
         let tmp_dir_path = self.tmp_dir.path();
         for path in paths {
             let path = tmp_dir_path.join(path);
-            if path.symlink_metadata().is_ok() {
-                bail!("{path:?} exists")
-            }
+            ensure!(path.symlink_metadata().is_err(), "{path:?} exists");
         }
         Ok(())
     }

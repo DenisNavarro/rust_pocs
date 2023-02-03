@@ -7,7 +7,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use anyhow::{bail, Context};
+use anyhow::{ensure, Context};
 use camino::Utf8Path;
 use clap::Parser;
 use regex::Regex;
@@ -55,9 +55,7 @@ fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
         .with_context(|| format!("{src_dir_path:?} does not have a name"))?;
     let src_dir_metadata = fs::metadata(src_dir_path)
         .with_context(|| format!("failed to read metadata from {src_dir_path:?}"))?;
-    if !src_dir_metadata.is_dir() {
-        bail!("{src_dir_path:?} is not a directory");
-    }
+    ensure!(src_dir_metadata.is_dir(), "{src_dir_path:?} is not a directory");
     Ok(src_dir_name)
 }
 
@@ -77,9 +75,7 @@ fn maybe_rename_a_candidate_to_final_dst(
 ) -> anyhow::Result<()> {
     let candidates =
         get_candidates(src_dir_name, dst_dir_path).context("failed to look for candidates")?;
-    if candidates.len() >= 2 {
-        bail!("there are several candidates: {candidates:?}");
-    }
+    ensure!(candidates.len() < 2, "there are several candidates: {candidates:?}");
     if let Some(candidate) = candidates.get(0) {
         fs::rename(candidate, final_dst_path)
             .with_context(|| format!("failed to renamed {candidate:?} to {final_dst_path:?}"))?;
@@ -543,8 +539,7 @@ mod tests {
     {
         let text = text.as_ref();
         let msg = result.err().context("missing error")?.to_string();
-        msg.contains(text)
-            .then_some(())
-            .with_context(|| format!("the error message {msg:?} does not contain {text:?}"))
+        ensure!(msg.contains(text), "the error message {msg:?} does not contain {text:?}");
+        Ok(())
     }
 }
