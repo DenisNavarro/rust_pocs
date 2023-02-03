@@ -43,6 +43,7 @@ fn main() -> anyhow::Result<()> {
 fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> anyhow::Result<()> {
     let src_dir_name = check_src_dir_path_is_ok(src_dir_path.as_ref())?;
     let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
+    check_is_directory_or_does_not_exist(&final_dst_path)?;
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
     writeln!(io::stdout(), "Synchronize {src_dir_path:?} with {final_dst_path:?}.")
         .context("failed to write to stdout")?;
@@ -68,6 +69,13 @@ fn get_final_dst_path(src_dir_name: &str, dst_dir_path: PathBuf, now: OffsetDate
     result
 }
 
+fn check_is_directory_or_does_not_exist(path: &Path) -> anyhow::Result<()> {
+    if let Ok(metadata) = path.symlink_metadata() {
+        ensure!(metadata.is_dir(), "{path:?} exists but is not a directory");
+    }
+    Ok(())
+}
+
 fn maybe_rename_a_candidate_to_final_dst(
     src_dir_name: &str,
     dst_dir_path: &Path,
@@ -91,7 +99,7 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
     )
     .unwrap();
     let entries_and_errors = fs::read_dir(dst_dir_path)
-        .with_context(|| format!("failed to read {dst_dir_path:?} as a directory"))?;
+        .with_context(|| format!("failed to read as a directory {dst_dir_path:?}"))?;
     let mut result = Vec::<PathBuf>::new();
     for entry_or_err in entries_and_errors {
         let entry =
@@ -138,11 +146,13 @@ fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
 mod tests {
     use super::*;
 
+    use std::fmt::Debug;
+
     use time::macros::datetime;
 
     use temporary_directory::TemporaryDirectory;
 
-    // TODO: remove duplication between code and comments.
+    // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:
     // directory_name:
     //   subdirectory_name:
@@ -237,8 +247,8 @@ mod tests {
         ])?;
         tmp.check_the_following_paths_do_not_exist([
             "bar/colors_2022-08-09-10h11",
-            "bar/colors_2022-12-13-14h15/light",
             "bar/colors_2022-12-13-14h15/green",
+            "bar/colors_2022-12-13-14h15/light",
         ])
     }
 
@@ -306,7 +316,7 @@ mod tests {
         //       └── red
         //
         // Remark: `synchronize_backup` follows command-line symlinks only, so
-        // "colors_2022-12-13-14h15" is not a symlink, but the copies of "not_light" and "blue"
+        // "colors_2022-12-13-14h15" is not a symlink, but the copies of "blue" and "not_light"
         // are symlinks. Note that "colors_2022-12-13-14h15/blue" points to an unexisting path.
         tmp.check_the_following_dirs_exist_and_are_not_symlinks([
             "baz/colors_2022-12-13-14h15",
@@ -342,7 +352,8 @@ mod tests {
         //    ├── colors -> things
         //    ├── things -> words
         //    └── words/
-        //       └── not_light -> non_existent_path
+        //       ├── dark -> non_existent_path
+        //       └── not_light -> dark
         tmp.create_dirs(["baz", "baz/colors_2022-08-09-10h11", "foo", "foo/words"])?;
         tmp.create_files(["baz/colors_2022-08-09-10h11/green"])?;
         tmp.create_symlinks([
@@ -350,7 +361,8 @@ mod tests {
             ("bay", "baz"),
             ("foo/colors", "things"),
             ("foo/things", "words"),
-            ("foo/words/not_light", "non_existent_path"),
+            ("foo/words/dark", "non_existent_path"),
+            ("foo/words/not_light", "dark"),
         ])?;
         launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
@@ -359,17 +371,23 @@ mod tests {
         // ├── bay -> baz
         // ├── baz/
         // │  └── colors_2022-12-13-14h15/
-        // │     └── not_light -> non_existent_path
+        // │     ├── dark -> non_existent_path
+        // │     └── not_light -> dark
         // └── foo/
         //    ├── colors -> things
         //    ├── things -> words
         //    └── words/
-        //       └── not_light -> non_existent_path
+        //       ├── dark -> non_existent_path
+        //       └── not_light -> dark
         //
         // Remark: `synchronize_backup` follows command-line symlinks only, so
-        // "colors_2022-12-13-14h15" is not a symlink, but the copy of "not_light" is a symlink.
+        // "colors_2022-12-13-14h15" is not a symlink, but the copies of "dark" and "not_light"
+        // are symlinks.
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(["baz/colors_2022-12-13-14h15"])?;
-        tmp.check_the_following_symlinks_exist(["baz/colors_2022-12-13-14h15/not_light"])?;
+        tmp.check_the_following_symlinks_exist([
+            "baz/colors_2022-12-13-14h15/dark",
+            "baz/colors_2022-12-13-14h15/not_light",
+        ])?;
         tmp.check_the_following_paths_do_not_exist([
             "baz/colors_2022-08-09-10h11",
             "baz/colors_2022-12-13-14h15/green",
@@ -379,13 +397,50 @@ mod tests {
     #[test]
     fn src_path_with_an_ending_slash() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo", "foo/colors", "bar"])?;
+        // Before:
+        // .
+        // ├── bar/
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["bar", "foo", "foo/colors"])?;
         launch_work(&tmp, "foo/colors/", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
+        // After:
+        // .
+        // ├── bar/
+        // |  └── colors_2022-12-13-14h15/
+        // └── foo/
+        //    └── colors/
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
     }
 
     #[test]
-    fn fancy_dir_names() -> anyhow::Result<()> {
+    fn final_dst_path_already_exists_and_is_a_directory() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // Before:
+        // .
+        // ├── bar/
+        // |  └── colors_2022-12-13-14h15/
+        // └── foo/
+        //    └── colors/
+        //       └── red
+        tmp.create_dirs(["bar", "bar/colors_2022-12-13-14h15", "foo", "foo/colors"])?;
+        tmp.create_files(["foo/colors/red"])?;
+        launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
+        // After:
+        // .
+        // ├── bar/
+        // |  └── colors_2022-12-13-14h15/
+        // |     └── red
+        // └── foo/
+        //    └── colors/
+        //       └── red
+        tmp.check_the_following_files_exist_and_are_not_symlinks([
+            "bar/colors_2022-12-13-14h15/red",
+        ])
+    }
+
+    #[test]
+    fn fancy_directory_names() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
         let now = datetime!(2022-12-13 14:15:16 UTC);
         tmp.create_dirs(["foo"])?;
@@ -411,36 +466,68 @@ mod tests {
     #[test]
     fn fail_if_two_valid_candidates() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar/
+        // |  ├── colors_2022-08-09-10h11/
+        // |  └── colors_2022-09-10-11h12/
+        // └── foo/
+        //    └── colors/
         let valid_candidates = ["bar/colors_2022-08-09-10h11", "bar/colors_2022-09-10-11h12"];
-        tmp.create_dirs(["foo", "foo/colors", "bar"])?;
+        tmp.create_dirs(["bar", "foo", "foo/colors"])?;
         tmp.create_dirs(&valid_candidates)?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "there are several candidates")?;
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks(&valid_candidates)?;
+        tmp.check_the_following_dirs_exist_and_are_not_symlinks(valid_candidates)?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
     }
 
     #[test]
     fn valid_and_invalid_candidates() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        let valid_candidate = ["bar/colors_2022-08-09-10h11"];
-        let invalid_dir_candidates = [
-            "bar/some_colors_2022-08-09-10h11",
+        // Before:
+        // .
+        // ├── bar/
+        // |  ├── colors2022-08-09-10h11/
+        // |  ├── colors_222-08-09-10h11/
+        // |  ├── colors_2022-08-09-10h11/
+        // |  ├── colors_2022-08-09-10h11m12/
+        // |  ├── colors_2022-08-bb-10h11/
+        // |  ├── colors_2022-09-10-11h12
+        // |  ├── colors_2022-AA-09-10h11/
+        // |  └── some_colors_2022-08-09-10h11/
+        // └── foo/
+        //    └── colors/
+        let valid_candidate = "bar/colors_2022-08-09-10h11";
+        let invalid_directory_candidates = [
             "bar/colors2022-08-09-10h11",
             "bar/colors_222-08-09-10h11",
-            "bar/colors_2022-AA-09-10h11",
-            "bar/colors_2022-08-bb-10h11",
             "bar/colors_2022-08-09-10h11m12",
+            "bar/colors_2022-08-bb-10h11",
+            "bar/colors_2022-AA-09-10h11",
+            "bar/some_colors_2022-08-09-10h11",
         ];
-        let file_candidate = ["bar/colors_2022-09-10-11h12"]; // file, so invalid
-        tmp.create_dirs(["foo", "foo/colors", "bar"])?;
-        tmp.create_dirs(&valid_candidate)?;
-        tmp.create_dirs(&invalid_dir_candidates)?;
-        tmp.create_files(&file_candidate)?;
+        let file_candidate = "bar/colors_2022-09-10-11h12"; // file, so invalid
+        tmp.create_dirs(["bar", "foo", "foo/colors"])?;
+        tmp.create_dirs([valid_candidate])?;
+        tmp.create_dirs(&invalid_directory_candidates)?;
+        tmp.create_files([file_candidate])?;
         launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
-        tmp.check_the_following_paths_do_not_exist(&valid_candidate)?;
-        tmp.check_the_following_files_exist_and_are_not_symlinks(&file_candidate)?;
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks(&invalid_dir_candidates)?;
+        // After:
+        // .
+        // ├── bar/
+        // |  ├── colors2022-08-09-10h11/
+        // |  ├── colors_222-08-09-10h11/
+        // |  ├── colors_2022-08-09-10h11m12/
+        // |  ├── colors_2022-08-bb-10h11/
+        // |  ├── colors_2022-09-10-11h12
+        // |  ├── colors_2022-12-13-14h15/
+        // |  ├── colors_2022-AA-09-10h11/
+        // |  └── some_colors_2022-08-09-10h11/
+        // └── foo/
+        //    └── colors/
+        tmp.check_the_following_paths_do_not_exist([valid_candidate])?;
+        tmp.check_the_following_files_exist_and_are_not_symlinks([file_candidate])?;
+        tmp.check_the_following_dirs_exist_and_are_not_symlinks(invalid_directory_candidates)?;
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
     }
 
@@ -448,9 +535,25 @@ mod tests {
     #[cfg(unix)]
     fn symlink_is_invalid_candidate() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo", "foo/colors", "bar", "bar/colors_2022-08-09-10h11", "bar/baz"])?;
+        // Before:
+        // .
+        // ├── bar/
+        // |  ├── baz/
+        // |  ├── colors_2022-08-09-10h11/
+        // |  └── colors_2022-09-10-11h12 -> baz
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["bar", "bar/baz", "bar/colors_2022-08-09-10h11", "foo", "foo/colors"])?;
         tmp.create_symlinks([("bar/colors_2022-09-10-11h12", "baz")])?;
         launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
+        // After:
+        // .
+        // ├── bar/
+        // |  ├── baz/
+        // |  ├── colors_2022-09-10-11h12 -> baz
+        // |  └── colors_2022-12-13-14h15/
+        // └── foo/
+        //    └── colors/
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-08-09-10h11"])?;
         tmp.check_the_following_symlinks_exist(["bar/colors_2022-09-10-11h12"])?;
         tmp.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
@@ -459,7 +562,12 @@ mod tests {
     #[test]
     fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo", "foo/colors", "foo/colors/dark", "bar"])?;
+        // .
+        // ├── bar/
+        // └── foo/
+        //    └── colors/
+        //       └── dark/
+        tmp.create_dirs(["bar", "foo", "foo/colors", "foo/colors/dark"])?;
         let result =
             launch_work(&tmp, "foo/colors/dark/..", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "does not have a name")?;
@@ -469,7 +577,10 @@ mod tests {
     #[test]
     fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo", "bar"])?;
+        // .
+        // ├── bar/
+        // └── foo/
+        tmp.create_dirs(["bar", "foo"])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
@@ -478,8 +589,29 @@ mod tests {
     #[test]
     fn fail_if_src_path_is_a_file() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo", "bar"])?;
+        // .
+        // ├── bar/
+        // └── foo/
+        //    └── colors
+        tmp.create_dirs(["bar", "foo"])?;
         tmp.create_files(["foo/colors"])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result, "is not a directory")?;
+        tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn fail_if_src_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar/
+        // └── foo/
+        //    ├── colors -> words
+        //    └── words
+        tmp.create_dirs(["bar", "foo"])?;
+        tmp.create_files(["foo/words"])?;
+        tmp.create_symlinks([("foo/colors", "words")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "is not a directory")?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
@@ -491,16 +623,60 @@ mod tests {
         let tmp = TemporaryDirectory::new();
         // .
         // ├── bar/
-        // │  └── colors_2022-08-09-10h11/
         // └── foo/
         //    ├── colors -> words
         //    └── words -> non_existent_path
-        tmp.create_dirs(["bar", "bar/colors_2022-08-09-10h11", "foo"])?;
+        tmp.create_dirs(["bar", "foo"])?;
         tmp.create_symlinks([("foo/colors", "words"), ("foo/words", "non_existent_path")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks(["bar/colors_2022-08-09-10h11"])?;
         tmp.check_the_following_paths_do_not_exist(["bar/colors_2022-12-13-14h15"])
+    }
+
+    #[test]
+    fn fail_if_dst_path_does_not_exist() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["foo", "foo/colors"])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result.as_ref(), "failed to look for candidates")?;
+        check_err_contains(result, "failed to read as a directory")
+    }
+
+    #[test]
+    fn fail_if_dst_path_is_a_file() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["foo", "foo/colors"])?;
+        tmp.create_files(["bar"])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result.as_ref(), "failed to look for candidates")?;
+        check_err_contains(result, "failed to read as a directory")?;
+        tmp.check_the_following_files_exist_and_are_not_symlinks(["bar"])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn fail_if_dst_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar -> baz
+        // ├── baz
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["foo", "foo/colors"])?;
+        tmp.create_files(["baz"])?;
+        tmp.create_symlinks([("bar", "baz")])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result.as_ref(), "failed to look for candidates")?;
+        check_err_contains(result, "failed to read as a directory")?;
+        tmp.check_the_following_symlinks_exist(["bar"])?;
+        tmp.check_the_following_paths_do_not_exist(["baz/colors_2022-12-13-14h15"])
     }
 
     #[test]
@@ -512,13 +688,44 @@ mod tests {
         // ├── baz -> non_existent_path
         // └── foo/
         //    └── colors/
-        //       └── red
         tmp.create_dirs(["foo", "foo/colors"])?;
-        tmp.create_files(["foo/colors/red"])?;
         tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
         let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
-        check_err_contains(result, "failed to look for candidates")?;
+        check_err_contains(result.as_ref(), "failed to look for candidates")?;
+        check_err_contains(result, "failed to read as a directory")?;
         tmp.check_the_following_symlinks_exist(["bar", "baz"])
+    }
+
+    #[test]
+    fn fail_if_final_dst_path_is_a_file() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar/
+        // │  └── colors_2022-12-13-14h15
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["bar", "foo", "foo/colors"])?;
+        tmp.create_files(["bar/colors_2022-12-13-14h15"])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result, "exists but is not a directory")?;
+        tmp.check_the_following_files_exist_and_are_not_symlinks(["bar/colors_2022-12-13-14h15"])
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn fail_if_final_dst_path_is_a_symlink() -> anyhow::Result<()> {
+        let tmp = TemporaryDirectory::new();
+        // .
+        // ├── bar/
+        // │  ├── baz/
+        // │  └── colors_2022-12-13-14h15 -> baz
+        // └── foo/
+        //    └── colors/
+        tmp.create_dirs(["bar", "bar/baz", "foo", "foo/colors"])?;
+        tmp.create_symlinks([("bar/colors_2022-12-13-14h15", "baz")])?;
+        let result = launch_work(&tmp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
+        check_err_contains(result, "exists but is not a directory")?;
+        tmp.check_the_following_symlinks_exist(["bar/colors_2022-12-13-14h15"])
     }
 
     fn launch_work(
@@ -535,10 +742,11 @@ mod tests {
 
     fn check_err_contains<T, E>(result: Result<T, E>, text: impl AsRef<str>) -> anyhow::Result<()>
     where
-        E: ToString,
+        E: Debug,
     {
         let text = text.as_ref();
-        let msg = result.err().context("missing error")?.to_string();
+        let error = result.err().context("missing error")?;
+        let msg = format!("{error:?}");
         ensure!(msg.contains(text), "the error message {msg:?} does not contain {text:?}");
         Ok(())
     }
