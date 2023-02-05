@@ -181,17 +181,7 @@ pub struct AfterInput<W: Write> {
 }
 
 #[must_use]
-pub struct AfterAllInputs<W: Write> {
-    writer: W,
-}
-
-#[must_use]
 pub struct AfterImplicitDependency<W: Write> {
-    writer: W,
-}
-
-#[must_use]
-pub struct AfterAllImplicitDependencies<W: Write> {
     writer: W,
 }
 
@@ -203,6 +193,18 @@ pub struct AfterOrderOnlyDependency<W: Write> {
 #[must_use]
 pub struct AfterVariableAndValue<W: Write> {
     writer: W,
+}
+
+#[must_use]
+pub enum AfterRuleOrInput<W: Write> {
+    AfterRule(AfterRule<W>),
+    AfterInput(AfterInput<W>),
+}
+
+#[must_use]
+pub enum AfterInputOrImplicitDependency<W: Write> {
+    AfterInput(AfterInput<W>),
+    AfterImplicitDependency(AfterImplicitDependency<W>),
 }
 
 impl<W: Write> AfterBuild<W> {
@@ -231,15 +233,23 @@ impl<W: Write> AfterRule<W> {
     pub fn inputs(
         self,
         inputs: impl IntoIterator<Item = impl AsRef<[u8]>>,
-    ) -> Result<AfterAllInputs<W>, Error> {
+    ) -> Result<AfterRuleOrInput<W>, Error> {
         let mut inputs = inputs.into_iter();
         if let Some(input) = inputs.next() {
             let step = self.input(input)?;
             let step = step.inputs(inputs)?;
-            Ok(AfterAllInputs { writer: step.writer })
+            Ok(AfterRuleOrInput::AfterInput(step))
         } else {
-            Ok(AfterAllInputs { writer: self.writer })
+            Ok(AfterRuleOrInput::AfterRule(self))
         }
+    }
+
+    fn variable_and_value(
+        self,
+        variable: impl AsRef<[u8]>,
+        value: impl AsRef<[u8]>,
+    ) -> Result<AfterVariableAndValue<W>, Error> {
+        write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
     }
 
     pub fn end(self) -> Result<(), Error> {
@@ -282,17 +292,26 @@ impl<W: Write> AfterInput<W> {
     pub fn implicit_dependencies(
         self,
         dependencies: impl IntoIterator<Item = impl AsRef<[u8]>>,
-    ) -> Result<AfterAllImplicitDependencies<W>, Error> {
+    ) -> Result<AfterInputOrImplicitDependency<W>, Error> {
         let mut dependencies = dependencies.into_iter();
         if let Some(dependency) = dependencies.next() {
             let step = self.implicit_dependency(dependency)?;
             let step = step.implicit_dependencies(dependencies)?;
-            Ok(AfterAllImplicitDependencies { writer: step.writer })
+            Ok(AfterInputOrImplicitDependency::AfterImplicitDependency(step))
         } else {
-            Ok(AfterAllImplicitDependencies { writer: self.writer })
+            Ok(AfterInputOrImplicitDependency::AfterInput(self))
         }
     }
 
+    #[cfg(unix)]
+    fn unix_order_only_dependency(
+        self,
+        dependency: impl AsRef<OsStr>,
+    ) -> Result<AfterOrderOnlyDependency<W>, Error> {
+        let dependency = std::os::unix::ffi::OsStrExt::as_bytes(dependency.as_ref());
+        write_first_order_only_dependency(self.writer, dependency)
+    }
+
     pub fn variable_and_value(
         self,
         variable: impl AsRef<[u8]>,
@@ -300,18 +319,8 @@ impl<W: Write> AfterInput<W> {
     ) -> Result<AfterVariableAndValue<W>, Error> {
         write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
     }
-}
 
-impl<W: Write> AfterAllInputs<W> {
-    pub fn variable_and_value(
-        self,
-        variable: impl AsRef<[u8]>,
-        value: impl AsRef<[u8]>,
-    ) -> Result<AfterVariableAndValue<W>, Error> {
-        write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
-    }
-
-    pub fn end(self) -> Result<(), Error> {
+    fn end(self) -> Result<(), Error> {
         write_end(self.writer)
     }
 }
@@ -330,11 +339,9 @@ impl<W: Write> AfterImplicitDependency<W> {
         }
         Ok(self)
     }
-}
 
-impl<W: Write> AfterAllImplicitDependencies<W> {
     #[cfg(unix)]
-    pub fn unix_order_only_dependency(
+    fn unix_order_only_dependency(
         self,
         dependency: impl AsRef<OsStr>,
     ) -> Result<AfterOrderOnlyDependency<W>, Error> {
@@ -352,5 +359,38 @@ impl<W: Write> AfterOrderOnlyDependency<W> {
 impl<W: Write> AfterVariableAndValue<W> {
     pub fn end(self) -> Result<(), Error> {
         write_end(self.writer)
+    }
+}
+
+impl<W: Write> AfterRuleOrInput<W> {
+    pub fn variable_and_value(
+        self,
+        variable: impl AsRef<[u8]>,
+        value: impl AsRef<[u8]>,
+    ) -> Result<AfterVariableAndValue<W>, Error> {
+        match self {
+            Self::AfterRule(step) => step.variable_and_value(variable, value),
+            Self::AfterInput(step) => step.variable_and_value(variable, value),
+        }
+    }
+
+    pub fn end(self) -> Result<(), Error> {
+        match self {
+            Self::AfterRule(step) => step.end(),
+            Self::AfterInput(step) => step.end(),
+        }
+    }
+}
+
+impl<W: Write> AfterInputOrImplicitDependency<W> {
+    #[cfg(unix)]
+    pub fn unix_order_only_dependency(
+        self,
+        dependency: impl AsRef<OsStr>,
+    ) -> Result<AfterOrderOnlyDependency<W>, Error> {
+        match self {
+            Self::AfterInput(step) => step.unix_order_only_dependency(dependency),
+            Self::AfterImplicitDependency(step) => step.unix_order_only_dependency(dependency),
+        }
     }
 }
