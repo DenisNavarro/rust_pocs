@@ -346,8 +346,10 @@ mod tests {
         // ├── bar -> bay
         // ├── bay -> baz
         // ├── baz/
-        // │  └── colors_2022-08-09-10h11/
-        // │     └── green
+        // │  ├── colors_2022-08-09-10h11/
+        // │  │  ├── light -> ../sun
+        // │  │  └── not_dark -> light
+        // │  └── sun
         // └── foo/
         //    ├── colors -> things
         //    ├── things -> words
@@ -355,10 +357,12 @@ mod tests {
         //       ├── dark -> non_existent_path
         //       └── not_light -> dark
         tmp.create_dirs(["baz", "baz/colors_2022-08-09-10h11", "foo", "foo/words"])?;
-        tmp.create_files(["baz/colors_2022-08-09-10h11/green"])?;
+        tmp.create_files(["baz/sun"])?;
         tmp.create_symlinks([
             ("bar", "bay"),
             ("bay", "baz"),
+            ("baz/colors_2022-08-09-10h11/light", "../sun"),
+            ("baz/colors_2022-08-09-10h11/not_dark", "light"),
             ("foo/colors", "things"),
             ("foo/things", "words"),
             ("foo/words/dark", "non_existent_path"),
@@ -370,9 +374,10 @@ mod tests {
         // ├── bar -> bay
         // ├── bay -> baz
         // ├── baz/
-        // │  └── colors_2022-12-13-14h15/
-        // │     ├── dark -> non_existent_path
-        // │     └── not_light -> dark
+        // │  ├── colors_2022-12-13-14h15/
+        // │  │  ├── dark -> non_existent_path
+        // │  │  └── not_light -> dark
+        // │  └── sun
         // └── foo/
         //    ├── colors -> things
         //    ├── things -> words
@@ -390,7 +395,8 @@ mod tests {
         ])?;
         tmp.check_the_following_paths_do_not_exist([
             "baz/colors_2022-08-09-10h11",
-            "baz/colors_2022-12-13-14h15/green",
+            "baz/colors_2022-12-13-14h15/light",
+            "baz/colors_2022-12-13-14h15/not_dark",
         ])
     }
 
