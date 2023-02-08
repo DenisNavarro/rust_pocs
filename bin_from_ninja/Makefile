@@ -11,6 +11,11 @@ check : build.ninja
 fmt : build.ninja
 	ninja fmt -v
 
+.PHONY: watch
+#: Reformat the code each time a Rust file is modified (thanks to the `watchexec-cli` crate)
+watch : build.ninja
+	watchexec --exts rs ninja fmt -v
+
 .PHONY: all
 #: For each project, if not done yet, reformat the code, check it and, if all is good, deploy it
 all : build.ninja
@@ -38,8 +43,3 @@ edit :
 #: Print the help with remake from https://remake.readthedocs.io/
 help :
 	@remake --tasks
-
-.PHONY: watch
-#: Reformat the code each time a Rust file is modified (thanks to the `watchexec-cli` crate)
-watch :
-	watchexec --exts rs ninja fmt -v
