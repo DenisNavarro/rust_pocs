@@ -26,6 +26,9 @@ When the code is ready to be deployed, `make all` can be launched.
 `make fmt` may be useless if the developer can already reformat the current Rust file with a
 keystroke.
 
+If you installed `watchexec` from the `watchexec-cli` crate, you can also launch `make watch`
+which does the same thing as `make fmt` each time a Rust file is modified.
+
 Under the hood, these Make commands call Ninja to launch the underlying commands in parallel.
 
 ## Ninja

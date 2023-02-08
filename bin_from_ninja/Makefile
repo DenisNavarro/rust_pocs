@@ -38,3 +38,8 @@ edit :
 #: Print the help with remake from https://remake.readthedocs.io/
 help :
 	@remake --tasks
+
+.PHONY: watch
+#: Reformat the code each time a Rust file is modified (thanks to the `watchexec-cli` crate)
+watch :
+	watchexec --exts rs ninja fmt -v
