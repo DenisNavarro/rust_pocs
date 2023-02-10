@@ -1,4 +1,4 @@
-# `make build.ninja` creates a `build.ninja` file identical to the current one, except that:
+# `build.ninja` is a file identical to the current one, except that:
 # - `/home/denis` will be replaced with your home directory and
 # - the 3 lines of the current comment are not there.
 rule create_directory
