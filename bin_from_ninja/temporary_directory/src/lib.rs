@@ -7,7 +7,7 @@
 use std::fs::{self, File};
 use std::path::{Path, PathBuf};
 
-use anyhow::{ensure, Context};
+use anyhow::Context;
 use tempfile::{tempdir, TempDir};
 
 pub struct TemporaryDirectory {
@@ -36,13 +36,13 @@ impl TemporaryDirectory {
         &self,
         paths: impl IntoIterator<Item = impl AsRef<Path>>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            fs::create_dir(&path)
-                .with_context(|| format!("failed to create directory {path:?}"))?;
-            println!("Created directory {path:?}.");
-        }
+        paths.into_iter().try_for_each(|path| self.create_dir(path))
+    }
+
+    pub fn create_dir(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
+        let path = self.get_path(path);
+        fs::create_dir(&path).with_context(|| format!("failed to create directory {path:?}"))?;
+        println!("Created directory {path:?}.");
         Ok(())
     }
 
@@ -50,12 +50,13 @@ impl TemporaryDirectory {
         &self,
         paths: impl IntoIterator<Item = impl AsRef<Path>>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            File::create(&path).with_context(|| format!("failed to create file {path:?}"))?;
-            println!("Created file {path:?}.");
-        }
+        paths.into_iter().try_for_each(|path| self.create_file(path))
+    }
+
+    pub fn create_file(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
+        let path = self.get_path(path);
+        File::create(&path).with_context(|| format!("failed to create file {path:?}"))?;
+        println!("Created file {path:?}.");
         Ok(())
     }
 
@@ -64,68 +65,80 @@ impl TemporaryDirectory {
         &self,
         symlinks: impl IntoIterator<Item = (impl AsRef<Path>, impl AsRef<Path>)>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for (from, to) in symlinks {
-            let from = tmp_dir_path.join(from);
-            let to = to.as_ref();
-            std::os::unix::fs::symlink(to, &from)
-                .with_context(|| format!("failed to create symlink from {from:?} to {to:?}"))?;
-            println!("Created symlink from {from:?} to {to:?}.");
-        }
+        symlinks.into_iter().try_for_each(|(from, to)| self.create_symlink(from, to))
+    }
+
+    #[cfg(unix)]
+    pub fn create_symlink(
+        &self,
+        from: impl AsRef<Path>,
+        to: impl AsRef<Path>,
+    ) -> anyhow::Result<()> {
+        let from = self.get_path(from);
+        let to = to.as_ref();
+        std::os::unix::fs::symlink(to, &from)
+            .with_context(|| format!("failed to create symlink from {from:?} to {to:?}"))?;
+        println!("Created symlink from {from:?} to {to:?}.");
         Ok(())
     }
 
-    pub fn check_the_following_dirs_exist_and_are_not_symlinks(
+    pub fn check_dirs_exist_and_are_not_symlinks(
         &self,
         paths: impl IntoIterator<Item = impl AsRef<Path>>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            let metadata = fs::symlink_metadata(&path)
-                .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            ensure!(metadata.is_dir(), "{path:?} is not a directory");
-        }
-        Ok(())
+        paths.into_iter().try_for_each(|path| self.check_dir_exists_and_is_not_a_symlink(path))
     }
 
-    pub fn check_the_following_files_exist_and_are_not_symlinks(
+    pub fn check_dir_exists_and_is_not_a_symlink(
         &self,
-        paths: impl IntoIterator<Item = impl AsRef<Path>>,
+        path: impl AsRef<Path>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            let metadata = fs::symlink_metadata(&path)
-                .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            ensure!(metadata.is_file(), "{path:?} is not a file");
-        }
-        Ok(())
+        let path = self.get_path(path);
+        let metadata = fs::symlink_metadata(&path)
+            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        metadata.is_dir().then_some(()).with_context(|| format!("{path:?} is not a directory"))
     }
 
-    pub fn check_the_following_symlinks_exist(
+    pub fn check_files_exist_and_are_not_symlinks(
         &self,
         paths: impl IntoIterator<Item = impl AsRef<Path>>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            let metadata = fs::symlink_metadata(&path)
-                .with_context(|| format!("failed to read metadata from {path:?}"))?;
-            ensure!(metadata.is_symlink(), "{path:?} is not a symlink");
-        }
-        Ok(())
+        paths.into_iter().try_for_each(|path| self.check_file_exists_and_is_not_a_symlink(path))
     }
 
-    pub fn check_the_following_paths_do_not_exist(
+    pub fn check_file_exists_and_is_not_a_symlink(
+        &self,
+        path: impl AsRef<Path>,
+    ) -> anyhow::Result<()> {
+        let path = self.get_path(path);
+        let metadata = fs::symlink_metadata(&path)
+            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        metadata.is_file().then_some(()).with_context(|| format!("{path:?} is not a file"))
+    }
+
+    pub fn check_symlinks_exist(
         &self,
         paths: impl IntoIterator<Item = impl AsRef<Path>>,
     ) -> anyhow::Result<()> {
-        let tmp_dir_path = self.tmp_dir.path();
-        for path in paths {
-            let path = tmp_dir_path.join(path);
-            ensure!(path.symlink_metadata().is_err(), "{path:?} exists");
-        }
-        Ok(())
+        paths.into_iter().try_for_each(|path| self.check_symlink_exists(path))
+    }
+
+    pub fn check_symlink_exists(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
+        let path = self.get_path(path);
+        let metadata = fs::symlink_metadata(&path)
+            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        metadata.is_symlink().then_some(()).with_context(|| format!("{path:?} is not a symlink"))
+    }
+
+    pub fn check_do_not_exist(
+        &self,
+        paths: impl IntoIterator<Item = impl AsRef<Path>>,
+    ) -> anyhow::Result<()> {
+        paths.into_iter().try_for_each(|path| self.check_does_not_exist(path))
+    }
+
+    pub fn check_does_not_exist(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
+        let path = self.get_path(path);
+        path.symlink_metadata().is_err().then_some(()).with_context(|| format!("{path:?} exists"))
     }
 }

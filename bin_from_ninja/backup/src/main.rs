@@ -134,11 +134,11 @@ mod tests {
         // │  └── red
         // ├── picture
         // └── picture_2022-12-13-14h15
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks([
+        tmp.check_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
         ])?;
-        tmp.check_the_following_files_exist_and_are_not_symlinks([
+        tmp.check_files_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15/dark/black",
             "colors_2022-12-13-14h15/red",
             "picture_2022-12-13-14h15",
@@ -191,16 +191,16 @@ mod tests {
         // Remark: `backup` follows command-line symlinks only, so "colors_2022-12-13-14h15" and
         // "picture_2022-12-13-14h15" are not symlinks, but the copies of "blue" and "not_light"
         // are symlinks.
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks([
+        tmp.check_dirs_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15",
             "colors_2022-12-13-14h15/dark",
         ])?;
-        tmp.check_the_following_files_exist_and_are_not_symlinks([
+        tmp.check_files_exist_and_are_not_symlinks([
             "colors_2022-12-13-14h15/dark/black",
             "colors_2022-12-13-14h15/red",
             "picture_2022-12-13-14h15",
         ])?;
-        tmp.check_the_following_symlinks_exist([
+        tmp.check_symlinks_exist([
             "colors_2022-12-13-14h15/blue",
             "colors_2022-12-13-14h15/not_light",
         ])
@@ -220,8 +220,8 @@ mod tests {
         // └── words/
         //    ├── dark -> non_existent_path
         //    └── not_light -> dark
-        tmp.create_dirs(["words"])?;
-        tmp.create_files(["sea"])?;
+        tmp.create_dir("words")?;
+        tmp.create_file("sea")?;
         tmp.create_symlinks([
             ("colors", "things"),
             ("picture", "place"),
@@ -249,9 +249,9 @@ mod tests {
         // Remark: `backup` follows command-line symlinks only, so "colors_2022-12-13-14h15" and
         // "picture_2022-12-13-14h15" are not symlinks, but the copies of "dark" and "not_light"
         // are symlinks.
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks(["colors_2022-12-13-14h15"])?;
-        tmp.check_the_following_files_exist_and_are_not_symlinks(["picture_2022-12-13-14h15"])?;
-        tmp.check_the_following_symlinks_exist([
+        tmp.check_dir_exists_and_is_not_a_symlink("colors_2022-12-13-14h15")?;
+        tmp.check_file_exists_and_is_not_a_symlink("picture_2022-12-13-14h15")?;
+        tmp.check_symlinks_exist([
             "colors_2022-12-13-14h15/dark",
             "colors_2022-12-13-14h15/not_light",
         ])
@@ -266,7 +266,7 @@ mod tests {
             ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
-        tmp.check_the_following_dirs_exist_and_are_not_symlinks([
+        tmp.check_dirs_exist_and_are_not_symlinks([
             "foo.abc.xyz_2022-12-13-14h15",
             " _2022-12-13-14h15",
             "--b a r_2022-12-13-14h15",
@@ -284,7 +284,7 @@ mod tests {
             ["foo.abc.xyz", " ", "--b a r", "--", "-"],
             datetime!(2022-12-13 14:15:16 UTC),
         )?;
-        tmp.check_the_following_files_exist_and_are_not_symlinks([
+        tmp.check_files_exist_and_are_not_symlinks([
             "foo.abc.xyz_2022-12-13-14h15",
             " _2022-12-13-14h15",
             "--b a r_2022-12-13-14h15",
@@ -303,16 +303,16 @@ mod tests {
         tmp.create_dirs(["bar", "bar/baz", "foo"])?;
         let result = launch_work(&tmp, ["foo", "bar/baz/.."], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "does not have a name")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     #[test]
     fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
         let tmp = TemporaryDirectory::new();
-        tmp.create_dirs(["foo"])?;
+        tmp.create_dir("foo")?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     #[test]
@@ -323,11 +323,11 @@ mod tests {
         // ├── bar -> baz
         // ├── baz -> non_existent_path
         // └── foo/
-        tmp.create_dirs(["foo"])?;
+        tmp.create_dir("foo")?;
         tmp.create_symlinks([("bar", "baz"), ("baz", "non_existent_path")])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     #[test]
@@ -340,7 +340,7 @@ mod tests {
         tmp.create_dirs(["bar", "bar_2022-12-13-14h15", "foo"])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "already exists")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     #[test]
@@ -353,7 +353,7 @@ mod tests {
         tmp.create_files(["bar", "bar_2022-12-13-14h15", "foo"])?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "already exists")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     #[test]
@@ -365,10 +365,10 @@ mod tests {
         // ├── bar_2022-12-13-14h15 -> non_existent_path
         // └── foo/
         tmp.create_dirs(["bar", "foo"])?;
-        tmp.create_symlinks([("bar_2022-12-13-14h15", "non_existent_path")])?;
+        tmp.create_symlink("bar_2022-12-13-14h15", "non_existent_path")?;
         let result = launch_work(&tmp, ["foo", "bar"], datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "already exists")?;
-        tmp.check_the_following_paths_do_not_exist(["foo_2022-12-13-14h15"])
+        tmp.check_does_not_exist("foo_2022-12-13-14h15")
     }
 
     fn launch_work<const N: usize>(
