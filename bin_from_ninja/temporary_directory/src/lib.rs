@@ -4,7 +4,7 @@
 
 //! Utility to write unit tests with a temporary directory
 
-use std::fs::{self, File};
+use std::fs::{self, File, Metadata};
 use std::path::{Path, PathBuf};
 
 use anyhow::Context;
@@ -94,8 +94,7 @@ impl TemporaryDirectory {
         path: impl AsRef<Path>,
     ) -> anyhow::Result<()> {
         let path = self.get_path(path);
-        let metadata = fs::symlink_metadata(&path)
-            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        let metadata = symlink_metadata(&path)?;
         metadata.is_dir().then_some(()).with_context(|| format!("{path:?} is not a directory"))
     }
 
@@ -111,8 +110,7 @@ impl TemporaryDirectory {
         path: impl AsRef<Path>,
     ) -> anyhow::Result<()> {
         let path = self.get_path(path);
-        let metadata = fs::symlink_metadata(&path)
-            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        let metadata = symlink_metadata(&path)?;
         metadata.is_file().then_some(()).with_context(|| format!("{path:?} is not a file"))
     }
 
@@ -125,8 +123,7 @@ impl TemporaryDirectory {
 
     pub fn check_symlink_exists(&self, path: impl AsRef<Path>) -> anyhow::Result<()> {
         let path = self.get_path(path);
-        let metadata = fs::symlink_metadata(&path)
-            .with_context(|| format!("failed to read metadata from {path:?}"))?;
+        let metadata = symlink_metadata(&path)?;
         metadata.is_symlink().then_some(()).with_context(|| format!("{path:?} is not a symlink"))
     }
 
@@ -141,4 +138,8 @@ impl TemporaryDirectory {
         let path = self.get_path(path);
         path.symlink_metadata().is_err().then_some(()).with_context(|| format!("{path:?} exists"))
     }
+}
+
+fn symlink_metadata(path: &Path) -> anyhow::Result<Metadata> {
+    path.symlink_metadata().with_context(|| format!("failed to read metadata from {path:?}"))
 }
