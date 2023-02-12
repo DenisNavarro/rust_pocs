@@ -11,5 +11,6 @@ regex = "1.7.1"
 time = { version = "0.3.17", features = ["formatting", "local-offset"] }
 
 [dev-dependencies]
-temporary_directory = { path = "../temporary_directory" }
+assert_fs = "1.0.10"
+test_helper = { path = "../test_helper" }
 time = { version = "0.3.17", features = ["formatting", "local-offset", "macros"] }
