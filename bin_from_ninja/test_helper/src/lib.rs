@@ -29,14 +29,14 @@ where
     fn check_is_dir(&self) -> anyhow::Result<()> {
         let path = self.as_ref();
         let metadata = symlink_metadata(path)?;
-        ensure!(metadata.is_dir(), "{path:?} exists, but is not a directory");
+        ensure!(metadata.is_dir(), "{path:?} exists but is not a directory");
         Ok(())
     }
 
     fn check_is_file_with_content(&self, expected: impl AsRef<str>) -> anyhow::Result<()> {
         let path = self.as_ref();
         let metadata = symlink_metadata(path)?;
-        ensure!(metadata.is_file(), "{path:?} exists, but is not a file");
+        ensure!(metadata.is_file(), "{path:?} exists but is not a file");
         let cont = fs::read(path).with_context(|| format!("failed to read {path:?}"))?;
         let cont = String::from_utf8(cont).with_context(|| format!("non-UTF8 data in {path:?}"))?;
         let expected = expected.as_ref();
