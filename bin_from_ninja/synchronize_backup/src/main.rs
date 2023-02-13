@@ -477,8 +477,10 @@ mod tests {
         // |  └── some_colors_2022-08-09-10h11/
         // └── foo/
         //    └── colors/
+        //       └── red
         temp.child("bar").create_dir_all()?;
         let valid_candidate = "bar/colors_2022-08-09-10h11";
+        temp.child(valid_candidate).create_dir_all()?;
         let invalid_directory_candidates = [
             "bar/colors2022-08-09-10h11",
             "bar/colors_222-08-09-10h11",
@@ -487,12 +489,12 @@ mod tests {
             "bar/colors_2022-AA-09-10h11",
             "bar/some_colors_2022-08-09-10h11",
         ];
-        let file_candidate = "bar/colors_2022-09-10-11h12"; // file, so invalid
-        temp.child(valid_candidate).create_dir_all()?;
         invalid_directory_candidates.iter().try_for_each(|p| temp.child(p).create_dir_all())?;
+        let file_candidate = "bar/colors_2022-09-10-11h12"; // file, so invalid
         temp.child(file_candidate).write_str("whatever")?;
         temp.child("foo").create_dir_all()?;
         temp.child("foo/colors").create_dir_all()?;
+        temp.child("foo/colors/red").write_str("blood")?;
         launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
@@ -503,14 +505,17 @@ mod tests {
         // |  ├── colors_2022-08-bb-10h11/
         // |  ├── colors_2022-09-10-11h12
         // |  ├── colors_2022-12-13-14h15/
+        // |  |  └── red
         // |  ├── colors_2022-AA-09-10h11/
         // |  └── some_colors_2022-08-09-10h11/
         // └── foo/
         //    └── colors/
+        //       └── red
         temp.child(valid_candidate).check_does_not_exist()?;
         temp.child(file_candidate).check_is_file_with_content("whatever")?;
         invalid_directory_candidates.iter().try_for_each(|p| temp.child(p).check_is_dir())?;
-        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()
+        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
     }
 
     #[test]
@@ -524,12 +529,14 @@ mod tests {
         // |  └── colors_2022-09-10-11h12 -> baz
         // └── foo/
         //    └── colors/
+        //       └── red
         temp.child("bar").create_dir_all()?;
         temp.child("bar/baz").create_dir_all()?;
         temp.child("bar/colors_2022-08-09-10h11").create_dir_all()?;
         temp.child("bar/colors_2022-09-10-11h12").symlink_to_dir("baz")?;
         temp.child("foo").create_dir_all()?;
         temp.child("foo/colors").create_dir_all()?;
+        temp.child("foo/colors/red").write_str("blood")?;
         launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC))?;
         // After:
         // .
@@ -537,11 +544,14 @@ mod tests {
         // |  ├── baz/
         // |  ├── colors_2022-09-10-11h12 -> baz
         // |  └── colors_2022-12-13-14h15/
+        // |     └── red
         // └── foo/
         //    └── colors/
+        //       └── red
         temp.child("bar/colors_2022-08-09-10h11").check_does_not_exist()?;
         temp.child("bar/colors_2022-09-10-11h12").check_is_symlink_to("baz")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()
+        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
     }
 
     #[test]
@@ -634,7 +644,8 @@ mod tests {
         temp.child("foo/colors").create_dir_all()?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result.as_ref(), "failed to look for candidates")?;
-        check_err_contains(result, "failed to read as a directory")
+        check_err_contains(result, "failed to read as a directory")?;
+        temp.child("bar").check_does_not_exist()
     }
 
     #[test]
@@ -717,14 +728,18 @@ mod tests {
         // │  └── colors_2022-12-13-14h15 -> baz
         // └── foo/
         //    └── colors/
+        //       └── red
         temp.child("bar").create_dir_all()?;
         temp.child("bar/baz").create_dir_all()?;
         temp.child("bar/colors_2022-12-13-14h15").symlink_to_dir("baz")?;
         temp.child("foo").create_dir_all()?;
         temp.child("foo/colors").create_dir_all()?;
+        temp.child("foo/colors/red").write_str("blood")?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "exists but is not a directory")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_is_symlink_to("baz")
+        temp.child("bar/colors_2022-12-13-14h15").check_is_symlink_to("baz")?;
+        temp.child("bar/baz").check_is_dir()?;
+        temp.child("bar/baz/red").check_does_not_exist()
     }
 
     fn launch_work(
