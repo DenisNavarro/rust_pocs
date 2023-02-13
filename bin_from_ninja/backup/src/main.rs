@@ -212,7 +212,7 @@ mod tests {
         // └── words/
         //    ├── dark -> non_existent_path
         //    └── not_light -> dark
-        temp.child("colors").symlink_to_file("things")?;
+        temp.child("colors").symlink_to_dir("things")?;
         temp.child("picture").symlink_to_file("place")?;
         temp.child("place").symlink_to_file("sea")?;
         temp.child("sea").write_str("massive")?;

@@ -330,7 +330,7 @@ mod tests {
         //    └── words/
         //       ├── dark -> non_existent_path
         //       └── not_light -> dark
-        temp.child("bar").symlink_to_file("bay")?;
+        temp.child("bar").symlink_to_dir("bay")?;
         temp.child("bay").symlink_to_dir("baz")?;
         temp.child("baz").create_dir_all()?;
         temp.child("baz/colors_2022-08-09-10h11").create_dir_all()?;
@@ -338,7 +338,7 @@ mod tests {
         temp.child("baz/colors_2022-08-09-10h11/not_dark").symlink_to_file("light")?;
         temp.child("baz/sun").write_str("star")?;
         temp.child("foo").create_dir_all()?;
-        temp.child("foo/colors").symlink_to_file("things")?;
+        temp.child("foo/colors").symlink_to_dir("things")?;
         temp.child("foo/things").symlink_to_dir("words")?;
         temp.child("foo/words").create_dir_all()?;
         temp.child("foo/words/dark").symlink_to_file("non_existent_path")?;
