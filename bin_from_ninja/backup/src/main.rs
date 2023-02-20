@@ -32,12 +32,11 @@ fn main() -> anyhow::Result<()> {
 fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let dst_path_suffix = get_dst_path_suffix(now, "_[year]-[month]-[day]-[hour]h[minute]");
     let copy_actions: Vec<_> = check_all_copies_seem_possible(src_paths, &dst_path_suffix)?;
-    for CopyAction { src_path, dst_path, src_is_dir } in copy_actions {
+    copy_actions.into_iter().try_for_each(|CopyAction { src_path, dst_path, src_is_dir }| {
         copy(&src_path, &dst_path, src_is_dir)?;
         writeln!(io::stdout(), "Copied {src_path:?} to {dst_path:?}.")
-            .context("failed to write to stdout")?;
-    }
-    Ok(())
+            .context("failed to write to stdout")
+    })
 }
 
 fn get_dst_path_suffix(now: OffsetDateTime, format: &str) -> String {
