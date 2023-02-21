@@ -6,9 +6,9 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.69"
 clap = { version = "4.1.6", features = ["derive"] }
-time = { version = "0.3.18", features = ["formatting", "local-offset"] }
+time = { version = "0.3.19", features = ["formatting", "local-offset"] }
 
 [dev-dependencies]
 assert_fs = "1.0.10"
 test_helper = { path = "../test_helper" }
-time = { version = "0.3.18", features = ["formatting", "local-offset", "macros"] }
+time = { version = "0.3.19", features = ["formatting", "local-offset", "macros"] }

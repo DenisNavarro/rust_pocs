@@ -8,9 +8,9 @@ anyhow = "1.0.69"
 camino = "1.1.2"
 clap = { version = "4.1.6", features = ["derive"] }
 regex = "1.7.1"
-time = { version = "0.3.18", features = ["formatting", "local-offset"] }
+time = { version = "0.3.19", features = ["formatting", "local-offset"] }
 
 [dev-dependencies]
 assert_fs = "1.0.10"
 test_helper = { path = "../test_helper" }
-time = { version = "0.3.18", features = ["formatting", "local-offset", "macros"] }
+time = { version = "0.3.19", features = ["formatting", "local-offset", "macros"] }
