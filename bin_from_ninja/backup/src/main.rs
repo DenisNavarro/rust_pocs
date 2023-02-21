@@ -118,8 +118,6 @@ mod tests {
         // │  │  └── black
         // │  └── red
         // └── picture
-        temp.child("colors").create_dir_all()?;
-        temp.child("colors/dark").create_dir_all()?;
         temp.child("colors/dark/black").write_str("ink")?;
         temp.child("colors/red").write_str("blood")?;
         temp.child("picture").write_str("photo")?;
@@ -162,7 +160,6 @@ mod tests {
         temp.child("sea").write_str("massive")?;
         temp.child("words").create_dir_all()?;
         temp.child("words/blue").symlink_to_file("../sea")?;
-        temp.child("words/dark").create_dir_all()?;
         temp.child("words/dark/black").write_str("ink")?;
         temp.child("words/not_light").symlink_to_dir("dark")?;
         temp.child("words/red").write_str("blood")?;
@@ -277,7 +274,6 @@ mod tests {
         // ├── bar/
         // │  └── baz/
         // └── foo/
-        temp.child("bar").create_dir_all()?;
         temp.child("bar/baz").create_dir_all()?;
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, ["foo", "bar/baz/.."], datetime!(2022-12-13 14:15:16 UTC));
