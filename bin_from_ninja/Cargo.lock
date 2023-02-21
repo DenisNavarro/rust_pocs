@@ -650,6 +650,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "synchronize_partially"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "assert_fs",
+ "camino",
+ "clap",
+ "test_helper",
+]
+
+[[package]]
 name = "tempfile"
 version = "3.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

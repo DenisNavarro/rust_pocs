@@ -3,6 +3,7 @@ members = [
     "backup",
     "ninja_bootstrap",
     "synchronize_backup",
+    "synchronize_partially",
     "test_helper",
 ]
 resolver = "2"

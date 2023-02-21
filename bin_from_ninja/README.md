@@ -2,11 +2,12 @@
 `bin_from_ninja`
 ================
 
-This POC combines Make and [Ninja][] to compile and check the Rust programs [`backup`][] and
-[`synchronize_backup`][] and deploy the binaries to `$HOME/bin`, thanks to the `build.ninja` file
-written by [`ninja_bootstrap`][].
+This POC combines Make and [Ninja][] to compile and check the Rust programs [`backup`][],
+[`synchronize_backup`][] and [`synchronize_partially`][], and deploy the binaries to `$HOME/bin`,
+thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
 
-Requirements: Unix, Make, Ninja, `cp` (for `backup`) and `rsync` (for `synchronize_backup`).
+Requirements: Unix, Make, Ninja, `cp` (for `backup`) and `rsync` (for `synchronize_backup` and
+`synchronize_partially`).
 
 ## Worflow
 
@@ -84,6 +85,25 @@ This is a simple CLI I execute every evening.
 /// In the current implementation, the source directory path must be a valid UTF-8 sequence.
 ```
 
+## [`synchronize_partially`][]
+
+This is a simple CLI I often use.
+
+```rust
+/// Synchronize parts of two directories. rsync is used to synchronize directory parts.
+/// Tested on Linux.
+///
+/// For example, if `/aaa/bbb/foo` is a file and `/aaa/bbb/bar/baz` a directory, then
+/// `synchronize_partially /aaa/bbb /xxx/yyy foo bar/baz` copies `/aaa/bbb/foo` to `/xxx/yyy/foo`
+/// and calls `time rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
+///
+/// In this example, you can see that `synchronize_partially` works on joined command-line paths.
+/// When a joined command-line path is a symlink, `synchronize_partially` follows it.
+///
+/// In the current implementation, only the second command-line argument (<DST_PREFIX_PATH>) can
+/// be a non-UTF-8 sequence.
+```
+
 ## [`ninja_bootstrap`][]
 
 This program writes the `build.ninja` file.
@@ -94,6 +114,7 @@ a copy of `build.ninja`.
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./backup/src/main.rs
 [`synchronize_backup`]: ./synchronize_backup/src/main.rs
+[`synchronize_partially`]: ./synchronize_partially/src/main.rs
 [`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
 [`.gitignore`]: ../.gitignore

@@ -38,11 +38,20 @@ build synchronize_backup/test.ninjatarget: test synchronize_backup/fmt.ninjatarg
 build target/release/synchronize_backup: release synchronize_backup/fmt.ninjatarget synchronize_backup/Cargo.toml
   project = synchronize_backup
 build /home/denis/bin/synchronize_backup: copy target/release/synchronize_backup | synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget || /home/denis/bin
+build synchronize_partially/fmt.ninjatarget: fmt rustfmt.toml synchronize_partially/src/main.rs
+  project = synchronize_partially
+build synchronize_partially/clippy.ninjatarget: clippy synchronize_partially/fmt.ninjatarget synchronize_partially/Cargo.toml test_helper/fmt.ninjatarget test_helper/Cargo.toml
+  project = synchronize_partially
+build synchronize_partially/test.ninjatarget: test synchronize_partially/fmt.ninjatarget synchronize_partially/Cargo.toml test_helper/fmt.ninjatarget test_helper/Cargo.toml
+  project = synchronize_partially
+build target/release/synchronize_partially: release synchronize_partially/fmt.ninjatarget synchronize_partially/Cargo.toml
+  project = synchronize_partially
+build /home/denis/bin/synchronize_partially: copy target/release/synchronize_partially | synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget || /home/denis/bin
 build test_helper/fmt.ninjatarget: fmt rustfmt.toml test_helper/src/lib.rs
   project = test_helper
 build test_helper/clippy.ninjatarget: clippy test_helper/fmt.ninjatarget test_helper/Cargo.toml
   project = test_helper
 build test_helper/test.ninjatarget: test test_helper/fmt.ninjatarget test_helper/Cargo.toml
   project = test_helper
-build fmt: phony backup/fmt.ninjatarget ninja_bootstrap/fmt.ninjatarget synchronize_backup/fmt.ninjatarget test_helper/fmt.ninjatarget
-build check: phony backup/clippy.ninjatarget backup/test.ninjatarget ninja_bootstrap/clippy.ninjatarget ninja_bootstrap/test.ninjatarget synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget test_helper/clippy.ninjatarget test_helper/test.ninjatarget
+build fmt: phony backup/fmt.ninjatarget ninja_bootstrap/fmt.ninjatarget synchronize_backup/fmt.ninjatarget synchronize_partially/fmt.ninjatarget test_helper/fmt.ninjatarget
+build check: phony backup/clippy.ninjatarget backup/test.ninjatarget ninja_bootstrap/clippy.ninjatarget ninja_bootstrap/test.ninjatarget synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget test_helper/clippy.ninjatarget test_helper/test.ninjatarget
