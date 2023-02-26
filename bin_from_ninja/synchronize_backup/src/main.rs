@@ -11,7 +11,8 @@ use anyhow::{ensure, Context};
 use camino::Utf8Path;
 use clap::Parser;
 use regex::Regex;
-use time::{format_description, OffsetDateTime};
+use time::macros::format_description;
+use time::OffsetDateTime;
 
 #[derive(Parser)]
 /// Synchronize a directory with a backup directory by renaming a suffix and calling rsync.
@@ -61,7 +62,7 @@ fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
 }
 
 fn get_final_dst_path(src_dir_name: &str, dst_dir_path: PathBuf, now: OffsetDateTime) -> PathBuf {
-    let format = format_description::parse("_[year]-[month]-[day]-[hour]h[minute]").unwrap();
+    let format = format_description!("_[year]-[month]-[day]-[hour]h[minute]");
     let suffix = now.format(&format).unwrap();
     let dst_dir_name = format!("{src_dir_name}{suffix}");
     let mut result = dst_dir_path;

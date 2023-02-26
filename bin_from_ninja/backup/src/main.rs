@@ -8,7 +8,8 @@ use std::process::Command;
 
 use anyhow::{ensure, Context};
 use clap::Parser;
-use time::{format_description, OffsetDateTime};
+use time::macros::format_description;
+use time::OffsetDateTime;
 
 #[derive(Parser)]
 /// Copy directories and files by adding a suffix which depends on the current datetime.
@@ -30,7 +31,7 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
-    let dst_path_suffix = get_dst_path_suffix(now, "_[year]-[month]-[day]-[hour]h[minute]");
+    let dst_path_suffix = get_dst_path_suffix(now);
     let copy_actions: Vec<_> = check_all_copies_seem_possible(src_paths, &dst_path_suffix)?;
     copy_actions.into_iter().try_for_each(|CopyAction { src_path, dst_path, src_is_dir }| {
         copy(&src_path, &dst_path, src_is_dir)?;
@@ -39,9 +40,8 @@ fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     })
 }
 
-fn get_dst_path_suffix(now: OffsetDateTime, format: &str) -> String {
-    let format = format_description::parse(format).unwrap();
-    now.format(&format).unwrap()
+fn get_dst_path_suffix(now: OffsetDateTime) -> String {
+    now.format(&format_description!("_[year]-[month]-[day]-[hour]h[minute]")).unwrap()
 }
 
 fn check_all_copies_seem_possible(
