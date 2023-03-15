@@ -37,6 +37,7 @@ fn main() -> anyhow::Result<()> {
     let mut out = io::stdout().lock();
     rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
     rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
+    rule(&mut out, "cargo_lock")?.command("cargo check && touch $out")?.end()?;
     rule(&mut out, "clippy")?
         .command("cargo clippy -p $project -- -D warnings && touch $out")?
         .end()?;
@@ -44,6 +45,12 @@ fn main() -> anyhow::Result<()> {
     rule(&mut out, "release")?.command("cargo build --release -p $project && touch $out")?.end()?;
     rule(&mut out, "copy")?.command("cp -- $in $out")?.end()?;
     build(&mut out)?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
+    build(&mut out)?
+        .output("Cargo.lock")?
+        .rule("cargo_lock")?
+        .input("Cargo.toml")?
+        .inputs(projects.iter().map(|project| format!("{project}/Cargo.toml")))?
+        .end()?;
     for project in &projects {
         build(&mut out)?
             .output(format!("{project}/fmt.ninjatarget"))?
@@ -56,19 +63,19 @@ fn main() -> anyhow::Result<()> {
         let clippy_and_test_inputs: Vec<String> = iter::once(project)
             .chain(local_dependencies.normal_dependencies.iter())
             .chain(local_dependencies.dev_dependencies.iter())
-            .flat_map(|project| {
-                [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
-            })
+            .map(|project| format!("{project}/fmt.ninjatarget"))
             .collect();
         build(&mut out)?
             .output(format!("{project}/clippy.ninjatarget"))?
             .rule("clippy")?
+            .input("Cargo.lock")?
             .inputs(clippy_and_test_inputs.iter())?
             .variable_and_value("project", project)?
             .end()?;
         build(&mut out)?
             .output(format!("{project}/test.ninjatarget"))?
             .rule("test")?
+            .input("Cargo.lock")?
             .inputs(clippy_and_test_inputs.iter())?
             .variable_and_value("project", project)?
             .end()?;
@@ -79,9 +86,12 @@ fn main() -> anyhow::Result<()> {
             build(&mut out)?
                 .output(&release_path)?
                 .rule("release")?
-                .inputs(project_and_normal_dependencies.iter().flat_map(|project| {
-                    [format!("{project}/fmt.ninjatarget"), format!("{project}/Cargo.toml")]
-                }))?
+                .input("Cargo.lock")?
+                .inputs(
+                    project_and_normal_dependencies
+                        .iter()
+                        .map(|project| format!("{project}/fmt.ninjatarget")),
+                )?
                 .variable_and_value("project", project)?
                 .end()?;
             build(&mut out)?

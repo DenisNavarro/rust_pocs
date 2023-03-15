@@ -244,14 +244,6 @@ impl<W: Write> AfterRule<W> {
         }
     }
 
-    fn variable_and_value(
-        self,
-        variable: impl AsRef<[u8]>,
-        value: impl AsRef<[u8]>,
-    ) -> Result<AfterVariableAndValue<W>, Error> {
-        write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
-    }
-
     pub fn end(self) -> Result<(), Error> {
         write_end(self.writer)
     }
@@ -262,7 +254,10 @@ impl<W: Write> AfterInput<W> {
         write_input(self.writer, input.as_ref())
     }
 
-    fn inputs(mut self, inputs: impl IntoIterator<Item = impl AsRef<[u8]>>) -> Result<Self, Error> {
+    pub fn inputs(
+        mut self,
+        inputs: impl IntoIterator<Item = impl AsRef<[u8]>>,
+    ) -> Result<Self, Error> {
         for input in inputs {
             self = self.input(input)?;
         }
@@ -320,7 +315,7 @@ impl<W: Write> AfterInput<W> {
         write_variable_and_value(self.writer, variable.as_ref(), value.as_ref())
     }
 
-    fn end(self) -> Result<(), Error> {
+    pub fn end(self) -> Result<(), Error> {
         write_end(self.writer)
     }
 }
@@ -363,17 +358,6 @@ impl<W: Write> AfterVariableAndValue<W> {
 }
 
 impl<W: Write> AfterRuleOrInput<W> {
-    pub fn variable_and_value(
-        self,
-        variable: impl AsRef<[u8]>,
-        value: impl AsRef<[u8]>,
-    ) -> Result<AfterVariableAndValue<W>, Error> {
-        match self {
-            Self::AfterRule(step) => step.variable_and_value(variable, value),
-            Self::AfterInput(step) => step.variable_and_value(variable, value),
-        }
-    }
-
     pub fn end(self) -> Result<(), Error> {
         match self {
             Self::AfterRule(step) => step.end(),
