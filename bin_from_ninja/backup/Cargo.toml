@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.69"
-clap = { version = "4.1.8", features = ["derive"] }
-time = { version = "0.3.20", features = ["formatting", "local-offset", "macros"] }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+time = { version = "0.3", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]
-assert_fs = "1.0.10"
+assert_fs = "1"
 test_helper = { path = "../test_helper" }
