@@ -22,19 +22,23 @@ all : build.ninja
 	ninja -v
 
 #: Write the build.ninja file, almost identical to example.ninja
-build.ninja : target/debug/ninja_bootstrap Cargo.toml $(wildcard */Cargo.toml)
+build.ninja : target/debug/ninja_bootstrap
 	RUST_LIB_BACKTRACE=1 target/debug/ninja_bootstrap > build.ninja
 
 #: Compile the Rust binary responsible to write the build.ninja file
-target/debug/ninja_bootstrap : ninja_bootstrap/Cargo.toml $(wildcard ninja_bootstrap/src/*.rs)
+target/debug/ninja_bootstrap : Cargo.lock $(wildcard ninja_bootstrap/src/*.rs)
 	cargo build -p ninja_bootstrap && touch target/debug/ninja_bootstrap
+
+#: Ensure that Cargo.lock matches the Cargo.toml files
+Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
+	cargo check && touch Cargo.lock
 
 #: Write example.ninja which is almost a copy of build.ninja, but is not in the .gitignore
 example.ninja : build.ninja
-	echo '# `build.ninja` is a file identical to the current one, except that:' > $@
-	echo '# - `/home/denis` will be replaced with your home directory and' >> $@
-	echo '# - the 3 lines of the current comment are not there.' >> $@
-	cat $< >> $@
+	echo '# `build.ninja` is a file identical to the current one, except that:' > example.ninja
+	echo '# - `/home/denis` will be replaced with your home directory and' >> example.ninja
+	echo '# - the 3 lines of the current comment are not there.' >> example.ninja
+	cat build.ninja >> example.ninja
 
 .PHONY: clean
 #: Remove what is in .gitignore (git clean -dXf)

@@ -36,7 +36,6 @@ fn main() -> anyhow::Result<()> {
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
     rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
-    rule(&mut out, "cargo_lock")?.command("cargo check && touch $out")?.end()?;
     rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
     rule(&mut out, "clippy")?
         .command("cargo clippy -p $project -- -D warnings && touch $out")?
@@ -45,12 +44,6 @@ fn main() -> anyhow::Result<()> {
     rule(&mut out, "release")?.command("cargo build --release -p $project && touch $out")?.end()?;
     rule(&mut out, "copy")?.command("cp -- $in $out")?.end()?;
     build(&mut out)?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
-    build(&mut out)?
-        .output("Cargo.lock")?
-        .rule("cargo_lock")?
-        .input("Cargo.toml")?
-        .inputs(projects.iter().map(|project| format!("{project}/Cargo.toml")))?
-        .end()?;
     for project in &projects {
         build(&mut out)?
             .output(format!("{project}/fmt.ninjatarget"))?
