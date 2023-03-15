@@ -36,8 +36,8 @@ fn main() -> anyhow::Result<()> {
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
     rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
-    rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
     rule(&mut out, "cargo_lock")?.command("cargo check && touch $out")?.end()?;
+    rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
     rule(&mut out, "clippy")?
         .command("cargo clippy -p $project -- -D warnings && touch $out")?
         .end()?;

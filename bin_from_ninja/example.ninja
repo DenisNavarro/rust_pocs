@@ -3,10 +3,10 @@
 # - the 3 lines of the current comment are not there.
 rule create_directory
   command = mkdir -p -- $out
-rule fmt
-  command = cargo fmt -p $project && touch $out
 rule cargo_lock
   command = cargo check && touch $out
+rule fmt
+  command = cargo fmt -p $project && touch $out
 rule clippy
   command = cargo clippy -p $project -- -D warnings && touch $out
 rule test
