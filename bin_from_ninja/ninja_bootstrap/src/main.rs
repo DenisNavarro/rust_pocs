@@ -9,8 +9,7 @@
 //! `build.ninja` is in the `.gitignore`, but you can look at `example.ninja`, which is almost a
 //! copy of `build.ninja`.
 
-mod build;
-mod rule;
+mod ninja_writer;
 
 use std::fs;
 use std::io;
@@ -24,8 +23,7 @@ use serde::Deserialize;
 use toml::value::Table;
 use toml::Value;
 
-use build::build;
-use rule::rule;
+use ninja_writer::{Config, NinjaWriter};
 
 fn main() -> anyhow::Result<()> {
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
@@ -35,17 +33,23 @@ fn main() -> anyhow::Result<()> {
     let home_path = home_dir().context("failed to get the home directory path")?;
     let bin_path = home_path.join("bin");
     let mut out = io::stdout().lock();
-    rule(&mut out, "create_directory")?.command("mkdir -p -- $out")?.end()?;
-    rule(&mut out, "fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
-    rule(&mut out, "clippy")?
+    let mut ninja_writer = NinjaWriter::new(Config, &mut out);
+    ninja_writer.rule("create_directory")?.command("mkdir -p -- $out")?.end()?;
+    ninja_writer.rule("fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
+    ninja_writer
+        .rule("clippy")?
         .command("cargo clippy -p $project -- -D warnings && touch $out")?
         .end()?;
-    rule(&mut out, "test")?.command("cargo test -p $project && touch $out")?.end()?;
-    rule(&mut out, "release")?.command("cargo build --release -p $project && touch $out")?.end()?;
-    rule(&mut out, "copy")?.command("cp -- $in $out")?.end()?;
-    build(&mut out)?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
+    ninja_writer.rule("test")?.command("cargo test -p $project && touch $out")?.end()?;
+    ninja_writer
+        .rule("release")?
+        .command("cargo build --release -p $project && touch $out")?
+        .end()?;
+    ninja_writer.rule("copy")?.command("cp -- $in $out")?.end()?;
+    ninja_writer.build()?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
     for project in &projects {
-        build(&mut out)?
+        ninja_writer
+            .build()?
             .output(format!("{project}/fmt.ninjatarget"))?
             .rule("fmt")?
             .input("rustfmt.toml")?
@@ -58,14 +62,16 @@ fn main() -> anyhow::Result<()> {
             .chain(local_dependencies.dev_dependencies.iter())
             .map(|project| format!("{project}/fmt.ninjatarget"))
             .collect();
-        build(&mut out)?
+        ninja_writer
+            .build()?
             .output(format!("{project}/clippy.ninjatarget"))?
             .rule("clippy")?
             .input("Cargo.lock")?
             .inputs(clippy_and_test_inputs.iter())?
             .variable_and_value("project", project)?
             .end()?;
-        build(&mut out)?
+        ninja_writer
+            .build()?
             .output(format!("{project}/test.ninjatarget"))?
             .rule("test")?
             .input("Cargo.lock")?
@@ -76,7 +82,8 @@ fn main() -> anyhow::Result<()> {
             let release_path = format!("target/release/{project}");
             let project_and_normal_dependencies: Vec<String> =
                 iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
-            build(&mut out)?
+            ninja_writer
+                .build()?
                 .output(&release_path)?
                 .rule("release")?
                 .input("Cargo.lock")?
@@ -87,7 +94,8 @@ fn main() -> anyhow::Result<()> {
                 )?
                 .variable_and_value("project", project)?
                 .end()?;
-            build(&mut out)?
+            ninja_writer
+                .build()?
                 .unix_output(bin_path.join(project))?
                 .rule("copy")?
                 .input(release_path)?
@@ -103,12 +111,14 @@ fn main() -> anyhow::Result<()> {
                 .end()?;
         }
     }
-    build(&mut out)?
+    ninja_writer
+        .build()?
         .output("fmt")?
         .rule("phony")?
         .inputs(projects.iter().map(|project| format!("{project}/fmt.ninjatarget")))?
         .end()?;
-    build(&mut out)?
+    ninja_writer
+        .build()?
         .output("check")?
         .rule("phony")?
         .inputs(projects.iter().flat_map(|project| {
