@@ -12,7 +12,7 @@
 mod ninja_writer;
 
 use std::fs;
-use std::io;
+use std::io::{self, Write};
 use std::iter;
 use std::path::PathBuf;
 
@@ -26,26 +26,38 @@ use toml::Value;
 use ninja_writer::{Config, NinjaWriter};
 
 fn main() -> anyhow::Result<()> {
+    let mut out = io::stdout().lock();
+    let mut ninja_writer = NinjaWriter::new(Config, &mut out);
+    write_rules(&mut ninja_writer)?;
+    write_builds(&mut ninja_writer)
+}
+
+fn write_rules<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()> {
+    ninja_writer.rule("create_directory")?.command("mkdir -p -- $out")?.end()?;
+    ninja_writer.rule("fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
+    ninja_writer
+        .rule("clippy")?
+        .command("cargo clippy --offline --frozen -p $project -- -D warnings && touch $out")?
+        .end()?;
+    ninja_writer
+        .rule("test")?
+        .command("cargo test --offline --frozen -p $project && touch $out")?
+        .end()?;
+    ninja_writer
+        .rule("release")?
+        .command("cargo build --offline --frozen --release -p $project && touch $out")?
+        .end()?;
+    ninja_writer.rule("copy")?.command("cp -- $in $out")?.end()?;
+    Ok(())
+}
+
+fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()> {
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
     let projects = cargo_toml.workspace.members;
     let home_path = home_dir().context("failed to get the home directory path")?;
     let bin_path = home_path.join("bin");
-    let mut out = io::stdout().lock();
-    let mut ninja_writer = NinjaWriter::new(Config, &mut out);
-    ninja_writer.rule("create_directory")?.command("mkdir -p -- $out")?.end()?;
-    ninja_writer.rule("fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
-    ninja_writer
-        .rule("clippy")?
-        .command("cargo clippy -p $project -- -D warnings && touch $out")?
-        .end()?;
-    ninja_writer.rule("test")?.command("cargo test -p $project && touch $out")?.end()?;
-    ninja_writer
-        .rule("release")?
-        .command("cargo build --release -p $project && touch $out")?
-        .end()?;
-    ninja_writer.rule("copy")?.command("cp -- $in $out")?.end()?;
     ninja_writer.build()?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
     for project in &projects {
         ninja_writer

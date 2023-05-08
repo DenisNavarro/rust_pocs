@@ -6,11 +6,11 @@ rule create_directory
 rule fmt
   command = cargo fmt -p $project && touch $out
 rule clippy
-  command = cargo clippy -p $project -- -D warnings && touch $out
+  command = cargo clippy --offline --frozen -p $project -- -D warnings && touch $out
 rule test
-  command = cargo test -p $project && touch $out
+  command = cargo test --offline --frozen -p $project && touch $out
 rule release
-  command = cargo build --release -p $project && touch $out
+  command = cargo build --offline --frozen --release -p $project && touch $out
 rule copy
   command = cp -- $in $out
 build /home/denis/bin: create_directory

@@ -27,11 +27,11 @@ build.ninja : target/debug/ninja_bootstrap
 
 #: Compile the Rust binary responsible to write the build.ninja file
 target/debug/ninja_bootstrap : Cargo.lock $(wildcard ninja_bootstrap/src/*.rs)
-	cargo build -p ninja_bootstrap && touch target/debug/ninja_bootstrap
+	cargo build --offline --frozen -p ninja_bootstrap && touch target/debug/ninja_bootstrap
 
 #: Ensure that Cargo.lock matches the Cargo.toml files
 Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
-	cargo check && touch Cargo.lock
+	cargo fetch && touch Cargo.lock
 
 #: Write example.ninja which is almost a copy of build.ninja, but is not in the .gitignore
 example.ninja : build.ninja
