@@ -1,0 +1,8 @@
+
+target/
+*/clippy.ninjatarget
+*/fmt.ninjatarget
+*/test.ninjatarget
+.ninja_deps
+.ninja_log
+build.ninja
