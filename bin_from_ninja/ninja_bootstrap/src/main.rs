@@ -27,7 +27,7 @@ use ninja_writer::{Config, NinjaWriter};
 
 fn main() -> anyhow::Result<()> {
     let mut out = io::stdout().lock();
-    let mut ninja_writer = NinjaWriter::new(Config, &mut out);
+    let mut ninja_writer = NinjaWriter::new(Config::with_width(100), &mut out);
     write_rules(&mut ninja_writer)?;
     write_builds(&mut ninja_writer)
 }

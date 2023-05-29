@@ -11,7 +11,15 @@ use snafu::{ResultExt, Snafu};
 
 #[must_use]
 #[derive(Clone, Copy)]
-pub struct Config; // TODO: add a "width" field
+pub struct Config {
+    width: usize,
+}
+
+impl Config {
+    pub const fn with_width(width: usize) -> Self {
+        Self { width }
+    }
+}
 
 // Opaque error type: https://docs.rs/snafu/0.7.4/snafu/guide/opaque/index.html
 #[derive(Debug, Snafu)]
@@ -64,19 +72,22 @@ enum InnerError {
 pub struct NinjaWriter<W: Write> {
     config: Config,
     writer: W,
+    current_line_size: usize,
 }
 
 impl<W: Write> NinjaWriter<W> {
     pub const fn new(config: Config, writer: W) -> Self {
-        Self { config, writer }
+        Self { config, writer, current_line_size: 0 }
     }
 
     pub fn rule(&mut self, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<W>, Error> {
+        assert!(self.current_line_size == 0);
         let rule_name = rule_name.as_ref();
         self.writer
             .write_all(b"rule ")
             .and_then(|_| self.writer.write_all(rule_name))
             .with_context(|_| RuleSnafu { rule_name: String::from_utf8_lossy(rule_name) })?;
+        self.current_line_size = 5 + rule_name.len();
         Ok(AfterRule(self))
     }
 
@@ -85,23 +96,29 @@ impl<W: Write> NinjaWriter<W> {
             .write_all(b"\n  command = ")
             .and_then(|_| self.writer.write_all(command))
             .with_context(|_| CommandSnafu { command: String::from_utf8_lossy(command) })?;
+        self.current_line_size = 12 + command.len();
         Ok(AfterCommand(self))
     }
 
     fn write_rule_end(&mut self) -> Result<(), Error> {
         self.writer.write_all(b"\n").context(RuleEndSnafu)?;
+        self.current_line_size = 0;
         Ok(())
     }
 
     pub fn build(&mut self) -> Result<AfterBuild<W>, Error> {
+        assert!(self.current_line_size == 0);
         self.writer.write_all(b"build").context(BeginningSnafu)?;
+        self.current_line_size = 5;
         Ok(AfterBuild(self))
     }
 
     fn write_output(&mut self, output: &[u8]) -> Result<AfterOutput<W>, Error> {
         self.writer
             .write_all(b" ")
-            .and_then(|_| self.write_escaped_path(output))
+            .with_context(|_| OutputSnafu { output: String::from_utf8_lossy(output) })?;
+        self.current_line_size += 1;
+        self.write_escaped_path(output)
             .with_context(|_| OutputSnafu { output: String::from_utf8_lossy(output) })?;
         Ok(AfterOutput(self))
     }
@@ -109,7 +126,9 @@ impl<W: Write> NinjaWriter<W> {
     fn write_rule(&mut self, rule_name: &[u8]) -> Result<AfterBuildRule<W>, Error> {
         self.writer
             .write_all(b": ")
-            .and_then(|_| self.writer.write_all(rule_name))
+            .with_context(|_| BuildRuleSnafu { rule_name: String::from_utf8_lossy(rule_name) })?;
+        self.current_line_size += 2;
+        self.write_unescaped_text(rule_name)
             .with_context(|_| BuildRuleSnafu { rule_name: String::from_utf8_lossy(rule_name) })?;
         Ok(AfterBuildRule(self))
     }
@@ -117,7 +136,9 @@ impl<W: Write> NinjaWriter<W> {
     fn write_input(&mut self, input: &[u8]) -> Result<AfterInput<W>, Error> {
         self.writer
             .write_all(b" ")
-            .and_then(|_| self.write_escaped_path(input))
+            .with_context(|_| InputSnafu { input: String::from_utf8_lossy(input) })?;
+        self.current_line_size += 1;
+        self.write_escaped_path(input)
             .with_context(|_| InputSnafu { input: String::from_utf8_lossy(input) })?;
         Ok(AfterInput(self))
     }
@@ -126,12 +147,13 @@ impl<W: Write> NinjaWriter<W> {
         &mut self,
         dependency: &[u8],
     ) -> Result<AfterImplicitDependency<W>, Error> {
-        self.writer
-            .write_all(b" | ")
-            .and_then(|_| self.write_escaped_path(dependency))
-            .with_context(|_| ImplicitDependencySnafu {
-                dependency: String::from_utf8_lossy(dependency),
-            })?;
+        self.writer.write_all(b" | ").with_context(|_| ImplicitDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
+        self.current_line_size += 3;
+        self.write_escaped_path(dependency).with_context(|_| ImplicitDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
         Ok(AfterImplicitDependency(self))
     }
 
@@ -139,12 +161,13 @@ impl<W: Write> NinjaWriter<W> {
         &mut self,
         dependency: &[u8],
     ) -> Result<AfterImplicitDependency<W>, Error> {
-        self.writer
-            .write_all(b" ")
-            .and_then(|_| self.write_escaped_path(dependency))
-            .with_context(|_| ImplicitDependencySnafu {
-                dependency: String::from_utf8_lossy(dependency),
-            })?;
+        self.writer.write_all(b" ").with_context(|_| ImplicitDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
+        self.current_line_size += 1;
+        self.write_escaped_path(dependency).with_context(|_| ImplicitDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
         Ok(AfterImplicitDependency(self))
     }
 
@@ -152,12 +175,13 @@ impl<W: Write> NinjaWriter<W> {
         &mut self,
         dependency: &[u8],
     ) -> Result<AfterOrderOnlyDependency<W>, Error> {
-        self.writer
-            .write_all(b" || ")
-            .and_then(|_| self.write_escaped_path(dependency))
-            .with_context(|_| OrderOnlyDependencySnafu {
-                dependency: String::from_utf8_lossy(dependency),
-            })?;
+        self.writer.write_all(b" || ").with_context(|_| OrderOnlyDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
+        self.current_line_size += 3;
+        self.write_escaped_path(dependency).with_context(|_| OrderOnlyDependencySnafu {
+            dependency: String::from_utf8_lossy(dependency),
+        })?;
         Ok(AfterOrderOnlyDependency(self))
     }
 
@@ -172,11 +196,25 @@ impl<W: Write> NinjaWriter<W> {
                 value: String::from_utf8_lossy(value),
             })?;
         }
+        self.current_line_size = 5 + variable.len() + value.len();
         Ok(AfterVariableAndValue(self))
     }
 
     fn write_build_end(&mut self) -> Result<(), Error> {
         self.writer.write_all(b"\n").context(BuildEndSnafu)?;
+        self.current_line_size = 0;
+        Ok(())
+    }
+
+    fn write_unescaped_text(&mut self, text: &[u8]) -> io::Result<()> {
+        let text_size = text.len();
+        // "+ 2" because, in the worst case, the text could be followed by " $".
+        if self.current_line_size + text_size + 2 > self.config.width {
+            self.writer.write_all(b"$\n  ")?;
+            self.current_line_size = 2;
+        }
+        self.writer.write_all(text)?;
+        self.current_line_size += text_size;
         Ok(())
     }
 
@@ -194,6 +232,16 @@ impl<W: Write> NinjaWriter<W> {
     /// `b'\n'` must be escaped too. The Ninja documentation says: "Newlines are significant.":
     /// <https://ninja-build.org/manual.html#ref_lexer>
     fn write_escaped_path(&mut self, path: &[u8]) -> io::Result<()> {
+        let escaped_path_size = path.len()
+            + path
+                .iter()
+                .filter(|byte| matches!(byte, b'$' | b' ' | b':' | b'|' | b'#' | b'\n'))
+                .count();
+        // "+ 5" because, in the worst case, the path could be followed by " || $".
+        if self.current_line_size + escaped_path_size + 5 > self.config.width {
+            self.writer.write_all(b"$\n  ")?;
+            self.current_line_size = 2;
+        }
         for &byte in path {
             match byte {
                 b'$' | b' ' | b':' | b'|' | b'#' | b'\n' => self.writer.write_all(b"$")?,
@@ -201,6 +249,7 @@ impl<W: Write> NinjaWriter<W> {
             };
             self.writer.write_all(&[byte])?;
         }
+        self.current_line_size += escaped_path_size;
         Ok(())
     }
 }
