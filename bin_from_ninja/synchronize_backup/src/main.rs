@@ -122,10 +122,7 @@ fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex
     let Some(dir_name) = dir_name.to_str() else {
         return false;
     };
-    let Some(capture) = regex.captures(dir_name) else {
-        return false;
-    };
-    &capture[1] == src_dir_name
+    regex.captures(dir_name).is_some_and(|capture| &capture[1] == src_dir_name)
 }
 
 fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
