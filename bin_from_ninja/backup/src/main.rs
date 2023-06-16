@@ -25,9 +25,9 @@ struct Cli {
 }
 
 fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
+    let Cli { src_paths } = Cli::parse();
     let now = OffsetDateTime::now_local().context("failed to determine the local offset")?;
-    work(cli.src_paths, now)
+    work(src_paths, now)
 }
 
 fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {

@@ -36,9 +36,9 @@ struct Cli {
 }
 
 fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
+    let Cli { src_dir_path, dst_dir_path } = Cli::parse();
     let now = OffsetDateTime::now_local().context("could not determine the local offset")?;
-    work(cli.src_dir_path.into(), &cli.dst_dir_path, now)
+    work(src_dir_path.into(), &dst_dir_path, now)
 }
 
 fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> anyhow::Result<()> {

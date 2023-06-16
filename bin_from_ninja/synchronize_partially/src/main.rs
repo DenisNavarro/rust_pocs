@@ -32,8 +32,8 @@ struct Cli {
 }
 
 fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
-    work(&cli.src_prefix_path, &cli.dst_prefix_path, &cli.subpaths)
+    let Cli { src_prefix_path, dst_prefix_path, subpaths } = Cli::parse();
+    work(&src_prefix_path, &dst_prefix_path, &subpaths)
 }
 
 fn work(src_prefix_path: &str, dst_prefix_path: &Path, subpaths: &[String]) -> anyhow::Result<()> {
