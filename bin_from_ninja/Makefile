@@ -52,15 +52,15 @@ Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
 fetch.maketarget : Cargo.lock
 	cargo fetch && touch fetch.maketarget
 
-#: Compile the Rust binary responsible to write the build.ninja file
+#: Compile the Rust binary responsible to write build.ninja
 target/debug/ninja_bootstrap : fetch.maketarget $(wildcard ninja_bootstrap/src/*.rs)
 	cargo build --offline --frozen -p ninja_bootstrap && touch target/debug/ninja_bootstrap
 
-#: Write the build.ninja file, almost identical to example.ninja
+#: Write build.ninja which is almost identical to example.ninja
 build.ninja : target/debug/ninja_bootstrap
 	RUST_LIB_BACKTRACE=1 target/debug/ninja_bootstrap > build.ninja
 
-#: Write example.ninja which is almost a copy of build.ninja, but is not in the .gitignore
+#: Write example.ninja which is almost a copy of build.ninja, but is not in .gitignore
 example.ninja : build.ninja
 	echo '# `build.ninja` is a file identical to the current one, except that:' > example.ninja
 	echo '# - `/home/denis` will be replaced with your home directory and' >> example.ninja

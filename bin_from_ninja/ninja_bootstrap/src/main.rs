@@ -6,8 +6,8 @@
 //! In the `bin_from_ninja` POC, `make build.ninja` calls
 //! `RUST_LIB_BACKTRACE=1 target/debug/ninja_bootstrap > build.ninja`.
 //!
-//! `build.ninja` is in the `.gitignore`, but you can look at `example.ninja`, which is almost a
-//! copy of `build.ninja`.
+//! `build.ninja` is in `.gitignore`, but you can look at `example.ninja`, which is almost a copy
+//! of `build.ninja`.
 
 mod ninja_writer;
 
