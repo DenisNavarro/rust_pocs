@@ -53,7 +53,7 @@ fn write_rules<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()
 }
 
 fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()> {
-    let target_dir = env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_owned());
+    let cargo_target_dir = env::var("CARGO_TARGET_DIR").unwrap_or_else(|_| "target".to_owned());
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
@@ -93,7 +93,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
             .variable_and_value("project", project)?
             .end()?;
         if has_a_binary_to_deploy(project) {
-            let release_path = format!("{target_dir}/release/{project}");
+            let release_path = format!("{cargo_target_dir}/release/{project}");
             let project_and_normal_dependencies: Vec<String> =
                 iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
             ninja_writer
