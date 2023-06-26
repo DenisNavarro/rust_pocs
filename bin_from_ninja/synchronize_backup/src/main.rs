@@ -146,6 +146,7 @@ mod tests {
 
     use assert_fs::fixture::{FileWriteStr, PathChild, PathCreateDir, SymlinkToDir, SymlinkToFile};
     use assert_fs::TempDir;
+    use testresult::TestResult;
     use time::macros::datetime;
 
     use test_helper::{check_err_contains, Check};
@@ -158,7 +159,7 @@ mod tests {
     //   symlink_name: [{"symlink_to": "path/to/target"}]
 
     #[test]
-    fn demo_without_update() -> anyhow::Result<()> {
+    fn demo_without_update() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -187,11 +188,12 @@ mod tests {
         temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
         temp.child("bar/colors_2022-12-13-14h15/dark").check_is_dir()?;
         temp.child("bar/colors_2022-12-13-14h15/dark/black").check_is_file_with_content("ink")?;
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn demo_with_update() -> anyhow::Result<()> {
+    fn demo_with_update() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -228,11 +230,12 @@ mod tests {
         temp.child("bar/colors_2022-12-13-14h15/dark/black").check_is_file_with_content("ink")?;
         temp.child("bar/colors_2022-12-13-14h15/green").check_does_not_exist()?;
         temp.child("bar/colors_2022-12-13-14h15/light").check_does_not_exist()?;
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn demo_with_symlinks() -> anyhow::Result<()> {
+    fn demo_with_symlinks() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -294,11 +297,12 @@ mod tests {
         temp.child("baz/colors_2022-12-13-14h15/green").check_does_not_exist()?;
         temp.child("baz/colors_2022-12-13-14h15/light").check_does_not_exist()?;
         temp.child("baz/colors_2022-12-13-14h15/not_light").check_is_symlink_to("dark")?;
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn symlinks_to_symlinks() -> anyhow::Result<()> {
+    fn symlinks_to_symlinks() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -352,11 +356,12 @@ mod tests {
         temp.child("baz/colors_2022-12-13-14h15/dark").check_is_symlink_to("non_existent_path")?;
         temp.child("baz/colors_2022-12-13-14h15/light").check_does_not_exist()?;
         temp.child("baz/colors_2022-12-13-14h15/not_dark").check_does_not_exist()?;
-        temp.child("baz/colors_2022-12-13-14h15/not_light").check_is_symlink_to("dark")
+        temp.child("baz/colors_2022-12-13-14h15/not_light").check_is_symlink_to("dark")?;
+        Ok(())
     }
 
     #[test]
-    fn src_path_with_an_ending_slash() -> anyhow::Result<()> {
+    fn src_path_with_an_ending_slash() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -372,11 +377,12 @@ mod tests {
         // |  └── colors_2022-12-13-14h15/
         // └── foo/
         //    └── colors/
-        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()
+        temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
+        Ok(())
     }
 
     #[test]
-    fn final_dst_path_already_exists_and_is_a_directory() -> anyhow::Result<()> {
+    fn final_dst_path_already_exists_and_is_a_directory() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -396,11 +402,12 @@ mod tests {
         // └── foo/
         //    └── colors/
         //       └── red
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn fancy_directory_names() -> anyhow::Result<()> {
+    fn fancy_directory_names() -> TestResult {
         let temp = TempDir::new()?;
         let now = datetime!(2022-12-13 14:15:16 UTC);
         for (src_path, dst_path) in [
@@ -417,11 +424,12 @@ mod tests {
         temp.child(" / _2022-12-13-14h15").check_is_dir()?;
         temp.child("--b a r/c --o l o r s_2022-12-13-14h15").check_is_dir()?;
         temp.child("--/co -- lors_2022-12-13-14h15").check_is_dir()?;
-        temp.child("-/-_2022-12-13-14h15").check_is_dir()
+        temp.child("-/-_2022-12-13-14h15").check_is_dir()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_two_valid_candidates() -> anyhow::Result<()> {
+    fn fail_if_two_valid_candidates() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -435,11 +443,12 @@ mod tests {
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "there are several candidates")?;
         valid_candidates.iter().try_for_each(|p| temp.child(p).check_is_dir())?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn valid_and_invalid_candidates() -> anyhow::Result<()> {
+    fn valid_and_invalid_candidates() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -489,11 +498,12 @@ mod tests {
         temp.child(file_candidate).check_is_file_with_content("whatever")?;
         invalid_directory_candidates.iter().try_for_each(|p| temp.child(p).check_is_dir())?;
         temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn symlink_is_invalid_candidate() -> anyhow::Result<()> {
+    fn symlink_is_invalid_candidate() -> TestResult {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -522,11 +532,12 @@ mod tests {
         temp.child("bar/colors_2022-08-09-10h11").check_does_not_exist()?;
         temp.child("bar/colors_2022-09-10-11h12").check_is_symlink_to("baz")?;
         temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
-        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
+        temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_src_path_does_not_have_a_name() -> anyhow::Result<()> {
+    fn fail_if_src_path_does_not_have_a_name() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -538,11 +549,12 @@ mod tests {
         let result =
             launch_work(&temp, "foo/colors/dark/..", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "does not have a name")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
+    fn fail_if_src_path_does_not_exist() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -551,11 +563,12 @@ mod tests {
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_src_path_is_a_file() -> anyhow::Result<()> {
+    fn fail_if_src_path_is_a_file() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -565,11 +578,12 @@ mod tests {
         temp.child("foo/colors").write_str("whatever")?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "is not a directory")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_src_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
+    fn fail_if_src_path_is_a_symlink_to_a_file() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -582,11 +596,12 @@ mod tests {
         temp.child("foo/words").write_str("whatever")?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "is not a directory")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_src_path_is_a_broken_symlink() -> anyhow::Result<()> {
+    fn fail_if_src_path_is_a_broken_symlink() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -599,11 +614,12 @@ mod tests {
         temp.child("foo/words").symlink_to_file("non_existent_path")?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "failed to read metadata")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
+        temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_dst_path_does_not_exist() -> anyhow::Result<()> {
+    fn fail_if_dst_path_does_not_exist() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // └── foo/
@@ -612,11 +628,12 @@ mod tests {
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result.as_ref(), "failed to look for candidates")?;
         check_err_contains(result, "failed to read as a directory")?;
-        temp.child("bar").check_does_not_exist()
+        temp.child("bar").check_does_not_exist()?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_dst_path_is_a_file() -> anyhow::Result<()> {
+    fn fail_if_dst_path_is_a_file() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar
@@ -627,11 +644,12 @@ mod tests {
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result.as_ref(), "failed to look for candidates")?;
         check_err_contains(result, "failed to read as a directory")?;
-        temp.child("bar").check_is_file_with_content("whatever")
+        temp.child("bar").check_is_file_with_content("whatever")?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_dst_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
+    fn fail_if_dst_path_is_a_symlink_to_a_file() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar -> baz
@@ -645,11 +663,12 @@ mod tests {
         check_err_contains(result.as_ref(), "failed to look for candidates")?;
         check_err_contains(result, "failed to read as a directory")?;
         temp.child("bar").check_is_symlink_to("baz")?;
-        temp.child("baz").check_is_file_with_content("whatever")
+        temp.child("baz").check_is_file_with_content("whatever")?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_dst_path_is_a_broken_symlink() -> anyhow::Result<()> {
+    fn fail_if_dst_path_is_a_broken_symlink() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar -> baz
@@ -663,11 +682,12 @@ mod tests {
         check_err_contains(result.as_ref(), "failed to look for candidates")?;
         check_err_contains(result, "failed to read as a directory")?;
         temp.child("bar").check_is_symlink_to("baz")?;
-        temp.child("baz").check_is_symlink_to("non_existent_path")
+        temp.child("baz").check_is_symlink_to("non_existent_path")?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_final_dst_path_is_a_file() -> anyhow::Result<()> {
+    fn fail_if_final_dst_path_is_a_file() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -678,11 +698,12 @@ mod tests {
         temp.child("foo/colors").create_dir_all()?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "exists but is not a directory")?;
-        temp.child("bar/colors_2022-12-13-14h15").check_is_file_with_content("whatever")
+        temp.child("bar/colors_2022-12-13-14h15").check_is_file_with_content("whatever")?;
+        Ok(())
     }
 
     #[test]
-    fn fail_if_final_dst_path_is_a_symlink() -> anyhow::Result<()> {
+    fn fail_if_final_dst_path_is_a_symlink() -> TestResult {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -698,7 +719,8 @@ mod tests {
         check_err_contains(result, "exists but is not a directory")?;
         temp.child("bar/colors_2022-12-13-14h15").check_is_symlink_to("baz")?;
         temp.child("bar/baz").check_is_dir()?;
-        temp.child("bar/baz/red").check_does_not_exist()
+        temp.child("bar/baz/red").check_does_not_exist()?;
+        Ok(())
     }
 
     fn launch_work(
