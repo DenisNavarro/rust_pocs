@@ -1,5 +1,7 @@
 
 .DELETE_ON_ERROR:
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --warn-undefined-variables
 
 cargo_target_dir != echo "$${CARGO_TARGET_DIR:-target}"
 

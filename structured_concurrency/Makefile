@@ -1,9 +1,10 @@
 
-project_name = structured_concurrency
-debug_exe_path = target/debug/$(project_name)
-release_exe_path = target/release/$(project_name)
-
 .DELETE_ON_ERROR:
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --warn-undefined-variables
+
+debug_exe_path = target/debug/structured_concurrency
+release_exe_path = target/release/structured_concurrency
 
 .PHONY: debug
 #: Debug execution
