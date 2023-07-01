@@ -117,5 +117,5 @@ a copy of `build.ninja`.
 [`synchronize_partially`]: ./synchronize_partially/src/main.rs
 [`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
-[`.gitignore`]: ../.gitignore
+[`.gitignore`]: ./.gitignore
 [`example.ninja`]: ./example.ninja
