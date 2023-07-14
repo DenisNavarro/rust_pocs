@@ -21,7 +21,7 @@ impl Config {
     }
 }
 
-// Opaque error type: https://docs.rs/snafu/0.7.4/snafu/guide/opaque/index.html
+// Opaque error type: https://docs.rs/snafu/0.7.5/snafu/guide/opaque/index.html
 #[derive(Debug, Snafu)]
 pub struct ErrorOr<E: error::Error + 'static>(InnerErrorOr<E>);
 
@@ -34,7 +34,7 @@ enum InnerErrorOr<E: error::Error + 'static> {
     Other { source: E },
 }
 
-// Opaque error type: https://docs.rs/snafu/0.7.4/snafu/guide/opaque/index.html
+// Opaque error type: https://docs.rs/snafu/0.7.5/snafu/guide/opaque/index.html
 #[derive(Debug, Snafu)]
 pub struct Error(InnerError);
 
