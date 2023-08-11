@@ -7,3 +7,6 @@ members = [
     "test_helper",
 ]
 resolver = "2"
+
+[profile.dev]
+debug = false
