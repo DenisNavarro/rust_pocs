@@ -10,3 +10,6 @@ resolver = "2"
 
 [profile.dev]
 debug = false
+
+[profile.release]
+strip = true
