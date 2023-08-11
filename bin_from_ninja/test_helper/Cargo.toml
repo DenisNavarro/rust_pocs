@@ -7,5 +7,5 @@ edition = "2021"
 anyhow = "1"
 
 [lib]
-test = false
 doctest = false
+test = false
