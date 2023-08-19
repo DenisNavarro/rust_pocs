@@ -1,4 +1,4 @@
-// Copied from <https://github.com/assert-rs/assert_fs/blob/v1.0.13/src/fixture/errors.rs>
+// Copy from <https://github.com/assert-rs/assert_fs/blob/v1.0.13/src/fixture/errors.rs>
 
 use std::error::Error;
 use std::fmt;

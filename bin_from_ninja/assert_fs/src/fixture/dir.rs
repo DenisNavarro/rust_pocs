@@ -1,4 +1,4 @@
-// Copied from <https://github.com/assert-rs/assert_fs/blob/v1.0.13/src/fixture/dir.rs>
+// Copy from <https://github.com/assert-rs/assert_fs/blob/v1.0.13/src/fixture/dir.rs>
 
 use std::path;
 
