@@ -14,12 +14,20 @@ rule release
 rule copy
   command = cp -- $in $out
 build /home/denis/bin: create_directory
+build assert_fs/fmt.ninjatarget: fmt rustfmt.toml assert_fs/src/fixture/child.rs $
+  assert_fs/src/fixture/dir.rs assert_fs/src/fixture/errors.rs assert_fs/src/fixture/mod.rs $
+  assert_fs/src/fixture/tools.rs assert_fs/src/lib.rs
+  project = assert_fs
+build assert_fs/clippy.ninjatarget: clippy Cargo.lock assert_fs/fmt.ninjatarget
+  project = assert_fs
+build assert_fs/test.ninjatarget: test Cargo.lock assert_fs/fmt.ninjatarget
+  project = assert_fs
 build backup/fmt.ninjatarget: fmt rustfmt.toml backup/src/main.rs
   project = backup
 build backup/clippy.ninjatarget: clippy Cargo.lock backup/fmt.ninjatarget $
-  test_helper/fmt.ninjatarget
+  assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = backup
-build backup/test.ninjatarget: test Cargo.lock backup/fmt.ninjatarget $
+build backup/test.ninjatarget: test Cargo.lock backup/fmt.ninjatarget assert_fs/fmt.ninjatarget $
   test_helper/fmt.ninjatarget
   project = backup
 build target/release/backup: release Cargo.lock backup/fmt.ninjatarget
@@ -36,10 +44,10 @@ build ninja_bootstrap/test.ninjatarget: test Cargo.lock ninja_bootstrap/fmt.ninj
 build synchronize_backup/fmt.ninjatarget: fmt rustfmt.toml synchronize_backup/src/main.rs
   project = synchronize_backup
 build synchronize_backup/clippy.ninjatarget: clippy Cargo.lock $
-  synchronize_backup/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_backup/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_backup
 build synchronize_backup/test.ninjatarget: test Cargo.lock synchronize_backup/fmt.ninjatarget $
-  test_helper/fmt.ninjatarget
+  assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_backup
 build target/release/synchronize_backup: release Cargo.lock synchronize_backup/fmt.ninjatarget
   project = synchronize_backup
@@ -48,10 +56,10 @@ build /home/denis/bin/synchronize_backup: copy target/release/synchronize_backup
 build synchronize_partially/fmt.ninjatarget: fmt rustfmt.toml synchronize_partially/src/main.rs
   project = synchronize_partially
 build synchronize_partially/clippy.ninjatarget: clippy Cargo.lock $
-  synchronize_partially/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_partially/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_partially
 build synchronize_partially/test.ninjatarget: test Cargo.lock $
-  synchronize_partially/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_partially/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_partially
 build target/release/synchronize_partially: release Cargo.lock $
   synchronize_partially/fmt.ninjatarget
@@ -65,11 +73,12 @@ build test_helper/clippy.ninjatarget: clippy Cargo.lock test_helper/fmt.ninjatar
   project = test_helper
 build test_helper/test.ninjatarget: test Cargo.lock test_helper/fmt.ninjatarget
   project = test_helper
-build fmt: phony backup/fmt.ninjatarget ninja_bootstrap/fmt.ninjatarget $
-  synchronize_backup/fmt.ninjatarget synchronize_partially/fmt.ninjatarget $
-  test_helper/fmt.ninjatarget
-build check: phony backup/clippy.ninjatarget backup/test.ninjatarget $
-  ninja_bootstrap/clippy.ninjatarget ninja_bootstrap/test.ninjatarget $
-  synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget $
-  synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget $
-  test_helper/clippy.ninjatarget test_helper/test.ninjatarget
+build fmt: phony assert_fs/fmt.ninjatarget backup/fmt.ninjatarget $
+  ninja_bootstrap/fmt.ninjatarget synchronize_backup/fmt.ninjatarget $
+  synchronize_partially/fmt.ninjatarget test_helper/fmt.ninjatarget
+build check: phony assert_fs/clippy.ninjatarget assert_fs/test.ninjatarget $
+  backup/clippy.ninjatarget backup/test.ninjatarget ninja_bootstrap/clippy.ninjatarget $
+  ninja_bootstrap/test.ninjatarget synchronize_backup/clippy.ninjatarget $
+  synchronize_backup/test.ninjatarget synchronize_partially/clippy.ninjatarget $
+  synchronize_partially/test.ninjatarget test_helper/clippy.ninjatarget $
+  test_helper/test.ninjatarget

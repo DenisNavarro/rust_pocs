@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "assert_fs",
     "backup",
     "ninja_bootstrap",
     "synchronize_backup",
