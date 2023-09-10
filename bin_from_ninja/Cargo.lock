@@ -113,7 +113,6 @@ dependencies = [
  "assert_fs",
  "clap",
  "test_helper",
- "testresult",
  "time",
 ]
 
@@ -511,7 +510,6 @@ dependencies = [
  "clap",
  "regex",
  "test_helper",
- "testresult",
  "time",
 ]
 
@@ -524,7 +522,6 @@ dependencies = [
  "camino",
  "clap",
  "test_helper",
- "testresult",
 ]
 
 [[package]]
@@ -546,12 +543,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
 ]
-
-[[package]]
-name = "testresult"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52e045f5cf9ad69772c1c9652f5567a75df88bbb5a1310a64e53cab140c5c459"
 
 [[package]]
 name = "time"

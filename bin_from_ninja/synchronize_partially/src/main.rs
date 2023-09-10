@@ -173,7 +173,6 @@ mod tests {
 
     use assert_fs::fixture::{FileWriteStr, PathChild, PathCreateDir, SymlinkToDir, SymlinkToFile};
     use assert_fs::TempDir;
-    use testresult::TestResult;
 
     use test_helper::{check_err_contains, Check};
 
@@ -185,7 +184,7 @@ mod tests {
     //   symlink_name: [{"symlink_to": "path/to/target"}]
 
     #[test]
-    fn demo_without_update() -> TestResult {
+    fn demo_without_update() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -226,12 +225,11 @@ mod tests {
         temp.child("bar/colors/red").check_is_file_with_content("blood")?;
         temp.child("bar/picture").check_is_file_with_content("photo")?;
         temp.child("bar/sea").check_does_not_exist()?;
-        temp.child("bar/sun").check_is_file_with_content("star")?;
-        Ok(())
+        temp.child("bar/sun").check_is_file_with_content("star")
     }
 
     #[test]
-    fn demo_with_update() -> TestResult {
+    fn demo_with_update() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -282,12 +280,11 @@ mod tests {
         temp.child("bar/colors/red").check_is_file_with_content("blood")?;
         temp.child("bar/picture").check_is_file_with_content("new photo")?;
         temp.child("bar/sea").check_does_not_exist()?;
-        temp.child("bar/sun").check_is_file_with_content("star")?;
-        Ok(())
+        temp.child("bar/sun").check_is_file_with_content("star")
     }
 
     #[test]
-    fn demo_with_symlinks() -> TestResult {
+    fn demo_with_symlinks() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -367,12 +364,11 @@ mod tests {
         temp.child("baz/picture").check_is_symlink_to("sun")?;
         temp.child("baz/sea").check_does_not_exist()?;
         temp.child("baz/sun").check_is_file_with_content("massive")?;
-        temp.child("baz/words").check_does_not_exist()?;
-        Ok(())
+        temp.child("baz/words").check_does_not_exist()
     }
 
     #[test]
-    fn symlinks_to_symlinks() -> TestResult {
+    fn symlinks_to_symlinks() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -458,12 +454,11 @@ mod tests {
         temp.child("baz/sky").check_is_symlink_to("sun")?;
         temp.child("baz/sun").check_is_file_with_content("massive")?;
         temp.child("baz/things").check_does_not_exist()?;
-        temp.child("baz/words").check_does_not_exist()?;
-        Ok(())
+        temp.child("baz/words").check_does_not_exist()
     }
 
     #[test]
-    fn replace_a_file_with_a_directory() -> TestResult {
+    fn replace_a_file_with_a_directory() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -493,12 +488,11 @@ mod tests {
         temp.child("bar/colors").check_is_dir()?;
         temp.child("bar/colors/dark").check_is_dir()?;
         temp.child("bar/colors/dark/black").check_is_file_with_content("ink")?;
-        temp.child("bar/colors/red").check_is_file_with_content("blood")?;
-        Ok(())
+        temp.child("bar/colors/red").check_is_file_with_content("blood")
     }
 
     #[test]
-    fn replace_a_directory_with_a_file() -> TestResult {
+    fn replace_a_directory_with_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -519,12 +513,11 @@ mod tests {
         // |  └── colors
         // └── foo/
         //    └── colors
-        temp.child("bar/colors").check_is_file_with_content("whatever")?;
-        Ok(())
+        temp.child("bar/colors").check_is_file_with_content("whatever")
     }
 
     #[test]
-    fn replace_a_file_with_a_directory_and_there_are_symlinks_to_symlinks() -> TestResult {
+    fn replace_a_file_with_a_directory_and_there_are_symlinks_to_symlinks() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -570,12 +563,11 @@ mod tests {
         //       └── not_light -> dark
         temp.child("baz/colors").check_is_dir()?;
         temp.child("baz/colors/dark").check_is_symlink_to("non_existent_path")?;
-        temp.child("baz/colors/not_light").check_is_symlink_to("dark")?;
-        Ok(())
+        temp.child("baz/colors/not_light").check_is_symlink_to("dark")
     }
 
     #[test]
-    fn replace_a_directory_with_a_file_and_there_are_symlinks_to_symlinks() -> TestResult {
+    fn replace_a_directory_with_a_file_and_there_are_symlinks_to_symlinks() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -615,12 +607,11 @@ mod tests {
         //    ├── colors -> things
         //    ├── things -> words
         //    └── words
-        temp.child("baz/colors").check_is_file_with_content("whatever")?;
-        Ok(())
+        temp.child("baz/colors").check_is_file_with_content("whatever")
     }
 
     #[test]
-    fn subpath_with_an_ending_slash() -> TestResult {
+    fn subpath_with_an_ending_slash() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -636,12 +627,11 @@ mod tests {
         // |  └── colors/
         // └── foo/
         //    └── colors/
-        temp.child("bar/colors").check_is_dir()?;
-        Ok(())
+        temp.child("bar/colors").check_is_dir()
     }
 
     #[test]
-    fn no_subpath() -> TestResult {
+    fn no_subpath() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -652,12 +642,11 @@ mod tests {
         temp.child("foo/colors").create_dir_all()?;
         launch_work(&temp, "foo", "bar", [])?;
         temp.child("bar/colors").check_does_not_exist()?;
-        temp.child("bar/images").check_is_dir()?;
-        Ok(())
+        temp.child("bar/images").check_is_dir()
     }
 
     #[test]
-    fn subpath_is_empty() -> TestResult {
+    fn subpath_is_empty() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -675,12 +664,11 @@ mod tests {
         // └── foo/
         //    └── colors/
         temp.child("bar/colors").check_is_dir()?;
-        temp.child("bar/images").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/images").check_does_not_exist()
     }
 
     #[test]
-    fn subpath_is_point() -> TestResult {
+    fn subpath_is_point() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -698,12 +686,11 @@ mod tests {
         // └── foo/
         //    └── colors/
         temp.child("bar/colors").check_is_dir()?;
-        temp.child("bar/images").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/images").check_does_not_exist()
     }
 
     #[test]
-    fn subpath_is_parent() -> TestResult {
+    fn subpath_is_parent() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // Before:
         // .
@@ -733,30 +720,27 @@ mod tests {
         temp.child("bar/colors/red").check_is_file_with_content("blood")?;
         temp.child("bar/images").check_does_not_exist()?;
         temp.child("bar/sea").check_is_file_with_content("massive")?;
-        temp.child("bar/sun").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/sun").check_does_not_exist()
     }
 
     #[test]
-    fn fail_if_src_prefix_path_does_not_exist() -> TestResult {
+    fn fail_if_src_prefix_path_does_not_exist() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         temp.child("bar").create_dir_all()?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "failed to read metadata")?;
-        Ok(())
+        check_err_contains(result, "failed to read metadata")
     }
 
     #[test]
-    fn fail_if_dst_prefix_path_does_not_exist() -> TestResult {
+    fn fail_if_dst_prefix_path_does_not_exist() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "failed to read metadata")?;
-        Ok(())
+        check_err_contains(result, "failed to read metadata")
     }
 
     #[test]
-    fn fail_if_src_prefix_path_is_a_file() -> TestResult {
+    fn fail_if_src_prefix_path_is_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -764,12 +748,11 @@ mod tests {
         temp.child("bar").create_dir_all()?;
         temp.child("foo").write_str("whatever")?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "is not a directory")?;
-        Ok(())
+        check_err_contains(result, "is not a directory")
     }
 
     #[test]
-    fn fail_if_dst_prefix_path_is_a_file() -> TestResult {
+    fn fail_if_dst_prefix_path_is_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar
@@ -777,12 +760,11 @@ mod tests {
         temp.child("bar").write_str("whatever")?;
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "is not a directory")?;
-        Ok(())
+        check_err_contains(result, "is not a directory")
     }
 
     #[test]
-    fn fail_if_src_prefix_path_is_a_symlink_to_a_file() -> TestResult {
+    fn fail_if_src_prefix_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -792,12 +774,11 @@ mod tests {
         temp.child("foo").symlink_to_file("fox")?;
         temp.child("fox").write_str("whatever")?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "is not a directory")?;
-        Ok(())
+        check_err_contains(result, "is not a directory")
     }
 
     #[test]
-    fn fail_if_dst_prefix_path_is_a_symlink_to_a_file() -> TestResult {
+    fn fail_if_dst_prefix_path_is_a_symlink_to_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar -> baz
@@ -807,12 +788,11 @@ mod tests {
         temp.child("baz").write_str("whatever")?;
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "is not a directory")?;
-        Ok(())
+        check_err_contains(result, "is not a directory")
     }
 
     #[test]
-    fn fail_if_src_prefix_path_is_a_broken_symlink() -> TestResult {
+    fn fail_if_src_prefix_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -822,12 +802,11 @@ mod tests {
         temp.child("foo").symlink_to_file("fox")?;
         temp.child("fox").symlink_to_file("non_existent_path")?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "failed to read metadata")?;
-        Ok(())
+        check_err_contains(result, "failed to read metadata")
     }
 
     #[test]
-    fn fail_if_dst_prefix_path_is_a_broken_symlink() -> TestResult {
+    fn fail_if_dst_prefix_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar -> baz
@@ -837,12 +816,11 @@ mod tests {
         temp.child("baz").symlink_to_file("non_existent_path")?;
         temp.child("foo").create_dir_all()?;
         let result = launch_work(&temp, "foo", "bar", []);
-        check_err_contains(result, "failed to read metadata")?;
-        Ok(())
+        check_err_contains(result, "failed to read metadata")
     }
 
     #[test]
-    fn fail_if_subpath_is_absolute() -> TestResult {
+    fn fail_if_subpath_is_absolute() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -855,12 +833,11 @@ mod tests {
         let result = launch_work(&temp, "foo", "bar", ["colors", "/picture"]);
         check_err_contains(result, "is absolute")?;
         temp.child("bar/colors").check_does_not_exist()?;
-        temp.child("bar/picture").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/picture").check_does_not_exist()
     }
 
     #[test]
-    fn fail_if_src_path_does_not_exist() -> TestResult {
+    fn fail_if_src_path_does_not_exist() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -871,12 +848,11 @@ mod tests {
         let result = launch_work(&temp, "foo", "bar", ["colors", "picture"]);
         check_err_contains(result, "failed to read metadata")?;
         temp.child("bar/colors").check_does_not_exist()?;
-        temp.child("bar/picture").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/picture").check_does_not_exist()
     }
 
     #[test]
-    fn fail_if_src_path_is_a_broken_symlink() -> TestResult {
+    fn fail_if_src_path_is_a_broken_symlink() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -891,12 +867,11 @@ mod tests {
         let result = launch_work(&temp, "foo", "bar", ["colors", "picture"]);
         check_err_contains(result, "failed to read metadata")?;
         temp.child("bar/colors").check_does_not_exist()?;
-        temp.child("bar/picture").check_does_not_exist()?;
-        Ok(())
+        temp.child("bar/picture").check_does_not_exist()
     }
 
     #[test]
-    fn fail_to_replace_a_symlink_to_a_file_with_a_directory() -> TestResult {
+    fn fail_to_replace_a_symlink_to_a_file_with_a_directory() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -914,12 +889,11 @@ mod tests {
         check_err_contains(result, "is a symlink whose final target is a file")?;
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_file_with_content("star")?;
-        Ok(())
+        temp.child("bar/sun").check_is_file_with_content("star")
     }
 
     #[test]
-    fn fail_to_replace_a_symlink_to_a_directory_with_a_file() -> TestResult {
+    fn fail_to_replace_a_symlink_to_a_directory_with_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -937,12 +911,11 @@ mod tests {
         check_err_contains(result, "is a symlink whose final target is a directory")?;
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_dir()?;
-        Ok(())
+        temp.child("bar/sun").check_is_dir()
     }
 
     #[test]
-    fn fail_to_replace_a_symlink_to_a_symlink_to_a_file_with_a_directory() -> TestResult {
+    fn fail_to_replace_a_symlink_to_a_symlink_to_a_file_with_a_directory() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -963,12 +936,11 @@ mod tests {
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sky")?;
         temp.child("bar/sky").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_file_with_content("star")?;
-        Ok(())
+        temp.child("bar/sun").check_is_file_with_content("star")
     }
 
     #[test]
-    fn fail_to_replace_a_symlink_to_a_symlink_to_a_directory_with_a_file() -> TestResult {
+    fn fail_to_replace_a_symlink_to_a_symlink_to_a_directory_with_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -989,12 +961,11 @@ mod tests {
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sky")?;
         temp.child("bar/sky").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_dir()?;
-        Ok(())
+        temp.child("bar/sun").check_is_dir()
     }
 
     #[test]
-    fn fail_to_replace_a_broken_symlink_with_a_directory() -> TestResult {
+    fn fail_to_replace_a_broken_symlink_with_a_directory() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -1012,12 +983,11 @@ mod tests {
         check_err_contains(result, "is a broken symlink")?;
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_symlink_to("non_existent_path")?;
-        Ok(())
+        temp.child("bar/sun").check_is_symlink_to("non_existent_path")
     }
 
     #[test]
-    fn fail_to_replace_a_broken_symlink_with_a_file() -> TestResult {
+    fn fail_to_replace_a_broken_symlink_with_a_file() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         // .
         // ├── bar/
@@ -1035,8 +1005,7 @@ mod tests {
         check_err_contains(result, "is a broken symlink")?;
         temp.child("bar/colors").check_does_not_exist()?;
         temp.child("bar/picture").check_is_symlink_to("sun")?;
-        temp.child("bar/sun").check_is_symlink_to("non_existent_path")?;
-        Ok(())
+        temp.child("bar/sun").check_is_symlink_to("non_existent_path")
     }
 
     fn launch_work<const N: usize>(

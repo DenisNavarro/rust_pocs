@@ -10,5 +10,4 @@ time = { version = "0.3", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]
 assert_fs = { path = "../assert_fs" }
-testresult = "0.3"
 test_helper = { path = "../test_helper" }
