@@ -3,14 +3,9 @@
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --warn-undefined-variables
 
-cargo_target_dir != echo "$${CARGO_TARGET_DIR:-target}"
+cargo_target_dir != cargo metadata --format-version=1 | jq -r .target_directory
 
-# Remark: a more correct way to get the cargo target directory is:
-# cargo_target_dir != cargo metadata --format-version=1 | jq -r .target_directory
-# but it requires to install jq.
-
-.PHONY: check
-#: For each project, if not done yet, reformat the code and check it
+.PHONY: check # For each project, if not done yet, reformat the code and check it
 check : build.ninja
 	ninja check -v
 
@@ -18,59 +13,37 @@ check : build.ninja
 # Other phony targets in alphabetical order #
 #############################################
 
-.PHONY: all
-#: For each project, if not done yet, reformat the code, check it and, if all is good, deploy it
+.PHONY: all # For each project, if not done yet, reformat the code, check it and, if all is good, deploy it
 all : build.ninja
 	ninja -v
 
-.PHONY: clean
-#: Remove what is in .gitignore (git clean -dXf)
-clean :
-	git clean -dXf
-
-.PHONY: edit
-#: Edit the Makefile (codium Makefile)
-edit :
-	@codium Makefile
-
-.PHONY: fmt
-#: For each project, if not done yet, reformat the code
+.PHONY: fmt # For each project, if not done yet, reformat the code
 fmt : build.ninja
 	ninja fmt -v
 
-.PHONY: help
-#: Print the help with remake from https://remake.readthedocs.io/
-help :
-	@remake --tasks
-
-.PHONY: watch
-#: Reformat the code each time a Rust file is modified (thanks to the `watchexec-cli` crate)
-watch : build.ninja
-	watchexec --exts rs ninja fmt -v
+.PHONY: help # Print each phony target with its description
+help:
+	@grep '^.PHONY: .* # ' Makefile | sed 's/\.PHONY: \(.*\) # \(.*\)/\1\t\2/' | expand -t 6
 
 ################
 # File targets #
 ################
 
-#: Ensure that Cargo.lock matches the Cargo.toml files
 Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
 	cargo fetch && touch $@
 
-#: Fetch dependencies
 fetch.maketarget : Cargo.lock
 	cargo fetch && touch $@
 
-#: Compile the Rust binary responsible to write build.ninja
 $(cargo_target_dir)/debug/ninja_bootstrap : fetch.maketarget $(wildcard ninja_bootstrap/src/*.rs)
 	cargo build --offline --frozen -p ninja_bootstrap && touch $@
 
-#: Write build.ninja which is almost identical to example.ninja
 build.ninja : $(cargo_target_dir)/debug/ninja_bootstrap
 	RUST_LIB_BACKTRACE=1 $< > $@
 
-#: Write example.ninja which is almost a copy of build.ninja, but is not in .gitignore
 example.ninja : build.ninja
 	echo '# `build.ninja` is a file identical to the current one, except that:' > $@
 	echo '# - `/home/denis` will be replaced with your home directory and' >> $@
-	echo '# - the 3 lines of the current comment are not there.' >> $@
+	echo '# - the absolute path of the `target` directory will also be different and' >> $@
+	echo '# - the 4 lines of the current comment are not there.' >> $@
 	cat $< >> $@

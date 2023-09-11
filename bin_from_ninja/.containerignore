@@ -3,7 +3,10 @@ target/
 */clippy.ninjatarget
 */fmt.ninjatarget
 */test.ninjatarget
+.gitignore
 .ninja_deps
 .ninja_log
+Containerfile
 build.ninja
+example.ninja
 fetch.maketarget

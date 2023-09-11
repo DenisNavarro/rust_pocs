@@ -11,13 +11,14 @@
 
 mod ninja_writer;
 
-use std::env;
 use std::fs;
 use std::io::{self, Write};
 use std::iter;
 use std::path::PathBuf;
 
 use anyhow::Context;
+use camino::Utf8PathBuf;
+use cargo_metadata::MetadataCommand;
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
@@ -53,8 +54,7 @@ fn write_rules<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()
 }
 
 fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()> {
-    let cargo_target_dir: PathBuf =
-        env::var_os("CARGO_TARGET_DIR").unwrap_or_else(|| "target".into()).into();
+    let cargo_target_dir = get_cargo_target_dir()?;
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
@@ -99,7 +99,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
                 iter::once(project.into()).chain(local_dependencies.normal_dependencies).collect();
             ninja_writer
                 .build()?
-                .unix_output(&release_path)?
+                .output(release_path.as_str())?
                 .rule("release")?
                 .input("Cargo.lock")?
                 .inputs(
@@ -113,7 +113,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
                 .build()?
                 .unix_output(bin_path.join(project))?
                 .rule("copy")?
-                .unix_input(release_path)?
+                .input(release_path.as_str())?
                 .implicit_dependencies(project_and_normal_dependencies.iter().flat_map(
                     |project| {
                         [
@@ -143,18 +143,10 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
     Ok(())
 }
 
-#[derive(Deserialize)]
-struct CargoToml {
-    workspace: Workspace,
-}
-
-#[derive(Deserialize)]
-struct Workspace {
-    members: Vec<String>,
-}
-
-fn has_a_binary_to_deploy(project: &str) -> bool {
-    project != "ninja_bootstrap" && PathBuf::from(format!("{project}/src/main.rs")).is_file()
+fn get_cargo_target_dir() -> anyhow::Result<Utf8PathBuf> {
+    let cmd = MetadataCommand::new();
+    let metadata = cmd.exec().with_context(|| format!("failed to execute command {cmd:?}"))?;
+    Ok(metadata.target_directory)
 }
 
 fn get_local_dependencies(
@@ -186,6 +178,20 @@ fn get_local_projects_from(
         }
         None => Ok(vec![]),
     }
+}
+
+fn has_a_binary_to_deploy(project: &str) -> bool {
+    project != "ninja_bootstrap" && PathBuf::from(format!("{project}/src/main.rs")).is_file()
+}
+
+#[derive(Deserialize)]
+struct CargoToml {
+    workspace: Workspace,
+}
+
+#[derive(Deserialize)]
+struct Workspace {
+    members: Vec<String>,
 }
 
 struct Dependencies {

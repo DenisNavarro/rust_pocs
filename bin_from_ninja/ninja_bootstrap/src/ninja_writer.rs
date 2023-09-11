@@ -328,12 +328,6 @@ impl<'a, W: Write> AfterBuildRule<'a, W> {
         self.0.write_input(input.as_ref())
     }
 
-    #[cfg(unix)]
-    pub fn unix_input(self, input: impl AsRef<OsStr>) -> Result<AfterInput<'a, W>, Error> {
-        let input = std::os::unix::ffi::OsStrExt::as_bytes(input.as_ref());
-        self.0.write_input(input)
-    }
-
     pub fn inputs(
         self,
         inputs: impl IntoIterator<Item = impl AsRef<[u8]>>,

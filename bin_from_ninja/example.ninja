@@ -1,6 +1,7 @@
 # `build.ninja` is a file identical to the current one, except that:
 # - `/home/denis` will be replaced with your home directory and
-# - the 3 lines of the current comment are not there.
+# - the absolute path of the `target` directory will also be different and
+# - the 4 lines of the current comment are not there.
 rule create_directory
   command = mkdir -p -- $out
 rule fmt
@@ -30,10 +31,12 @@ build backup/clippy.ninjatarget: clippy Cargo.lock backup/fmt.ninjatarget $
 build backup/test.ninjatarget: test Cargo.lock backup/fmt.ninjatarget assert_fs/fmt.ninjatarget $
   test_helper/fmt.ninjatarget
   project = backup
-build target/release/backup: release Cargo.lock backup/fmt.ninjatarget
+build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/backup: release $
+  Cargo.lock backup/fmt.ninjatarget
   project = backup
-build /home/denis/bin/backup: copy target/release/backup | backup/clippy.ninjatarget $
-  backup/test.ninjatarget || /home/denis/bin
+build /home/denis/bin/backup: copy $
+  /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/backup | $
+  backup/clippy.ninjatarget backup/test.ninjatarget || /home/denis/bin
 build ninja_bootstrap/fmt.ninjatarget: fmt rustfmt.toml ninja_bootstrap/src/main.rs $
   ninja_bootstrap/src/ninja_writer.rs
   project = ninja_bootstrap
@@ -49,9 +52,11 @@ build synchronize_backup/clippy.ninjatarget: clippy Cargo.lock $
 build synchronize_backup/test.ninjatarget: test Cargo.lock synchronize_backup/fmt.ninjatarget $
   assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_backup
-build target/release/synchronize_backup: release Cargo.lock synchronize_backup/fmt.ninjatarget
+build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_backup: $
+  release Cargo.lock synchronize_backup/fmt.ninjatarget
   project = synchronize_backup
-build /home/denis/bin/synchronize_backup: copy target/release/synchronize_backup | $
+build /home/denis/bin/synchronize_backup: copy $
+  /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_backup | $
   synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget || /home/denis/bin
 build synchronize_partially/fmt.ninjatarget: fmt rustfmt.toml synchronize_partially/src/main.rs
   project = synchronize_partially
@@ -61,10 +66,11 @@ build synchronize_partially/clippy.ninjatarget: clippy Cargo.lock $
 build synchronize_partially/test.ninjatarget: test Cargo.lock $
   synchronize_partially/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
   project = synchronize_partially
-build target/release/synchronize_partially: release Cargo.lock $
-  synchronize_partially/fmt.ninjatarget
+build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_partially: $
+  release Cargo.lock synchronize_partially/fmt.ninjatarget
   project = synchronize_partially
-build /home/denis/bin/synchronize_partially: copy target/release/synchronize_partially | $
+build /home/denis/bin/synchronize_partially: copy $
+  /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_partially | $
   synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget || $
   /home/denis/bin
 build test_helper/fmt.ninjatarget: fmt rustfmt.toml test_helper/src/lib.rs

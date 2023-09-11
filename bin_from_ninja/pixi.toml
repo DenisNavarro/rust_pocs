@@ -1,0 +1,17 @@
+[project]
+name = "bin_from_ninja"
+version = "0.0.0"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "linux-ppc64le", "osx-64", "osx-arm64"]
+
+[tasks]
+all = "make all"
+check = "make check"
+example = "make example.ninja"
+fmt = "make fmt"
+
+[dependencies]
+jq = "1.6"
+make = "4.3"
+ninja = "1.11.1"
+rust = "1.72.0"

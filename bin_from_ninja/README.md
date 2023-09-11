@@ -6,29 +6,45 @@ This POC combines Make and [Ninja][] to compile and check the Rust programs [`ba
 [`synchronize_backup`][] and [`synchronize_partially`][], and deploy the binaries to `$HOME/bin`,
 thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
 
-Requirements: Unix, Make, Ninja, `cp` (for `backup`) and `rsync` (for `synchronize_backup` and
-`synchronize_partially`).
+[Ninja]: https://ninja-build.org/
+[`backup`]: ./backup/src/main.rs
+[`synchronize_backup`]: ./synchronize_backup/src/main.rs
+[`synchronize_partially`]: ./synchronize_partially/src/main.rs
+[`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
+
+Requirements: There are 3 possible requirement sets:
+
+  - Installing `podman` only. Then you can launch [`podman_demo.bash`][], but the binaries will be
+    in the `$HOME/bin` of the container, not your `$HOME/bin`.
+  - Installing what is in [`Containerfile`][]. Then you can launch the [pixi][] commands.
+  - Installing what is in [`Containerfile`][] (with or without [pixi][]) and [`pixi.toml`][]. Then
+    you can launch the Make commands.
+
+[`podman_demo.bash`]: ./podman_demo.bash
+[`Containerfile`]: ./Containerfile
+[pixi]: https://pixi.sh/
+[`pixi.toml`]: ./pixi.toml
+
+This was tested on Ubuntu 22.04.3 LTS.
 
 ## Worflow
 
 The idea is that, instead of launching `cargo clippy`, `cargo test`, etc., the developer launches
 one of these commands:
 
-  - `make fmt`: For each project, if not done yet, reformat the code (with `cargo fmt`).
-  - `make check` or just `make`: For each project, if not done yet, reformat the code and check it
-    (with `cargo clippy` and `cargo test`).
-  - `make all`: For each project, if not done yet, reformat the code, check it, compile it in
-    release mode and, if all is good, deploy the up-to-date binary to `$HOME/bin`.
+  - `pixi run fmt` or `make fmt`: For each project, if not done yet, reformat the code (with
+    `cargo fmt`).
+  - `pixi run check`, `make check` or just `make`: For each project, if not done yet, reformat the
+    code and check it (with `cargo clippy` and `cargo test`).
+  - `pixi run all` or `make all`: For each project, if not done yet, reformat the code, check it,
+    compile it in release mode and, if all is good, deploy the up-to-date binary to `$HOME/bin`.
 
-In most cases, the developer just launches `make`.
+In most cases, the developer launches `pixi run check` or `make`.
 
-When the code is ready to be deployed, `make all` can be launched.
+When the code is ready to be deployed, `pixi run all` or `make all` can be launched.
 
-`make fmt` may be useless if the developer can already reformat the current Rust file with a
-keystroke.
-
-If you installed `watchexec` from the `watchexec-cli` crate, you can also launch `make watch`
-which does the same thing as `make fmt` each time a Rust file is modified.
+`pixi run fmt` and `make fmt` may be useless if the developer can already reformat the current Rust
+file with a keystroke.
 
 Under the hood, these Make commands call Ninja to launch the underlying commands in parallel.
 
@@ -47,6 +63,8 @@ Remark: If a complex workflow can be automated with a `Makefile` which uses adva
 Make and if, like Matt Rickard, you think that
 [every sufficiently advanced configuration language is wrong][], then you may prefer to use a
 regular programming language to write a code which writes a Ninja build file.
+
+[every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
 
 ## [`backup`][]
 
@@ -111,11 +129,5 @@ This program writes the `build.ninja` file.
 `build.ninja` is in the [`.gitignore`][], but you can look at [`example.ninja`][], which is almost
 a copy of `build.ninja`.
 
-[Ninja]: https://ninja-build.org/
-[`backup`]: ./backup/src/main.rs
-[`synchronize_backup`]: ./synchronize_backup/src/main.rs
-[`synchronize_partially`]: ./synchronize_partially/src/main.rs
-[`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
-[every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
 [`.gitignore`]: ./.gitignore
 [`example.ninja`]: ./example.ninja
