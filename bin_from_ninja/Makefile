@@ -43,7 +43,7 @@ build.ninja : $(cargo_target_dir)/debug/ninja_bootstrap
 
 example.ninja : build.ninja
 	echo '# `build.ninja` is a file identical to the current one, except that:' > $@
-	echo '# - `/home/denis` will be replaced with your home directory and' >> $@
+	echo '# - `/home/denis` will be replaced with your home directory,' >> $@
 	echo '# - the absolute path of the `target` directory will also be different and' >> $@
 	echo '# - the 4 lines of the current comment are not there.' >> $@
 	cat $< >> $@

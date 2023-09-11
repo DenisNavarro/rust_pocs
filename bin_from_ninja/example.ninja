@@ -1,5 +1,5 @@
 # `build.ninja` is a file identical to the current one, except that:
-# - `/home/denis` will be replaced with your home directory and
+# - `/home/denis` will be replaced with your home directory,
 # - the absolute path of the `target` directory will also be different and
 # - the 4 lines of the current comment are not there.
 rule create_directory
