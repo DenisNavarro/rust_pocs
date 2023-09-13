@@ -3,6 +3,7 @@ target/
 */clippy.ninjatarget
 */fmt.ninjatarget
 */test.ninjatarget
+.containerignore
 .gitignore
 .ninja_deps
 .ninja_log
@@ -10,3 +11,4 @@ Containerfile
 build.ninja
 example.ninja
 fetch.maketarget
+podman_demo.bash
