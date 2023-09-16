@@ -1,31 +1,41 @@
 FROM docker.io/library/debian:bookworm-20230904
-
 WORKDIR /app
 
-# Remark 1: `synchronize_backup` and `synchronize_partially` call `rsync` and `time`.
-# Remark 2: To install `pixi` on your PC, if `cargo` is already installed, then you
+################
+# Install pixi #
+################
+
+# Remark: To install `pixi` on your PC, if `cargo` is already installed, then you
 #   can call `cargo install pixi --version 0.2.0 --locked` instead.
-RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl rsync time \
- && rm -rf /var/lib/apt/lists/* \
- && curl -fsSL https://pixi.sh/install.sh -o install.sh \
- && PIXI_VERSION=v0.2.0 /bin/bash install.sh \
- && rm install.sh
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates curl; \
+    rm -rf /var/lib/apt/lists/*; \
+    curl -fsSL https://pixi.sh/install.sh -o install.sh; \
+    PIXI_VERSION=v0.2.0 /bin/bash install.sh; \
+    rm install.sh
 
 # Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/.pixi/bin"`.
-ENV PATH="$PATH:/root/.pixi/bin"
+ENV PATH $PATH:/root/.pixi/bin
+
+########################################################################
+# Compile and check local Rust programs and deploy them to "$HOME/bin" #
+########################################################################
 
 COPY pixi.toml pixi.lock /app
-
-# Remark: `pixi run all` already does `pixi install` if needed. But, in the
-#   `Containerfile`, it is better to have the result in a cache before `COPY . /app`.
-RUN pixi install
-
+RUN set -eux; \
+    # Remark: `pixi run all` already does `pixi install` if needed. But it is better
+    #   to have the result in a cache before `COPY . /app`.
+    pixi install; \
+    apt-get update; \
+    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync` and `time`.
+    apt-get install -y --no-install-recommends rsync time; \
+    rm -rf /var/lib/apt/lists/*
 COPY . /app
 RUN pixi run all
 
 # Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/bin"` so that
 #   you can use `synchronize_backup`, `synchronize_partially`, etc.
-ENV PATH="$PATH:/root/bin"
+ENV PATH $PATH:/root/bin
 
-CMD /bin/bash
+CMD ["/bin/bash"]
