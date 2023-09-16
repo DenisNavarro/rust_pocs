@@ -7,8 +7,10 @@ target/
 .gitignore
 .ninja_deps
 .ninja_log
-Containerfile
+Containerfile_debian
+Containerfile_ubuntu
 build.ninja
 example.ninja
 fetch.maketarget
-podman_demo.bash
+podman_debian.bash
+podman_ubuntu.bash

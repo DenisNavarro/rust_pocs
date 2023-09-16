@@ -14,18 +14,20 @@ thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
 
 Requirements: There are 3 possible requirement sets:
 
-  - Installing `podman` only. Then you can launch [`podman_demo.bash`][], but the binaries will be
-    in the `$HOME/bin` of the container, not your `$HOME/bin`.
-  - Installing what is in [`Containerfile`][]. Then you can launch the [pixi][] commands.
-  - Installing what is in [`Containerfile`][] (with or without [pixi][]) and [`pixi.toml`][]. Then
-    you can launch the Make commands.
+  - Installing `podman` only. Then you can launch [`podman_debian.bash`][] or
+    [`podman_ubuntu.bash`][], but the binaries will be in the `$HOME/bin` of the container, not
+    your `$HOME/bin`.
+  - Installing what is in [`Containerfile_debian`][] or [`Containerfile_ubuntu`][]. Then you can
+    launch the [pixi][] commands.
+  - Installing what is in [`Containerfile_debian`][] or [`Containerfile_ubuntu`][] (with or
+    without [pixi][]) and [`pixi.toml`][]. Then you can launch the Make commands.
 
-[`podman_demo.bash`]: ./podman_demo.bash
-[`Containerfile`]: ./Containerfile
+[`podman_debian.bash`]: ./podman_debian.bash
+[`podman_ubuntu.bash`]: ./podman_ubuntu.bash
+[`Containerfile_debian`]: ./Containerfile_debian
+[`Containerfile_ubuntu`]: ./Containerfile_ubuntu
 [pixi]: https://pixi.sh/
 [`pixi.toml`]: ./pixi.toml
-
-This was tested on Ubuntu 22.04.3 LTS.
 
 ## Worflow
 

@@ -1,7 +1,9 @@
-FROM docker.io/library/debian:bookworm-20230904
+FROM docker.io/library/ubuntu:22.04
 
 # Remark: `synchronize_backup` and `synchronize_partially` call `rsync` and `time`.
-RUN apt update && apt install -y curl rsync time
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates curl rsync time \
+ && rm -rf /var/lib/apt/lists/*
 
 # Remark: To install `pixi` on your PC, if `cargo` is already installed, then you
 #   can call `cargo install pixi --version 0.2.0 --locked` instead.
