@@ -14,43 +14,48 @@ thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
 
 Requirements: There are 3 possible requirement sets:
 
-  - Installing `podman` only. Then you can launch [`podman_debian.bash`][] or
-    [`podman_ubuntu.bash`][], but the binaries will be in the `$HOME/bin` of the container, not
-    your `$HOME/bin`.
+  - Installing `podman` only. Then you can launch [`podman_debian.bash`][],
+    [`podman_ubuntu.bash`][], [`podman_debian_pixi.bash`][] or [`podman_ubuntu_pixi.bash`][]. But
+    the binaries will be in the `$HOME/bin` of the container, not your `$HOME/bin`.
   - Installing what is in [`Containerfile_debian`][] or [`Containerfile_ubuntu`][]. Then you can
-    launch the [pixi][] commands.
-  - Installing what is in [`Containerfile_debian`][] or [`Containerfile_ubuntu`][] (with or
-    without [pixi][]) and [`pixi.toml`][]. Then you can launch the Make commands.
+    launch the Make commands.
+  - Installing what is in [`Containerfile_debian_pixi`][] or [`Containerfile_ubuntu_pixi`][]. Then
+    you can launch the [pixi][] commands.
 
 [`podman_debian.bash`]: ./podman_debian.bash
 [`podman_ubuntu.bash`]: ./podman_ubuntu.bash
+[`podman_debian_pixi.bash`]: ./podman_debian_pixi.bash
+[`podman_ubuntu_pixi.bash`]: ./podman_ubuntu_pixi.bash
 [`Containerfile_debian`]: ./Containerfile_debian
 [`Containerfile_ubuntu`]: ./Containerfile_ubuntu
+[`Containerfile_debian_pixi`]: ./Containerfile_debian_pixi
+[`Containerfile_ubuntu_pixi`]: ./Containerfile_ubuntu_pixi
 [pixi]: https://pixi.sh/
-[`pixi.toml`]: ./pixi.toml
 
 ## Worflow
 
 The idea is that, instead of launching `cargo clippy`, `cargo test`, etc., the developer launches
 one of these commands:
 
-  - `pixi run fmt` or `make fmt`: For each project, if not done yet, reformat the code (with
+  - `make fmt` or `pixi run fmt`: For each project, if not done yet, reformat the code (with
     `cargo fmt`).
-  - `pixi run check`, `make check` or just `make`: For each project, if not done yet, reformat the
-    code and check it (with `cargo clippy` and `cargo test`).
-  - `pixi run all` or `make all`: For each project, if not done yet, reformat the code, check it,
+  - `make`, `make check` or `pixi run check`: For each project, if not done yet, reformat the code
+    and check it (with `cargo clippy` and `cargo test`).
+  - `make all` or `pixi run all`: For each project, if not done yet, reformat the code, check it,
     compile it in release mode and, if all is good, deploy the up-to-date binary to `$HOME/bin`.
 
-In most cases, the developer launches `pixi run check` or `make`.
+In most cases, the developer launches `make` or `pixi run check`.
 
-When the code is ready to be deployed, `pixi run all` or `make all` can be launched.
+When the code is ready to be deployed, `make all` or `pixi run all` can be launched.
 
-`pixi run fmt` and `make fmt` may be useless if the developer can already reformat the current Rust
+`make fmt` and `pixi run fmt` may be useless if the developer can already reformat the current Rust
 file with a keystroke.
 
 Under the hood, these Make commands call Ninja to launch the underlying commands in parallel.
 
-## Ninja
+The pixi commands call the Make commands in a local environment.
+
+## [Ninja][]
 
 Why did I choose to use Ninja? Make can also launch commands in parallel with `make -j`, but the
 output is interleaved, so unreadable. Ninja has a much nicer output.
@@ -67,6 +72,15 @@ Make and if, like Matt Rickard, you think that
 regular programming language to write a code which writes a Ninja build file.
 
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
+
+## [Pixi][pixi]
+
+Pixi is a Conda alternative written in Rust. It allows to manage dependencies in a local
+environment with the Conda packaging ecosystem. This local environment is similar to a Python
+virtual environment, but is not limited to Python. So it is not as isolated as a container, but it
+is more friendly to manage. The corresponding configuration file is [`pixi.toml`][].
+
+[`pixi.toml`]: ./pixi.toml
 
 ## [`backup`][]
 
