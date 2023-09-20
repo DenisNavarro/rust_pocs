@@ -20,6 +20,46 @@ metadata:
   inputs_metadata: null
   custom_metadata: null
 package:
+- name: rust
+  version: 1.72.1
+  manager: conda
+  platform: osx-64
+  dependencies:
+    rust-std-x86_64-apple-darwin: ==1.72.1 h059895a_0
+  url: https://conda.anaconda.org/conda-forge/osx-64/rust-1.72.1-h7e1429e_0.conda
+  hash:
+    md5: 475181acbfe3a373ab6a9438c97f866c
+    sha256: ccd41c0110e88ce8292377c2e562710921d1ab4443ae145b5d94f101e484a987
+  optional: false
+  category: main
+  build: h7e1429e_0
+  arch: x86_64
+  subdir: osx-64
+  build_number: 0
+  license: MIT
+  size: 190562286
+  timestamp: 1695173313470
+- name: rust-std-x86_64-apple-darwin
+  version: 1.72.1
+  manager: conda
+  platform: osx-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-apple-darwin-1.72.1-h059895a_0.conda
+  hash:
+    md5: 7b6b9d4e0199b4dc50eb70060bc1003f
+    sha256: 0fc2f1418e428c2341ad09572d5123d61b6cbddb1207b9c8c62ca53d15dc1904
+  optional: false
+  category: main
+  build: h059895a_0
+  arch: x86_64
+  subdir: osx-64
+  build_number: 0
+  constrains:
+  - rust >=1.72.1,<1.72.2.0a0
+  license: MIT
+  noarch: generic
+  size: 30895932
+  timestamp: 1695173148069
 - name: jq
   version: '1.6'
   manager: conda
@@ -79,48 +119,6 @@ package:
   license_family: Apache
   size: 121284
   timestamp: 1676837793132
-- name: rust
-  version: 1.72.0
-  manager: conda
-  platform: osx-64
-  dependencies:
-    rust-std-x86_64-apple-darwin: ==1.72.0 h059895a_2
-  url: https://conda.anaconda.org/conda-forge/osx-64/rust-1.72.0-h7e1429e_2.conda
-  hash:
-    md5: 7a9501f8a5bcc297dd91b1789c8758f8
-    sha256: d55a40d31810f07db88afa8fb8b3afe22d2e049282f150c627b1e6dfb2c4f1ca
-  optional: false
-  category: main
-  build: h7e1429e_2
-  arch: x86_64
-  subdir: osx-64
-  build_number: 2
-  license: MIT
-  license_family: MIT
-  size: 190658446
-  timestamp: 1693581235710
-- name: rust-std-x86_64-apple-darwin
-  version: 1.72.0
-  manager: conda
-  platform: osx-64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-apple-darwin-1.72.0-h059895a_2.conda
-  hash:
-    md5: b85d77b8064fe46c7d88604f9bcba316
-    sha256: 480193ad9ce5252d22de77825a22d8b2d4c7852d286c559d536aa25450f09dc6
-  optional: false
-  category: main
-  build: h059895a_2
-  arch: x86_64
-  subdir: osx-64
-  build_number: 2
-  constrains:
-  - rust >=1.72.0,<1.72.1.0a0
-  license: MIT
-  license_family: MIT
-  noarch: generic
-  size: 31041146
-  timestamp: 1693581037252
 - name: libcxx
   version: 16.0.6
   manager: conda
@@ -159,6 +157,49 @@ package:
   license_family: BSD
   size: 395624
   timestamp: 1653406267651
+- name: rust
+  version: 1.72.1
+  manager: conda
+  platform: linux-64
+  dependencies:
+    gcc_impl_linux-64: '*'
+    libzlib: '>=1.2.13,<1.3.0a0'
+    libgcc-ng: '>=12'
+    rust-std-x86_64-unknown-linux-gnu: ==1.72.1 hc1431ca_0
+  url: https://conda.anaconda.org/conda-forge/linux-64/rust-1.72.1-h70c747d_0.conda
+  hash:
+    md5: 6365363ac8b5518684d6173c1f623221
+    sha256: 356d2533ff77f0cc088657e78b02da4a0bdded220575a0810ca1f209a3f849ee
+  optional: false
+  category: main
+  build: h70c747d_0
+  arch: x86_64
+  subdir: linux-64
+  build_number: 0
+  license: MIT
+  size: 207914798
+  timestamp: 1695173731389
+- name: rust-std-x86_64-unknown-linux-gnu
+  version: 1.72.1
+  manager: conda
+  platform: linux-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-unknown-linux-gnu-1.72.1-hc1431ca_0.conda
+  hash:
+    md5: 3ee177ec32e432971a8605d5f692c458
+    sha256: f343851829874231a5ccef2b2ff82cde268ab26dc779cdce5ddf1a76f5b8c3f7
+  optional: false
+  category: main
+  build: hc1431ca_0
+  arch: x86_64
+  subdir: linux-64
+  build_number: 0
+  constrains:
+  - rust >=1.72.1,<1.72.2.0a0
+  license: MIT
+  noarch: generic
+  size: 33119013
+  timestamp: 1695173582421
 - name: jq
   version: '1.6'
   manager: conda
@@ -221,29 +262,6 @@ package:
   license_family: Apache
   size: 2251263
   timestamp: 1676837602636
-- name: rust
-  version: 1.72.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    gcc_impl_linux-64: '*'
-    libzlib: '>=1.2.13,<1.3.0a0'
-    libgcc-ng: '>=12'
-    rust-std-x86_64-unknown-linux-gnu: ==1.72.0 hc1431ca_2
-  url: https://conda.anaconda.org/conda-forge/linux-64/rust-1.72.0-h70c747d_2.conda
-  hash:
-    md5: 273b6df56e73e6fdd57e4cb1c9927991
-    sha256: 069832397c7b6dd86766784cbe91454479b19e7e409ce04fabd3f9e97711e560
-  optional: false
-  category: main
-  build: h70c747d_2
-  arch: x86_64
-  subdir: linux-64
-  build_number: 2
-  license: MIT
-  license_family: MIT
-  size: 207786108
-  timestamp: 1693581716075
 - name: gcc_impl_linux-64
   version: 13.2.0
   manager: conda
@@ -269,6 +287,110 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 53381151
   timestamp: 1694376412626
+- name: libgcc-ng
+  version: 13.2.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    _libgcc_mutex: ==0.1 conda_forge
+    _openmp_mutex: '>=4.5'
+  url: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-13.2.0-h807b86a_0.conda
+  hash:
+    md5: 3934dca6107fad668d036a4cafca1015
+    sha256: 4d32e497a5e130c2915b12301f47881a362a8ae16243885e10355b2bcc6abd6b
+  optional: false
+  category: main
+  build: h807b86a_0
+  arch: x86_64
+  subdir: linux-64
+  build_number: 0
+  constrains:
+  - libgomp 13.2.0 h807b86a_0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 770774
+  timestamp: 1694376312964
+- name: libzlib
+  version: 1.2.13
+  manager: conda
+  platform: linux-64
+  dependencies:
+    libgcc-ng: '>=12'
+  url: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.2.13-hd590300_5.conda
+  hash:
+    md5: f36c115f1ee199da648e0597ec2047ad
+    sha256: 370c7c5893b737596fd6ca0d9190c9715d89d888b8c88537ae1ef168c25e82e4
+  optional: false
+  category: main
+  build: hd590300_5
+  arch: x86_64
+  subdir: linux-64
+  build_number: 5
+  constrains:
+  - zlib 1.2.13 *_5
+  license: Zlib
+  license_family: Other
+  size: 61588
+  timestamp: 1686575217516
+- name: _libgcc_mutex
+  version: '0.1'
+  manager: conda
+  platform: linux-64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
+  hash:
+    md5: d7c89558ba9fa0495403155b64376d81
+    sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
+  optional: false
+  category: main
+  build: conda_forge
+  arch: x86_64
+  subdir: linux-64
+  build_number: 0
+  license: None
+  size: 2562
+  timestamp: 1578324546067
+- name: _openmp_mutex
+  version: '4.5'
+  manager: conda
+  platform: linux-64
+  dependencies:
+    libgomp: '>=7.5.0'
+    _libgcc_mutex: ==0.1 conda_forge
+  url: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
+  hash:
+    md5: 73aaf86a425cc6e73fcf236a5a46396d
+    sha256: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
+  optional: false
+  category: main
+  build: 2_gnu
+  arch: x86_64
+  subdir: linux-64
+  build_number: 16
+  constrains:
+  - openmp_impl 9999
+  license: BSD-3-Clause
+  license_family: BSD
+  size: 23621
+  timestamp: 1650670423406
+- name: libgomp
+  version: 13.2.0
+  manager: conda
+  platform: linux-64
+  dependencies:
+    _libgcc_mutex: ==0.1 conda_forge
+  url: https://conda.anaconda.org/conda-forge/linux-64/libgomp-13.2.0-h807b86a_0.conda
+  hash:
+    md5: 33c2353e425610c69ad58a8e29694724
+    sha256: 92feb26e751356fda6a1b24f37b9532aacb70b7dfc4c5c5773372e564147f310
+  optional: false
+  category: main
+  build: h807b86a_0
+  arch: x86_64
+  subdir: linux-64
+  build_number: 0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 421525
+  timestamp: 1694376243359
 - name: libgcc-devel_linux-64
   version: 13.2.0
   manager: conda
@@ -349,88 +471,6 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 4079074
   timestamp: 1694376329375
-- name: libgcc-ng
-  version: 13.2.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    _libgcc_mutex: ==0.1 conda_forge
-    _openmp_mutex: '>=4.5'
-  url: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-13.2.0-h807b86a_0.conda
-  hash:
-    md5: 3934dca6107fad668d036a4cafca1015
-    sha256: 4d32e497a5e130c2915b12301f47881a362a8ae16243885e10355b2bcc6abd6b
-  optional: false
-  category: main
-  build: h807b86a_0
-  arch: x86_64
-  subdir: linux-64
-  build_number: 0
-  constrains:
-  - libgomp 13.2.0 h807b86a_0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 770774
-  timestamp: 1694376312964
-- name: _libgcc_mutex
-  version: '0.1'
-  manager: conda
-  platform: linux-64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
-  hash:
-    md5: d7c89558ba9fa0495403155b64376d81
-    sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
-  optional: false
-  category: main
-  build: conda_forge
-  arch: x86_64
-  subdir: linux-64
-  build_number: 0
-  license: None
-  size: 2562
-  timestamp: 1578324546067
-- name: _openmp_mutex
-  version: '4.5'
-  manager: conda
-  platform: linux-64
-  dependencies:
-    libgomp: '>=7.5.0'
-    _libgcc_mutex: ==0.1 conda_forge
-  url: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
-  hash:
-    md5: 73aaf86a425cc6e73fcf236a5a46396d
-    sha256: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
-  optional: false
-  category: main
-  build: 2_gnu
-  arch: x86_64
-  subdir: linux-64
-  build_number: 16
-  constrains:
-  - openmp_impl 9999
-  license: BSD-3-Clause
-  license_family: BSD
-  size: 23621
-  timestamp: 1650670423406
-- name: libgomp
-  version: 13.2.0
-  manager: conda
-  platform: linux-64
-  dependencies:
-    _libgcc_mutex: ==0.1 conda_forge
-  url: https://conda.anaconda.org/conda-forge/linux-64/libgomp-13.2.0-h807b86a_0.conda
-  hash:
-    md5: 33c2353e425610c69ad58a8e29694724
-    sha256: 92feb26e751356fda6a1b24f37b9532aacb70b7dfc4c5c5773372e564147f310
-  optional: false
-  category: main
-  build: h807b86a_0
-  arch: x86_64
-  subdir: linux-64
-  build_number: 0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 421525
-  timestamp: 1694376243359
 - name: libstdcxx-ng
   version: 13.2.0
   manager: conda
@@ -491,50 +531,6 @@ package:
   license_family: GPL
   size: 704696
   timestamp: 1674833944779
-- name: libzlib
-  version: 1.2.13
-  manager: conda
-  platform: linux-64
-  dependencies:
-    libgcc-ng: '>=12'
-  url: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.2.13-hd590300_5.conda
-  hash:
-    md5: f36c115f1ee199da648e0597ec2047ad
-    sha256: 370c7c5893b737596fd6ca0d9190c9715d89d888b8c88537ae1ef168c25e82e4
-  optional: false
-  category: main
-  build: hd590300_5
-  arch: x86_64
-  subdir: linux-64
-  build_number: 5
-  constrains:
-  - zlib 1.2.13 *_5
-  license: Zlib
-  license_family: Other
-  size: 61588
-  timestamp: 1686575217516
-- name: rust-std-x86_64-unknown-linux-gnu
-  version: 1.72.0
-  manager: conda
-  platform: linux-64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-unknown-linux-gnu-1.72.0-hc1431ca_2.conda
-  hash:
-    md5: 144b376ae70f03b3cf66a77517dd4807
-    sha256: c1e907d053ecceb7939a142d17a6c4341c24cef4e087e747d3e675bc42f7b855
-  optional: false
-  category: main
-  build: hc1431ca_2
-  arch: x86_64
-  subdir: linux-64
-  build_number: 2
-  constrains:
-  - rust >=1.72.0,<1.72.1.0a0
-  license: MIT
-  license_family: MIT
-  noarch: generic
-  size: 33395087
-  timestamp: 1693581560559
 - name: oniguruma
   version: 6.9.8
   manager: conda
@@ -555,6 +551,46 @@ package:
   license_family: BSD
   size: 440009
   timestamp: 1653405951144
+- name: rust
+  version: 1.72.1
+  manager: conda
+  platform: osx-arm64
+  dependencies:
+    rust-std-aarch64-apple-darwin: ==1.72.1 hf1a8007_0
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.72.1-h4ff7c5d_0.conda
+  hash:
+    md5: ae115d7be09f43444cac505429eb5ef3
+    sha256: 193bbaab223bb0e184584ef7791de6e452604027c863f4af4b65c6bec6216e5e
+  optional: false
+  category: main
+  build: h4ff7c5d_0
+  arch: aarch64
+  subdir: osx-arm64
+  build_number: 0
+  license: MIT
+  size: 143656092
+  timestamp: 1695173242793
+- name: rust-std-aarch64-apple-darwin
+  version: 1.72.1
+  manager: conda
+  platform: osx-arm64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-apple-darwin-1.72.1-hf1a8007_0.conda
+  hash:
+    md5: 019947a64ffe6f51798f1ec8415ff405
+    sha256: 710076e41d4f24ae2567576dc8b3db74bf2e624f7054f255057cfc20758919fe
+  optional: false
+  category: main
+  build: hf1a8007_0
+  arch: aarch64
+  subdir: osx-arm64
+  build_number: 0
+  constrains:
+  - rust >=1.72.1,<1.72.2.0a0
+  license: MIT
+  noarch: generic
+  size: 30236649
+  timestamp: 1695173150148
 - name: jq
   version: '1.6'
   manager: conda
@@ -614,48 +650,6 @@ package:
   license_family: Apache
   size: 107047
   timestamp: 1676837935565
-- name: rust
-  version: 1.72.0
-  manager: conda
-  platform: osx-arm64
-  dependencies:
-    rust-std-aarch64-apple-darwin: ==1.72.0 hf1a8007_2
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.72.0-h4ff7c5d_2.conda
-  hash:
-    md5: 819db30107a1f32eba8ee66407a4f7a8
-    sha256: 1e0fddd6a9060f6e72c159fab14ffb0ef8848262a77ca389d53bd68da32a022c
-  optional: false
-  category: main
-  build: h4ff7c5d_2
-  arch: aarch64
-  subdir: osx-arm64
-  build_number: 2
-  license: MIT
-  license_family: MIT
-  size: 142699341
-  timestamp: 1693581209134
-- name: rust-std-aarch64-apple-darwin
-  version: 1.72.0
-  manager: conda
-  platform: osx-arm64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-apple-darwin-1.72.0-hf1a8007_2.conda
-  hash:
-    md5: cd6f9364d1a3129da9ae92d369858a0f
-    sha256: f63972a39393e9bc28c97d903ab2257c086681ff084d0c1138b6aaba23f6c800
-  optional: false
-  category: main
-  build: hf1a8007_2
-  arch: aarch64
-  subdir: osx-arm64
-  build_number: 2
-  constrains:
-  - rust >=1.72.0,<1.72.1.0a0
-  license: MIT
-  license_family: MIT
-  noarch: generic
-  size: 30271994
-  timestamp: 1693581081375
 - name: libcxx
   version: 16.0.6
   manager: conda
@@ -694,6 +688,49 @@ package:
   license_family: BSD
   size: 387274
   timestamp: 1653406073762
+- name: rust
+  version: 1.72.1
+  manager: conda
+  platform: linux-ppc64le
+  dependencies:
+    gcc_impl_linux-ppc64le: '*'
+    rust-std-powerpc64le-unknown-linux-gnu: ==1.72.1 h6ac4ec8_0
+    libzlib: '>=1.2.13,<1.3.0a0'
+    libgcc-ng: '>=12'
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/rust-1.72.1-hb12b0c0_0.conda
+  hash:
+    md5: 62cf0cfc8c06e65d04bb74276b2b98fa
+    sha256: b83a094dd3f840c599194a7a45aac33c2121c588b0606dfdbc9f1da2169c5ade
+  optional: false
+  category: main
+  build: hb12b0c0_0
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 0
+  license: MIT
+  size: 238017526
+  timestamp: 1695174573010
+- name: rust-std-powerpc64le-unknown-linux-gnu
+  version: 1.72.1
+  manager: conda
+  platform: linux-ppc64le
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-powerpc64le-unknown-linux-gnu-1.72.1-h6ac4ec8_0.conda
+  hash:
+    md5: e6e5dd85019fbfe753af54ccc26dfe74
+    sha256: 26263d97808c4d5ac1deb901a536798442547d41c47da386bf3b83d9e350f885
+  optional: false
+  category: main
+  build: h6ac4ec8_0
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 0
+  constrains:
+  - rust >=1.72.1,<1.72.2.0a0
+  license: MIT
+  noarch: generic
+  size: 28641247
+  timestamp: 1695174110366
 - name: jq
   version: '1.6'
   manager: conda
@@ -756,29 +793,6 @@ package:
   license_family: Apache
   size: 2440586
   timestamp: 1676838885103
-- name: rust
-  version: 1.72.0
-  manager: conda
-  platform: linux-ppc64le
-  dependencies:
-    gcc_impl_linux-ppc64le: '*'
-    rust-std-powerpc64le-unknown-linux-gnu: ==1.72.0 h6ac4ec8_2
-    libzlib: '>=1.2.13,<1.3.0a0'
-    libgcc-ng: '>=12'
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/rust-1.72.0-hb12b0c0_2.conda
-  hash:
-    md5: ba9f424dc80dfb7682ef35ed54f0d88e
-    sha256: ad52d98fb5f38b9c45c5132739dedfcc50fdabd55be28ceb20cc8a2fca3f1f6e
-  optional: false
-  category: main
-  build: hb12b0c0_2
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 2
-  license: MIT
-  license_family: MIT
-  size: 236877502
-  timestamp: 1693582994167
 - name: gcc_impl_linux-ppc64le
   version: 13.2.0
   manager: conda
@@ -789,8 +803,8 @@ package:
     libstdcxx-ng: '>=13.2.0'
     libgcc-devel_linux-ppc64le: ==13.2.0 hf1adbf4_0
     libgomp: '>=13.2.0'
-    libsanitizer: ==13.2.0 h0849fd4_0
     libgcc-ng: '>=13.2.0'
+    libsanitizer: ==13.2.0 h0849fd4_0
   url: https://conda.anaconda.org/conda-forge/linux-ppc64le/gcc_impl_linux-ppc64le-13.2.0-h7908001_0.conda
   hash:
     md5: 8315f6ffcbd716169b52cd630ec7bc6c
@@ -804,6 +818,110 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 52308212
   timestamp: 1694383657541
+- name: libgcc-ng
+  version: 13.2.0
+  manager: conda
+  platform: linux-ppc64le
+  dependencies:
+    _libgcc_mutex: ==0.1 conda_forge
+    _openmp_mutex: '>=4.5'
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-13.2.0-h31ea8bd_0.conda
+  hash:
+    md5: e0bc0831bc99c80a8db36c5075e85ea7
+    sha256: 3af1bb7149a20c254545f68799f426a474afaeb791095ee2b6c8be1c9dc5c48e
+  optional: false
+  category: main
+  build: h31ea8bd_0
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 0
+  constrains:
+  - libgomp 13.2.0 h31ea8bd_0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 713798
+  timestamp: 1694383547792
+- name: libzlib
+  version: 1.2.13
+  manager: conda
+  platform: linux-ppc64le
+  dependencies:
+    libgcc-ng: '>=12'
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libzlib-1.2.13-ha17a0cc_5.conda
+  hash:
+    md5: 290dff69f8404e84baf28d80a7e51d47
+    sha256: ee650810f85b95c22e65a6f75eafd304851049f9e5a7b73478876f4231c7d413
+  optional: false
+  category: main
+  build: ha17a0cc_5
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 5
+  constrains:
+  - zlib 1.2.13 *_5
+  license: Zlib
+  license_family: Other
+  size: 70345
+  timestamp: 1686575205370
+- name: _libgcc_mutex
+  version: '0.1'
+  manager: conda
+  platform: linux-ppc64le
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/_libgcc_mutex-0.1-conda_forge.tar.bz2
+  hash:
+    md5: e96f48755dc7c9f86c4aecf4cac40477
+    sha256: 5dd34b412e6274c0614d01a2f616844376ae873dfb8782c2c67d055779de6df6
+  optional: false
+  category: main
+  build: conda_forge
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 0
+  license: None
+  size: 2550
+  timestamp: 1578324511581
+- name: _openmp_mutex
+  version: '4.5'
+  manager: conda
+  platform: linux-ppc64le
+  dependencies:
+    libgomp: '>=7.5.0'
+    _libgcc_mutex: ==0.1 conda_forge
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/_openmp_mutex-4.5-2_gnu.tar.bz2
+  hash:
+    md5: 3e41cbaba7e4988d15a24c4e85e6171b
+    sha256: 4c89c2067cf5e7b0fbbdc3200c3f7affa5896e14812acf10f51575be87ae0c05
+  optional: false
+  category: main
+  build: 2_gnu
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 16
+  constrains:
+  - openmp_impl 9999
+  license: BSD-3-Clause
+  license_family: BSD
+  size: 23710
+  timestamp: 1650671119831
+- name: libgomp
+  version: 13.2.0
+  manager: conda
+  platform: linux-ppc64le
+  dependencies:
+    _libgcc_mutex: ==0.1 conda_forge
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-13.2.0-h31ea8bd_0.conda
+  hash:
+    md5: 9de9f229bc0a7d6717fd98c42a0e93cd
+    sha256: 870063a1532d01c43c0a2f3848b7e7ba8abb1b47ac0a4a6c421f2dc55c0b7b18
+  optional: false
+  category: main
+  build: h31ea8bd_0
+  arch: ppc64le
+  subdir: linux-ppc64le
+  build_number: 0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 425198
+  timestamp: 1694383463794
 - name: libstdcxx-ng
   version: 13.2.0
   manager: conda
@@ -822,24 +940,6 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 3973013
   timestamp: 1694383591256
-- name: libgcc-devel_linux-ppc64le
-  version: 13.2.0
-  manager: conda
-  platform: linux-ppc64le
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-devel_linux-ppc64le-13.2.0-hf1adbf4_0.conda
-  hash:
-    md5: 3f481279248cf7d68ca5df9f331f662f
-    sha256: 20458be48e601bd4bea80d36145a127217b169f110ebcc214e26db30ad4329ae
-  optional: false
-  category: main
-  build: hf1adbf4_0
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 573504
-  timestamp: 1694383423068
 - name: binutils_impl_linux-ppc64le
   version: '2.40'
   manager: conda
@@ -946,43 +1046,24 @@ package:
   noarch: generic
   size: 966384
   timestamp: 1635519348235
-- name: libgomp
+- name: libgcc-devel_linux-ppc64le
   version: 13.2.0
   manager: conda
   platform: linux-ppc64le
-  dependencies:
-    _libgcc_mutex: ==0.1 conda_forge
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-13.2.0-h31ea8bd_0.conda
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-devel_linux-ppc64le-13.2.0-hf1adbf4_0.conda
   hash:
-    md5: 9de9f229bc0a7d6717fd98c42a0e93cd
-    sha256: 870063a1532d01c43c0a2f3848b7e7ba8abb1b47ac0a4a6c421f2dc55c0b7b18
+    md5: 3f481279248cf7d68ca5df9f331f662f
+    sha256: 20458be48e601bd4bea80d36145a127217b169f110ebcc214e26db30ad4329ae
   optional: false
   category: main
-  build: h31ea8bd_0
+  build: hf1adbf4_0
   arch: ppc64le
   subdir: linux-ppc64le
   build_number: 0
   license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 425198
-  timestamp: 1694383463794
-- name: _libgcc_mutex
-  version: '0.1'
-  manager: conda
-  platform: linux-ppc64le
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/_libgcc_mutex-0.1-conda_forge.tar.bz2
-  hash:
-    md5: e96f48755dc7c9f86c4aecf4cac40477
-    sha256: 5dd34b412e6274c0614d01a2f616844376ae873dfb8782c2c67d055779de6df6
-  optional: false
-  category: main
-  build: conda_forge
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 0
-  license: None
-  size: 2550
-  timestamp: 1578324511581
+  size: 573504
+  timestamp: 1694383423068
 - name: libsanitizer
   version: 13.2.0
   manager: conda
@@ -1002,95 +1083,6 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 4109527
   timestamp: 1694383568620
-- name: libgcc-ng
-  version: 13.2.0
-  manager: conda
-  platform: linux-ppc64le
-  dependencies:
-    _libgcc_mutex: ==0.1 conda_forge
-    _openmp_mutex: '>=4.5'
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-13.2.0-h31ea8bd_0.conda
-  hash:
-    md5: e0bc0831bc99c80a8db36c5075e85ea7
-    sha256: 3af1bb7149a20c254545f68799f426a474afaeb791095ee2b6c8be1c9dc5c48e
-  optional: false
-  category: main
-  build: h31ea8bd_0
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 0
-  constrains:
-  - libgomp 13.2.0 h31ea8bd_0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 713798
-  timestamp: 1694383547792
-- name: _openmp_mutex
-  version: '4.5'
-  manager: conda
-  platform: linux-ppc64le
-  dependencies:
-    libgomp: '>=7.5.0'
-    _libgcc_mutex: ==0.1 conda_forge
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/_openmp_mutex-4.5-2_gnu.tar.bz2
-  hash:
-    md5: 3e41cbaba7e4988d15a24c4e85e6171b
-    sha256: 4c89c2067cf5e7b0fbbdc3200c3f7affa5896e14812acf10f51575be87ae0c05
-  optional: false
-  category: main
-  build: 2_gnu
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 16
-  constrains:
-  - openmp_impl 9999
-  license: BSD-3-Clause
-  license_family: BSD
-  size: 23710
-  timestamp: 1650671119831
-- name: rust-std-powerpc64le-unknown-linux-gnu
-  version: 1.72.0
-  manager: conda
-  platform: linux-ppc64le
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-powerpc64le-unknown-linux-gnu-1.72.0-h6ac4ec8_2.conda
-  hash:
-    md5: 6239dd627047a27c20cfea15a34531f5
-    sha256: f723392662001ab0bf3239c7fd6ef106b6003d8a3821326ec82a44bc1ce94b4f
-  optional: false
-  category: main
-  build: h6ac4ec8_2
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 2
-  constrains:
-  - rust >=1.72.0,<1.72.1.0a0
-  license: MIT
-  license_family: MIT
-  noarch: generic
-  size: 28927286
-  timestamp: 1693582424160
-- name: libzlib
-  version: 1.2.13
-  manager: conda
-  platform: linux-ppc64le
-  dependencies:
-    libgcc-ng: '>=12'
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libzlib-1.2.13-ha17a0cc_5.conda
-  hash:
-    md5: 290dff69f8404e84baf28d80a7e51d47
-    sha256: ee650810f85b95c22e65a6f75eafd304851049f9e5a7b73478876f4231c7d413
-  optional: false
-  category: main
-  build: ha17a0cc_5
-  arch: ppc64le
-  subdir: linux-ppc64le
-  build_number: 5
-  constrains:
-  - zlib 1.2.13 *_5
-  license: Zlib
-  license_family: Other
-  size: 70345
-  timestamp: 1686575205370
 - name: oniguruma
   version: 6.9.8
   manager: conda
@@ -1111,6 +1103,49 @@ package:
   license_family: BSD
   size: 545547
   timestamp: 1653406825441
+- name: rust
+  version: 1.72.1
+  manager: conda
+  platform: linux-aarch64
+  dependencies:
+    gcc_impl_linux-aarch64: '*'
+    libzlib: '>=1.2.13,<1.3.0a0'
+    libgcc-ng: '>=12'
+    rust-std-aarch64-unknown-linux-gnu: ==1.72.1 ha15b78c_0
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/rust-1.72.1-h9d3d833_0.conda
+  hash:
+    md5: 1b82d1a31a240942b01295526bc62206
+    sha256: 8564091e9357c05e1474887620aae69a5406dafb3e7b13219df88f0fa7e0e2e6
+  optional: false
+  category: main
+  build: h9d3d833_0
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 0
+  license: MIT
+  size: 270692914
+  timestamp: 1695175516175
+- name: rust-std-aarch64-unknown-linux-gnu
+  version: 1.72.1
+  manager: conda
+  platform: linux-aarch64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-unknown-linux-gnu-1.72.1-ha15b78c_0.conda
+  hash:
+    md5: 9992c85ea68d44b23b6162aeb88c4c03
+    sha256: 0983f3a90d0547b5adb6a9cd16031b58100b6b6025658f20f4808435c62ccf54
+  optional: false
+  category: main
+  build: ha15b78c_0
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 0
+  constrains:
+  - rust >=1.72.1,<1.72.2.0a0
+  license: MIT
+  noarch: generic
+  size: 45979022
+  timestamp: 1695174395078
 - name: jq
   version: '1.6'
   manager: conda
@@ -1173,29 +1208,6 @@ package:
   license_family: Apache
   size: 2398482
   timestamp: 1676839419214
-- name: rust
-  version: 1.72.0
-  manager: conda
-  platform: linux-aarch64
-  dependencies:
-    gcc_impl_linux-aarch64: '*'
-    libzlib: '>=1.2.13,<1.3.0a0'
-    libgcc-ng: '>=12'
-    rust-std-aarch64-unknown-linux-gnu: ==1.72.0 ha15b78c_2
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/rust-1.72.0-h9d3d833_2.conda
-  hash:
-    md5: 0843ecd20b36d95cb43863774d9752ac
-    sha256: 69a471c2d2130544b0e11ad7c442f7cea539d754c6812d26954749469681a2e0
-  optional: false
-  category: main
-  build: h9d3d833_2
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 2
-  license: MIT
-  license_family: MIT
-  size: 269369540
-  timestamp: 1693582744036
 - name: gcc_impl_linux-aarch64
   version: 13.2.0
   manager: conda
@@ -1221,6 +1233,89 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 50007987
   timestamp: 1694384661528
+- name: libgcc-ng
+  version: 13.2.0
+  manager: conda
+  platform: linux-aarch64
+  dependencies:
+    _openmp_mutex: '>=4.5'
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-13.2.0-hf8544c7_0.conda
+  hash:
+    md5: a9786ee78ab2d07c345ddd74cba831c4
+    sha256: 1f3f5e67356c2b2645cc0fa40b3b8f875f7abc9c7677aa12ffcddedbacdb7cf4
+  optional: false
+  category: main
+  build: hf8544c7_0
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 0
+  constrains:
+  - libgomp 13.2.0 hf8544c7_0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 458177
+  timestamp: 1694384528225
+- name: libzlib
+  version: 1.2.13
+  manager: conda
+  platform: linux-aarch64
+  dependencies:
+    libgcc-ng: '>=12'
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libzlib-1.2.13-h31becfc_5.conda
+  hash:
+    md5: b213aa87eea9491ef7b129179322e955
+    sha256: aeeefbb61e5e8227e53566d5e42dbb49e120eb99109996bf0dbfde8f180747a7
+  optional: false
+  category: main
+  build: h31becfc_5
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 5
+  constrains:
+  - zlib 1.2.13 *_5
+  license: Zlib
+  license_family: Other
+  size: 67036
+  timestamp: 1686575148440
+- name: _openmp_mutex
+  version: '4.5'
+  manager: conda
+  platform: linux-aarch64
+  dependencies:
+    libgomp: '>=7.5.0'
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
+  hash:
+    md5: 6168d71addc746e8f2b8d57dfd2edcea
+    sha256: 3702bef2f0a4d38bd8288bbe54aace623602a1343c2cfbefd3fa188e015bebf0
+  optional: false
+  category: main
+  build: 2_gnu
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 16
+  constrains:
+  - openmp_impl 9999
+  license: BSD-3-Clause
+  license_family: BSD
+  size: 23712
+  timestamp: 1650670790230
+- name: libgomp
+  version: 13.2.0
+  manager: conda
+  platform: linux-aarch64
+  dependencies: {}
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-13.2.0-hf8544c7_0.conda
+  hash:
+    md5: e99024524c16f89df0fce99cd12ca4aa
+    sha256: 88df44c6be84d25b38243b9c1bb02503ac4966fa8fc62ac49ab5d2d6e7084bab
+  optional: false
+  category: main
+  build: hf8544c7_0
+  arch: aarch64
+  subdir: linux-aarch64
+  build_number: 0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  size: 422489
+  timestamp: 1694384412447
 - name: binutils_impl_linux-aarch64
   version: '2.40'
   manager: conda
@@ -1346,67 +1441,6 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 4076495
   timestamp: 1694384550983
-- name: libgcc-ng
-  version: 13.2.0
-  manager: conda
-  platform: linux-aarch64
-  dependencies:
-    _openmp_mutex: '>=4.5'
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-13.2.0-hf8544c7_0.conda
-  hash:
-    md5: a9786ee78ab2d07c345ddd74cba831c4
-    sha256: 1f3f5e67356c2b2645cc0fa40b3b8f875f7abc9c7677aa12ffcddedbacdb7cf4
-  optional: false
-  category: main
-  build: hf8544c7_0
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 0
-  constrains:
-  - libgomp 13.2.0 hf8544c7_0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 458177
-  timestamp: 1694384528225
-- name: _openmp_mutex
-  version: '4.5'
-  manager: conda
-  platform: linux-aarch64
-  dependencies:
-    libgomp: '>=7.5.0'
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
-  hash:
-    md5: 6168d71addc746e8f2b8d57dfd2edcea
-    sha256: 3702bef2f0a4d38bd8288bbe54aace623602a1343c2cfbefd3fa188e015bebf0
-  optional: false
-  category: main
-  build: 2_gnu
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 16
-  constrains:
-  - openmp_impl 9999
-  license: BSD-3-Clause
-  license_family: BSD
-  size: 23712
-  timestamp: 1650670790230
-- name: libgomp
-  version: 13.2.0
-  manager: conda
-  platform: linux-aarch64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-13.2.0-hf8544c7_0.conda
-  hash:
-    md5: e99024524c16f89df0fce99cd12ca4aa
-    sha256: 88df44c6be84d25b38243b9c1bb02503ac4966fa8fc62ac49ab5d2d6e7084bab
-  optional: false
-  category: main
-  build: hf8544c7_0
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 0
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  size: 422489
-  timestamp: 1694384412447
 - name: libgcc-devel_linux-aarch64
   version: 13.2.0
   manager: conda
@@ -1443,50 +1477,6 @@ package:
   license: GPL-3.0-only WITH GCC-exception-3.1
   size: 3751438
   timestamp: 1694384578216
-- name: libzlib
-  version: 1.2.13
-  manager: conda
-  platform: linux-aarch64
-  dependencies:
-    libgcc-ng: '>=12'
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libzlib-1.2.13-h31becfc_5.conda
-  hash:
-    md5: b213aa87eea9491ef7b129179322e955
-    sha256: aeeefbb61e5e8227e53566d5e42dbb49e120eb99109996bf0dbfde8f180747a7
-  optional: false
-  category: main
-  build: h31becfc_5
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 5
-  constrains:
-  - zlib 1.2.13 *_5
-  license: Zlib
-  license_family: Other
-  size: 67036
-  timestamp: 1686575148440
-- name: rust-std-aarch64-unknown-linux-gnu
-  version: 1.72.0
-  manager: conda
-  platform: linux-aarch64
-  dependencies: {}
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-unknown-linux-gnu-1.72.0-ha15b78c_2.conda
-  hash:
-    md5: c74355f5c509247f0560c72e588d97d9
-    sha256: 15aa5d8f88905967f5b15dc3e88706c272042c1b15ec2eac5ea52948ce2dbc0d
-  optional: false
-  category: main
-  build: ha15b78c_2
-  arch: aarch64
-  subdir: linux-aarch64
-  build_number: 2
-  constrains:
-  - rust >=1.72.0,<1.72.1.0a0
-  license: MIT
-  license_family: MIT
-  noarch: generic
-  size: 45982468
-  timestamp: 1693581933667
 - name: oniguruma
   version: 6.9.8
   manager: conda

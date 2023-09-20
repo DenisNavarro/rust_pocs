@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:bookworm-20230904-slim
+FROM docker.io/library/debian:bookworm-20230919-slim
 
 ################
 # Install pixi #
