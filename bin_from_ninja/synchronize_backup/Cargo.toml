@@ -7,7 +7,7 @@ edition = "2021"
 anyhow = "1"
 camino = "1"
 clap = { version = "4", features = ["derive"] }
-regex = { version = "1", default-features = false, features = ["std", "perf"] }
+regex-lite = "0.1"
 time = { version = "0.3", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]

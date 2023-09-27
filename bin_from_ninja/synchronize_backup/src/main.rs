@@ -10,7 +10,7 @@ use std::process::Command;
 use anyhow::{ensure, Context};
 use camino::Utf8Path;
 use clap::Parser;
-use regex::Regex;
+use regex_lite::Regex;
 use time::macros::format_description;
 use time::OffsetDateTime;
 
