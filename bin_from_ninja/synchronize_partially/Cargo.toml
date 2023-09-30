@@ -7,6 +7,7 @@ edition = "2021"
 anyhow = "1"
 camino = "1"
 clap = { version = "4", features = ["derive"] }
+humantime = "2.1.0"
 
 [dev-dependencies]
 assert_fs = { path = "../assert_fs" }

@@ -52,8 +52,8 @@ RUN set -eux; \
 RUN set -eux; \
     rustup component add clippy rustfmt; \
     apt-get update; \
-    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync` and `time`.
-    apt-get install -y --no-install-recommends jq make ninja-build rsync time; \
+    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
+    apt-get install -y --no-install-recommends jq make ninja-build rsync; \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY . /app

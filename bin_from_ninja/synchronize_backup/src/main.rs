@@ -6,10 +6,12 @@ use std::fs::{self, DirEntry, Metadata};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::time::Instant;
 
 use anyhow::{ensure, Context};
 use camino::Utf8Path;
 use clap::Parser;
+use humantime::format_duration;
 use regex_lite::Regex;
 use time::macros::format_description;
 use time::OffsetDateTime;
@@ -21,7 +23,7 @@ use time::OffsetDateTime;
 /// For example, on 2022-12-13 14:15:16, if the directory `/my/hard/drive/foo_2022-08-09-10h11`
 /// exists, then `synchronize_backup /path/to/foo /my/hard/drive` renames
 /// `/my/hard/drive/foo_2022-08-09-10h11` to `/my/hard/drive/foo_2022-12-13-14h15` and then calls
-/// `time rsync -aAXHv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
+/// `rsync -aAXHv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
 ///
 /// If there is no directory candidate to rename, `rsync` is called anyway and creates a new one.
 /// If there are several candidates, no one is renamed, `rsync` is not called and an error code is
@@ -48,7 +50,7 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
     writeln!(io::stdout(), "Synchronize {src_dir_path:?} with {final_dst_path:?}.")
         .context("failed to write to stdout")?;
-    synchronize(src_dir_path, &final_dst_path)
+    execute_and_print_elapsed_time(|| synchronize(src_dir_path, &final_dst_path))
 }
 
 fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
@@ -125,12 +127,20 @@ fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex
     regex.captures(dir_name).is_some_and(|capture| &capture[1] == src_dir_name)
 }
 
+fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
+    let start = Instant::now();
+    f()?;
+    let duration = start.elapsed();
+    writeln!(io::stdout(), "Elapsed time: {}.", format_duration(duration))
+        .context("failed to write to stdout")
+}
+
 fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
     if !src_path.as_ref().ends_with('/') {
         src_path.to_mut().push('/');
     }
-    Command::new("time")
-        .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
+    Command::new("rsync")
+        .args(["-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
         .arg(dst_path)
         .status()
         .context("failed to execute process")

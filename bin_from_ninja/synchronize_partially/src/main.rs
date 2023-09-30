@@ -6,10 +6,12 @@ use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::time::Instant;
 
 use anyhow::{bail, Context};
 use camino::Utf8Path;
 use clap::Parser;
+use humantime::format_duration;
 
 #[allow(clippy::doc_markdown)]
 #[derive(Parser)]
@@ -18,7 +20,7 @@ use clap::Parser;
 ///
 /// For example, if `/aaa/bbb/foo` is a file and `/aaa/bbb/bar/baz` a directory, then
 /// `synchronize_partially /aaa/bbb /xxx/yyy foo bar/baz` copies `/aaa/bbb/foo` to `/xxx/yyy/foo`
-/// and calls `time rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
+/// and calls `rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
 ///
 /// In this example, you can see that `synchronize_partially` works on joined command-line paths.
 /// When a joined command-line path is a symlink, `synchronize_partially` follows it.
@@ -50,7 +52,7 @@ fn work(src_prefix_path: &str, dst_prefix_path: &Path, subpaths: &[String]) -> a
             }
             writeln!(io::stdout(), "---> Synchronize {src_path:?} with {dst_path:?}.")
                 .context("failed to write to stdout")?;
-            synchronize_directory(src_path.into(), &dst_path)
+            execute_and_print_elapsed_time(|| synchronize_directory(src_path.into(), &dst_path))
         }
         Operation::CopyFile | Operation::RemoveDestDirAndCopyFile => {
             if operation == Operation::RemoveDestDirAndCopyFile {
@@ -60,7 +62,7 @@ fn work(src_prefix_path: &str, dst_prefix_path: &Path, subpaths: &[String]) -> a
             }
             writeln!(io::stdout(), "---> Copy the file {src_path:?} to {dst_path:?}.")
                 .context("failed to write to stdout")?;
-            copy_file(&src_path, &dst_path)
+            execute_and_print_elapsed_time(|| copy_file(&src_path, &dst_path))
         }
     })
 }
@@ -124,12 +126,20 @@ fn check_dst_path_is_ok(src_is_dir: bool, dst_path: &Path) -> anyhow::Result<Ope
     Ok(Operation::CopyFile)
 }
 
+fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
+    let start = Instant::now();
+    f()?;
+    let duration = start.elapsed();
+    writeln!(io::stdout(), "Elapsed time: {}.", format_duration(duration))
+        .context("failed to write to stdout")
+}
+
 fn synchronize_directory(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
     if !src_path.as_ref().ends_with('/') {
         src_path.to_mut().push('/');
     }
-    Command::new("time")
-        .args(["rsync", "-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
+    Command::new("rsync")
+        .args(["-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
         .arg(dst_path)
         .status()
         .context("failed to execute process")

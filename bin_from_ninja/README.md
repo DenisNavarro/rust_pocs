@@ -108,7 +108,7 @@ This is a simple CLI I execute every evening.
 /// For example, on 2022-12-13 14:15:16, if the directory `/my/hard/drive/foo_2022-08-09-10h11`
 /// exists, then `synchronize_backup /path/to/foo /my/hard/drive` renames
 /// `/my/hard/drive/foo_2022-08-09-10h11` to `/my/hard/drive/foo_2022-12-13-14h15` and then calls
-/// `time rsync -aAXHv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
+/// `rsync -aAXHv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
 ///
 /// If there is no directory candidate to rename, `rsync` is called anyway and creates a new one.
 /// If there are several candidates, no one is renamed, `rsync` is not called and an error code is
@@ -129,7 +129,7 @@ This is a simple CLI I often use.
 ///
 /// For example, if `/aaa/bbb/foo` is a file and `/aaa/bbb/bar/baz` a directory, then
 /// `synchronize_partially /aaa/bbb /xxx/yyy foo bar/baz` copies `/aaa/bbb/foo` to `/xxx/yyy/foo`
-/// and calls `time rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
+/// and calls `rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
 ///
 /// In this example, you can see that `synchronize_partially` works on joined command-line paths.
 /// When a joined command-line path is a symlink, `synchronize_partially` follows it.

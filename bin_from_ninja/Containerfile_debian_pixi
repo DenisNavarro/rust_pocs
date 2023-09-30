@@ -29,8 +29,8 @@ RUN set -eux; \
     #   to have the result in a cache before `COPY . /app`.
     pixi install; \
     apt-get update; \
-    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync` and `time`.
-    apt-get install -y --no-install-recommends rsync time; \
+    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
+    apt-get install -y --no-install-recommends rsync; \
     rm -rf /var/lib/apt/lists/*
 COPY . /app
 RUN pixi run all
