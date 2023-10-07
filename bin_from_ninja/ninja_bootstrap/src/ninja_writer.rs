@@ -85,7 +85,7 @@ impl<W: Write> NinjaWriter<W> {
         let rule_name = rule_name.as_ref();
         self.writer
             .write_all(b"rule ")
-            .and_then(|_| self.writer.write_all(rule_name))
+            .and_then(|()| self.writer.write_all(rule_name))
             .with_context(|_| RuleSnafu { rule_name: String::from_utf8_lossy(rule_name) })?;
         self.current_line_size = 5 + rule_name.len();
         Ok(AfterRule(self))
@@ -94,7 +94,7 @@ impl<W: Write> NinjaWriter<W> {
     fn write_command(&mut self, command: &[u8]) -> Result<AfterCommand<W>, Error> {
         self.writer
             .write_all(b"\n  command = ")
-            .and_then(|_| self.writer.write_all(command))
+            .and_then(|()| self.writer.write_all(command))
             .with_context(|_| CommandSnafu { command: String::from_utf8_lossy(command) })?;
         self.current_line_size = 12 + command.len();
         Ok(AfterCommand(self))
