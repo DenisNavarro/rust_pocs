@@ -17,7 +17,7 @@ RUN set -eux; \
     rm install.sh
 
 # Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/.pixi/bin"`.
-ENV PATH $PATH:/root/.pixi/bin
+ENV PATH="$PATH:/root/.pixi/bin"
 
 ########################################################################
 # Compile and check local Rust programs and deploy them to "$HOME/bin" #
@@ -37,6 +37,6 @@ RUN pixi run all
 
 # Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/bin"` so that
 #   you can use `synchronize_backup`, `synchronize_partially`, etc.
-ENV PATH $PATH:/root/bin
+ENV PATH="$PATH:/root/bin"
 
 CMD ["/bin/bash"]
