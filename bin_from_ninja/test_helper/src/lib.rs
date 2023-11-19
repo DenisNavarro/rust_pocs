@@ -1,7 +1,3 @@
-#![forbid(unsafe_code)]
-#![warn(clippy::nursery, clippy::pedantic)]
-#![allow(clippy::missing_errors_doc)]
-
 //! Utility to write unit tests
 
 use std::fmt;

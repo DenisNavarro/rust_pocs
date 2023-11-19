@@ -1,6 +1,3 @@
-#![forbid(unsafe_code)]
-#![warn(clippy::nursery, clippy::pedantic)]
-
 use std::borrow::Cow;
 use std::fs;
 use std::io::{self, Write};

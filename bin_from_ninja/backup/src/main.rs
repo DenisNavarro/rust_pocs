@@ -1,6 +1,3 @@
-#![forbid(unsafe_code)]
-#![warn(clippy::nursery, clippy::pedantic)]
-
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};

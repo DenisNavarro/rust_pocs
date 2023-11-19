@@ -1,6 +1,3 @@
-#![forbid(unsafe_code)]
-#![warn(clippy::nursery, clippy::pedantic)]
-
 //! Write a Ninja build file to stdout
 //!
 //! In the `bin_from_ninja` POC, `make build.ninja` redirects the output of `ninja_bootstrap` to

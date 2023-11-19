@@ -14,3 +14,10 @@ debug = false
 
 [profile.release]
 strip = true
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+nursery = "warn"
+pedantic = "warn"

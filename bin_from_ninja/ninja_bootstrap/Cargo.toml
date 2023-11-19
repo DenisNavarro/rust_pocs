@@ -19,3 +19,6 @@ anyhow = { version = "1", features = ["backtrace"] }
 [[bin]]
 name = "ninja_bootstrap"
 test = false
+
+[lints]
+workspace = true
