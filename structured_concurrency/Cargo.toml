@@ -8,3 +8,10 @@ debug = false
 
 [profile.release]
 strip = true
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+nursery = "warn"
+pedantic = "warn"

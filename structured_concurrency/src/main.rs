@@ -2,9 +2,6 @@
 // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/main.rs
 // The original code lacks error handling. To limit the differences, I did not fix it.
 
-#![warn(clippy::nursery, clippy::pedantic)]
-#![allow(clippy::unused_io_amount)]
-
 use std::fs;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
@@ -38,6 +35,7 @@ fn main() {
     println!("Shutting down.");
 }
 
+#[allow(clippy::unused_io_amount)]
 fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
 

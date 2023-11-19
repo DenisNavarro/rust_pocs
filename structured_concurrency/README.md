@@ -39,7 +39,6 @@ In the original code, `ThreadPool::new` panicked if the size (thread count) was 
 ## Make Clippy happy
 
 The other changes in the code are just to make Clippy happy.  
-I like using `#![warn(clippy::nursery, clippy::pedantic)]`.
 
 ## Add a Makefile
 
