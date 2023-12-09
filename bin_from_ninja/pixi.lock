@@ -1,4 +1,4 @@
-version: 2
+version: 3
 metadata:
   content_hash:
     linux-64: e90c2ee71ad70fc0a1c8302029533a7d1498f2bffcd0eaa8d2934700e775dc1d
@@ -295,102 +295,107 @@ package:
   timestamp: 1695219712169
 - platform: linux-64
   name: jq
-  version: '1.6'
+  version: '1.7'
   category: main
   manager: conda
   dependencies:
-  - libgcc-ng >=7.5.0
-  - oniguruma >=6.9.3,<6.10.0a0
-  url: https://conda.anaconda.org/conda-forge/linux-64/jq-1.6-h36c2ea0_1000.tar.bz2
+  - libgcc-ng >=12
+  - oniguruma 6.9.*
+  - oniguruma >=6.9.9,<6.10.0a0
+  url: https://conda.anaconda.org/conda-forge/linux-64/jq-1.7-hd590300_0.conda
   hash:
-    md5: 8578ae83310b8c9f5717f1aa65054f36
-    sha256: 00e69aec19174e61c70b652bb62c77c0947a27d6720bda0cb8d5be654020804a
-  build: h36c2ea0_1000
+    md5: c29cbd5ee663325f9bed9a2b2488ef3a
+    sha256: e994d4e162a882ed9706f1ce992b5c33419ef425eafcd321252a6f94d3a05ab8
+  build: hd590300_0
   arch: x86_64
   subdir: linux-64
-  build_number: 1000
+  build_number: 0
   license: MIT
   license_family: MIT
-  size: 354165
-  timestamp: 1606940647337
+  size: 320652
+  timestamp: 1700818547823
 - platform: linux-aarch64
   name: jq
-  version: '1.6'
+  version: '1.7'
   category: main
   manager: conda
   dependencies:
-  - libgcc-ng >=7.5.0
-  - oniguruma >=6.9.3,<6.10.0a0
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/jq-1.6-hb9de7d4_1000.tar.bz2
+  - libgcc-ng >=12
+  - oniguruma 6.9.*
+  - oniguruma >=6.9.9,<6.10.0a0
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/jq-1.7-h31becfc_0.conda
   hash:
-    md5: 02587ab350c71d48247d3370f2f24dda
-    sha256: f3a795a07dbf5221a99f5b5406ca0ac5e624c8745ecacd606eec931ef305e7dd
-  build: hb9de7d4_1000
+    md5: e05a1c19a56db0d2298edb165298d2e5
+    sha256: 2d02a2c4cb117668f5ffb86faf27c35045d98bbe9a39c08ae75fa3fbc355b880
+  build: h31becfc_0
   arch: aarch64
   subdir: linux-aarch64
-  build_number: 1000
+  build_number: 0
   license: MIT
   license_family: MIT
-  size: 403972
-  timestamp: 1606941456337
+  size: 333865
+  timestamp: 1700819997364
 - platform: linux-ppc64le
   name: jq
-  version: '1.6'
+  version: '1.7'
   category: main
   manager: conda
   dependencies:
-  - libgcc-ng >=8.4.0
-  - oniguruma >=6.9.3,<6.10.0a0
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/jq-1.6-h339bb43_1000.tar.bz2
+  - libgcc-ng >=12
+  - oniguruma 6.9.*
+  - oniguruma >=6.9.9,<6.10.0a0
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/jq-1.7-ha17a0cc_0.conda
   hash:
-    md5: 18a1fd8753be50f651a4b47d7610b312
-    sha256: 13a9abe58daf09bcf70fc44b980dabc8917431a5aab5796e037ec2be398c2c0b
-  build: h339bb43_1000
+    md5: 99dadd9b6519a3b9b7a93f61cc4c6d12
+    sha256: 2eceb13759326ccef247a8a560bfa52f0d652709d66c9be8327f14c142fcb554
+  build: ha17a0cc_0
   arch: ppc64le
   subdir: linux-ppc64le
-  build_number: 1000
+  build_number: 0
   license: MIT
   license_family: MIT
-  size: 422710
-  timestamp: 1606941516649
+  size: 399787
+  timestamp: 1700820087109
 - platform: osx-64
   name: jq
-  version: '1.6'
+  version: '1.7'
   category: main
   manager: conda
   dependencies:
-  - oniguruma >=6.9.3,<6.10.0a0
-  url: https://conda.anaconda.org/conda-forge/osx-64/jq-1.6-hc929b4f_1000.tar.bz2
+  - oniguruma 6.9.*
+  - oniguruma >=6.9.9,<6.10.0a0
+  url: https://conda.anaconda.org/conda-forge/osx-64/jq-1.7-h10d778d_0.conda
   hash:
-    md5: b93b2f3582c1089b65fb042b1e4c0585
-    sha256: 85d8ee6bf5439572b03af416aa5900f4406299da1344540a45deccd31ecec6bd
-  build: hc929b4f_1000
+    md5: 3176fe261777b6eb50572f8da4024242
+    sha256: d4da72090838b1638ccacd4064d092629eaf029c346cc0a94e26e1245ddfeb00
+  build: h10d778d_0
   arch: x86_64
   subdir: osx-64
-  build_number: 1000
+  build_number: 0
   license: MIT
   license_family: MIT
-  size: 377318
-  timestamp: 1606940695289
+  size: 300286
+  timestamp: 1700819002101
 - platform: osx-arm64
   name: jq
-  version: '1.6'
+  version: '1.7'
   category: main
   manager: conda
   dependencies:
-  - oniguruma >=6.9.3,<6.10.0a0
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.6-h27ca646_1000.tar.bz2
+  - oniguruma 6.9.*
+  - oniguruma >=6.9.9,<6.10.0a0
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.7-h93a5062_0.conda
   hash:
-    md5: 4828e462499d335cdeb3a4ff81eb1d1f
-    sha256: 9bf14b2752a567cf669179169717fdc1fa1d247969a1647040a80706112a02ce
-  build: h27ca646_1000
+    md5: 5727c85f955158705b13988b9a7eb168
+    sha256: 1ac3f690e36c9882845eb2bcdf0e77aad2c96ec19fb5e51199028182a6d985c4
+  build: h93a5062_0
   arch: aarch64
   subdir: osx-arm64
-  build_number: 1000
+  build_number: 0
   license: MIT
   license_family: MIT
-  size: 366124
-  timestamp: 1606940748123
+  size: 315201
+  timestamp: 1700818897118
 - platform: linux-64
   name: kernel-headers_linux-64
   version: 2.6.32
@@ -1092,301 +1097,311 @@ package:
   timestamp: 1676837935565
 - platform: linux-64
   name: oniguruma
-  version: 6.9.8
+  version: 6.9.9
   category: main
   manager: conda
   dependencies:
   - libgcc-ng >=12
-  url: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.8-h166bdaf_0.tar.bz2
+  url: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.9-hd590300_0.conda
   hash:
-    md5: 5be58359dbbf568c1ec0be87e0c6cb1b
-    sha256: f6c470ba56c43e5f6c75fd28b05256fd8f5d54d76df29c0652496bf3b104ae2b
-  build: h166bdaf_0
+    md5: 77dab674d16c1525ebe65e67de30de0d
+    sha256: dec1c78df7670d34880f71f75ac716f082d087494b4a2c6a90d5d75a82c933ed
+  build: hd590300_0
   arch: x86_64
   subdir: linux-64
   build_number: 0
   license: BSD-2-Clause
   license_family: BSD
-  size: 440009
-  timestamp: 1653405951144
+  size: 246869
+  timestamp: 1697485543293
 - platform: linux-aarch64
   name: oniguruma
-  version: 6.9.8
+  version: 6.9.9
   category: main
   manager: conda
   dependencies:
   - libgcc-ng >=12
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.8-h4e544f5_0.tar.bz2
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.9-h31becfc_0.conda
   hash:
-    md5: 85599807237129c156b8463c53054949
-    sha256: 1096037ed1071ddb4d3033110ae3348d2144f45fc124e3d6c175eecfbd73f175
-  build: h4e544f5_0
+    md5: 475018b8e0b8720c985a185427f5bf13
+    sha256: e21b1822736959ba434ebce452ee86844a11d918c8b1c48c71f15e9a932fd571
+  build: h31becfc_0
   arch: aarch64
   subdir: linux-aarch64
   build_number: 0
   license: BSD-2-Clause
   license_family: BSD
-  size: 464504
-  timestamp: 1653406736270
+  size: 250005
+  timestamp: 1697487236819
 - platform: linux-ppc64le
   name: oniguruma
-  version: 6.9.8
+  version: 6.9.9
   category: main
   manager: conda
   dependencies:
   - libgcc-ng >=12
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.8-hb283c62_0.tar.bz2
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.9-ha17a0cc_0.conda
   hash:
-    md5: ffe45dc6bafd08bd683ee6ba45c7c38d
-    sha256: 2ea0fcd48d3363c4ba801b48837859431142689a1a238b852351f996149c418e
-  build: hb283c62_0
+    md5: ad9493324b5d7ca108d2ae808d3efa90
+    sha256: fdcfa08aae69449e8aed1ab5dac584080d290f10afe041b4390b987f186209f2
+  build: ha17a0cc_0
   arch: ppc64le
   subdir: linux-ppc64le
   build_number: 0
   license: BSD-2-Clause
   license_family: BSD
-  size: 545547
-  timestamp: 1653406825441
+  size: 289963
+  timestamp: 1697487579258
 - platform: osx-64
   name: oniguruma
-  version: 6.9.8
+  version: 6.9.9
   category: main
   manager: conda
   dependencies: []
-  url: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.8-hac89ed1_0.tar.bz2
+  url: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
   hash:
-    md5: 4b0b9b7334c349f7e9f0827f3f98d8af
-    sha256: 761b106acb7e97535c6da22b390a2dff6eea2a966a54ecf1f0f34d904b07ffd9
-  build: hac89ed1_0
+    md5: 0b1b97981c0b7b59e72606e9f3616431
+    sha256: c529ba66bcf31bc1d73c9a6a15cf90dce96e52d65f82e8b7ee903e8437ecb6e8
+  build: h10d778d_0
   arch: x86_64
   subdir: osx-64
   build_number: 0
   license: BSD-2-Clause
   license_family: BSD
-  size: 395624
-  timestamp: 1653406267651
+  size: 224443
+  timestamp: 1697485744652
 - platform: osx-arm64
   name: oniguruma
-  version: 6.9.8
+  version: 6.9.9
   category: main
   manager: conda
   dependencies: []
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.8-he4db4b2_0.tar.bz2
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
   hash:
-    md5: 7a480ecb5db0ee0ae1be37a8802d3cea
-    sha256: b2f62299f839c76702f516b43402d90e8e8d7b2cd09a9bdf35bfbdedf3ad84ba
-  build: he4db4b2_0
+    md5: 770c654e0d5bfa3aa1e6ac5440815cda
+    sha256: 66632aeef5b74e15746161db8fa8b5150a191ab05823d7d2f1587bdf96674c7b
+  build: h93a5062_0
   arch: aarch64
   subdir: osx-arm64
   build_number: 0
   license: BSD-2-Clause
   license_family: BSD
-  size: 387274
-  timestamp: 1653406073762
+  size: 223231
+  timestamp: 1697485732214
 - platform: linux-64
   name: rust
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - gcc_impl_linux-64
   - libgcc-ng >=12
   - libzlib >=1.2.13,<1.3.0a0
-  - rust-std-x86_64-unknown-linux-gnu 1.74.0 h2c6d0dc_0
-  url: https://conda.anaconda.org/conda-forge/linux-64/rust-1.74.0-h70c747d_0.conda
+  - rust-std-x86_64-unknown-linux-gnu 1.74.1 h2c6d0dc_0
+  url: https://conda.anaconda.org/conda-forge/linux-64/rust-1.74.1-h70c747d_0.conda
   hash:
-    md5: 47a3902182265f47c624e918610088e9
-    sha256: e6ffc3fe6ef3fc82277be33168725ecbd002c5f103f8dac79f457cb96e2740e2
+    md5: be243ba88d072f11701d5cdef6d6bd97
+    sha256: 5d3bc4c6f1a0b97ebcf5ce2c34d6d7982bf2d5ffff3d91ed55d2acfc4a9ede07
   build: h70c747d_0
   arch: x86_64
   subdir: linux-64
   build_number: 0
   license: MIT
-  size: 187647601
-  timestamp: 1700249558976
+  license_family: MIT
+  size: 187876743
+  timestamp: 1701976785447
 - platform: linux-aarch64
   name: rust
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - gcc_impl_linux-aarch64
   - libgcc-ng >=12
   - libzlib >=1.2.13,<1.3.0a0
-  - rust-std-aarch64-unknown-linux-gnu 1.74.0 hbe8e118_0
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/rust-1.74.0-h9d3d833_0.conda
+  - rust-std-aarch64-unknown-linux-gnu 1.74.1 hbe8e118_0
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/rust-1.74.1-h9d3d833_0.conda
   hash:
-    md5: a737bf5332c139a465693ae56ebc27b9
-    sha256: 7d9a6d8d899323399aa6d86b00c43474bcc86ccd8f41fd6dfd6040f320e3b618
+    md5: c6b5cae0ba26ac81820cefbd2a70f9f9
+    sha256: b03efde048a5f0972ed51a7ba163bf23f44c5b25ccd194430c12e3025a708bae
   build: h9d3d833_0
   arch: aarch64
   subdir: linux-aarch64
   build_number: 0
   license: MIT
-  size: 280671808
-  timestamp: 1700251140960
+  license_family: MIT
+  size: 279691710
+  timestamp: 1701978473299
 - platform: linux-ppc64le
   name: rust
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - gcc_impl_linux-ppc64le
   - libgcc-ng >=12
   - libzlib >=1.2.13,<1.3.0a0
-  - rust-std-powerpc64le-unknown-linux-gnu 1.74.0 h41e980f_0
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/rust-1.74.0-hb12b0c0_0.conda
+  - rust-std-powerpc64le-unknown-linux-gnu 1.74.1 h41e980f_0
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/rust-1.74.1-hb12b0c0_0.conda
   hash:
-    md5: 74cd713521d10b22c7ea0543c3c43df3
-    sha256: 5780e9b6ee0bdf1a3383c527ffcf0c1860160e16ac3abef4d3f90fba67d7771a
+    md5: 9648d5892f8353a133c6e8a3cfaea45f
+    sha256: 2220268d4574de9284f81a7b45fcb5cdadf76fdabab7f02383fc11ddf3c26b74
   build: hb12b0c0_0
   arch: ppc64le
   subdir: linux-ppc64le
   build_number: 0
   license: MIT
-  size: 241110535
-  timestamp: 1700249958142
+  license_family: MIT
+  size: 241167183
+  timestamp: 1701977922651
 - platform: osx-64
   name: rust
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
-  - rust-std-x86_64-apple-darwin 1.74.0 h38e4360_0
-  url: https://conda.anaconda.org/conda-forge/osx-64/rust-1.74.0-h7e1429e_0.conda
+  - rust-std-x86_64-apple-darwin 1.74.1 h38e4360_0
+  url: https://conda.anaconda.org/conda-forge/osx-64/rust-1.74.1-h7e1429e_0.conda
   hash:
-    md5: 7c3955e2b3f9a7bf409a8d132890fa15
-    sha256: feb777232be5f225068665d634ad49f3f708fd99a8744785e0cb062b24d7309a
+    md5: 72c3cf00c1971af0e4a788b33913c56c
+    sha256: 576f623aa75a8e1102ea1d30d40c2192b877bd8e82ddea7c23fcecfa2a281e34
   build: h7e1429e_0
   arch: x86_64
   subdir: osx-64
   build_number: 0
   license: MIT
-  size: 193879279
-  timestamp: 1700249101926
+  license_family: MIT
+  size: 193372850
+  timestamp: 1701976478689
 - platform: osx-arm64
   name: rust
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
-  - rust-std-aarch64-apple-darwin 1.74.0 hf6ec828_0
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.74.0-h4ff7c5d_0.conda
+  - rust-std-aarch64-apple-darwin 1.74.1 hf6ec828_0
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.74.1-h4ff7c5d_0.conda
   hash:
-    md5: acae7854779f1c76ee8ca186009e7f7c
-    sha256: 6cf79a2df22e8713d1177cca5ae9c0bffe06980fa83c4b2777298a758af1e45c
+    md5: c3677339af7c46ee64527c2fdd44b6c2
+    sha256: 87ebfb8ec72b51d0254a7b3adf568013616cc6f37527b57d96aca97cb9515f18
   build: h4ff7c5d_0
   arch: aarch64
   subdir: osx-arm64
   build_number: 0
   license: MIT
-  size: 146543937
-  timestamp: 1700249031967
+  license_family: MIT
+  size: 146761419
+  timestamp: 1701976424676
 - platform: osx-arm64
   name: rust-std-aarch64-apple-darwin
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - __unix
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-apple-darwin-1.74.0-hf6ec828_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-apple-darwin-1.74.1-hf6ec828_0.conda
   hash:
-    md5: d9aaa5107a965d1be7f9cfbde2a633e1
-    sha256: 450b8db7b5769fcbe292b75d02d835d9520988265d14c0a344f63e729225d20f
+    md5: a2117b92d7e30fe7de24e32d383f1e6a
+    sha256: 6b3f59ce4fcfc147ff8f33eb1b504c68ad5fdcbc5ae6c838f9330861f93f5dad
   build: hf6ec828_0
   arch: aarch64
   subdir: osx-arm64
   build_number: 0
   constrains:
-  - rust >=1.74.0,<1.74.1.0a0
+  - rust >=1.74.1,<1.74.2.0a0
   license: MIT
+  license_family: MIT
   noarch: generic
-  size: 30215552
-  timestamp: 1700248931086
+  size: 30031172
+  timestamp: 1701976322428
 - platform: linux-aarch64
   name: rust-std-aarch64-unknown-linux-gnu
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - __unix
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-unknown-linux-gnu-1.74.0-hbe8e118_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-aarch64-unknown-linux-gnu-1.74.1-hbe8e118_0.conda
   hash:
-    md5: 6f81fa6f8befdbc128cbb1a69d4889c3
-    sha256: 78788680bb4da4dd30947e41a4781efb8052e6c2eaeb3da80e2b4a28732d2ed6
+    md5: 0e4a8a6e586af479cece46b03d65881b
+    sha256: 877f63d3c4b1f9797b4088b348a3d473f7c34e82d691117aec98ab214595b87a
   build: hbe8e118_0
   arch: aarch64
   subdir: linux-aarch64
   build_number: 0
   constrains:
-  - rust >=1.74.0,<1.74.1.0a0
+  - rust >=1.74.1,<1.74.2.0a0
   license: MIT
+  license_family: MIT
   noarch: generic
-  size: 46426804
-  timestamp: 1700249952803
+  size: 46329972
+  timestamp: 1701977160675
 - platform: linux-ppc64le
   name: rust-std-powerpc64le-unknown-linux-gnu
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - __unix
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-powerpc64le-unknown-linux-gnu-1.74.0-h41e980f_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-powerpc64le-unknown-linux-gnu-1.74.1-h41e980f_0.conda
   hash:
-    md5: 16463496ad8affdae2d33eea740defae
-    sha256: 00bfeca713844a8e934a55ee4bf87a2e81c0953be64df5f6e862fd5dc1affac9
+    md5: 788e471f462884bcb5bf02cf0fecc16b
+    sha256: 81a12f7ce40b5940ac1e31387ad557085cfb05e7f7d98fede8050337b347a55f
   build: h41e980f_0
   arch: ppc64le
   subdir: linux-ppc64le
   build_number: 0
   constrains:
-  - rust >=1.74.0,<1.74.1.0a0
+  - rust >=1.74.1,<1.74.2.0a0
   license: MIT
+  license_family: MIT
   noarch: generic
-  size: 28796293
-  timestamp: 1700249546171
+  size: 28839945
+  timestamp: 1701977303403
 - platform: osx-64
   name: rust-std-x86_64-apple-darwin
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - __unix
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-apple-darwin-1.74.0-h38e4360_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-apple-darwin-1.74.1-h38e4360_0.conda
   hash:
-    md5: 9560233b67f81c6ef4a5ad3ac64febaa
-    sha256: a4faccb59be8eb8b220a0d707fd9aacf8c8be51f502ebaeb8afc9ea7b1ffbe4d
+    md5: bda0be92780a13a4cd8fabf0f2210733
+    sha256: ad23cb72c7481b77de9f4e42199e9b91a52376a1f86a0fae7d549b1d0e1d7492
   build: h38e4360_0
   arch: x86_64
   subdir: osx-64
   build_number: 0
   constrains:
-  - rust >=1.74.0,<1.74.1.0a0
+  - rust >=1.74.1,<1.74.2.0a0
   license: MIT
+  license_family: MIT
   noarch: generic
-  size: 30631988
-  timestamp: 1700248912094
+  size: 30711956
+  timestamp: 1701976253219
 - platform: linux-64
   name: rust-std-x86_64-unknown-linux-gnu
-  version: 1.74.0
+  version: 1.74.1
   category: main
   manager: conda
   dependencies:
   - __unix
-  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-unknown-linux-gnu-1.74.0-h2c6d0dc_0.conda
+  url: https://conda.anaconda.org/conda-forge/noarch/rust-std-x86_64-unknown-linux-gnu-1.74.1-h2c6d0dc_0.conda
   hash:
-    md5: 5b179502c9715a250198f24b47a08cdb
-    sha256: 3ab502496029c505dacdd5c9813662d03913e1f1e4a9ce5539bbdd63b0d905af
+    md5: 4a485bc1f0dda3e1a227d729b1e91ca5
+    sha256: faa041a40396feca79982b4e6976c8314931855db6e30d875ccc9825fd698059
   build: h2c6d0dc_0
   arch: x86_64
   subdir: linux-64
   build_number: 0
   constrains:
-  - rust >=1.74.0,<1.74.1.0a0
+  - rust >=1.74.1,<1.74.2.0a0
   license: MIT
+  license_family: MIT
   noarch: generic
-  size: 33742239
-  timestamp: 1700249382209
+  size: 33459376
+  timestamp: 1701976607868
 - platform: linux-64
   name: sysroot_linux-64
   version: '2.12'

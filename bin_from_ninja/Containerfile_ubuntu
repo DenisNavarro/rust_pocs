@@ -7,12 +7,12 @@ FROM docker.io/library/ubuntu:22.04
 # In practice, to install Rust on your PC, you can follow: https://www.rust-lang.org/tools/install
 
 # Copied from:
-# https://github.com/rust-lang/docker-rust/blob/c9d5ef80a065e00761652951a22064f0134614aa/1.74.0/bookworm/slim/Dockerfile
+# https://github.com/rust-lang/docker-rust/blob/71bff4a1e2962366266f94bc2ea821e4b1ee7a23/1.74.1/bookworm/slim/Dockerfile
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
-    RUST_VERSION=1.74.0
+    RUST_VERSION=1.74.1
 
 RUN set -eux; \
     apt-get update; \

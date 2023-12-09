@@ -11,7 +11,7 @@ example = "make example.ninja"
 fmt = "make fmt"
 
 [dependencies]
-jq = "1.6"
+jq = "1.7"
 make = "4.3"
 ninja = "1.11.1"
-rust = "1.74.0"
+rust = "1.74.1"
