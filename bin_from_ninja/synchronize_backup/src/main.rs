@@ -84,7 +84,7 @@ fn maybe_rename_a_candidate_to_final_dst(
     let candidates =
         get_candidates(src_dir_name, dst_dir_path).context("failed to look for candidates")?;
     ensure!(candidates.len() < 2, "there are several candidates: {candidates:?}");
-    if let Some(candidate) = candidates.get(0) {
+    if let Some(candidate) = candidates.first() {
         fs::rename(candidate, final_dst_path)
             .with_context(|| format!("failed to renamed {candidate:?} to {final_dst_path:?}"))?;
         writeln!(io::stdout(), "Renamed {candidate:?} to {final_dst_path:?}.")

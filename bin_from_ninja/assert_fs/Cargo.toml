@@ -1,6 +1,5 @@
 [package]
 name = "assert_fs"
-version = "0.0.0"
 edition = "2021"
 description = "Local subset of the assert_fs crate from crates.io"
 

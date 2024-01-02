@@ -1,6 +1,5 @@
 [package]
 name = "structured_concurrency"
-version = "0.0.0"
 edition = "2021"
 
 [profile.dev]
