@@ -1,4 +1,3 @@
-
-target/
-clippy.maketarget
-fmt.maketarget
+/target/
+/clippy.maketarget
+/fmt.maketarget

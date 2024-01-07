@@ -1,9 +1,9 @@
-.pixi/
-target/
+/.pixi/
+/target/
+/.ninja_deps
+/.ninja_log
+/build.ninja
+/fetch.maketarget
 */clippy.ninjatarget
 */fmt.ninjatarget
 */test.ninjatarget
-.ninja_deps
-.ninja_log
-build.ninja
-fetch.maketarget
