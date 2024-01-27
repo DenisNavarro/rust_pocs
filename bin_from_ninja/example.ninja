@@ -7,7 +7,7 @@ rule create_directory
 rule fmt
   command = cargo fmt -p $project && touch $out
 rule clippy
-  command = cargo clippy --offline --frozen -p $project -- -D warnings && touch $out
+  command = cargo clippy --offline --frozen --all-targets --all-features -p $project -- -D warnings && touch $out
 rule test
   command = cargo test --offline --frozen -p $project && touch $out
 rule release

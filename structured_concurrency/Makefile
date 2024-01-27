@@ -38,7 +38,7 @@ fmt.maketarget : $(wildcard src/*.rs)
 	cargo fmt && touch $@
 
 clippy.maketarget : fmt.maketarget
-	cargo clippy -- -D warnings && touch $@
+	cargo clippy --all-targets --all-features -- -D warnings && touch $@
 
 $(debug_exe_path) : Cargo.toml fmt.maketarget
 	cargo build

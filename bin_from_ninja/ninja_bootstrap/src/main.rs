@@ -36,7 +36,7 @@ fn write_rules<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()
     ninja_writer.rule("fmt")?.command("cargo fmt -p $project && touch $out")?.end()?;
     ninja_writer
         .rule("clippy")?
-        .command("cargo clippy --offline --frozen -p $project -- -D warnings && touch $out")?
+        .command("cargo clippy --offline --frozen --all-targets --all-features -p $project -- -D warnings && touch $out")?
         .end()?;
     ninja_writer
         .rule("test")?
