@@ -12,5 +12,5 @@ fmt = "make fmt"
 [dependencies]
 jq = "1.7.1"
 make = "4.3"
-ninja = "1.11.1"
+ninja = "1.12.1"
 rust = "1.77.0"

@@ -9,3 +9,6 @@ tempfile = "3"
 [lib]
 doctest = false
 test = false
+
+[lints.rust]
+dead_code = "allow"

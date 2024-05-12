@@ -18,7 +18,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-13.2.0-h7e041cc_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libzlib-1.2.13-hd590300_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/make-4.3-hd18ef5c_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.11.1-h924138e_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.12.1-h297d8ca_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.9-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/rust-1.77.0-h70c747d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/kernel-headers_linux-64-2.6.32-he073ed8_16.conda
@@ -37,7 +37,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-13.2.0-h9a76618_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libzlib-1.2.13-h31becfc_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.3-h309ac5b_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.11.1-hdd96247_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.12.1-h70be974_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.9-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/rust-1.77.0-h9d3d833_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_sysroot_linux-aarch64_curr_repodata_hack-4-h57d6b7b_13.conda
@@ -58,7 +58,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-13.2.0-h0849fd4_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libzlib-1.2.13-ha17a0cc_5.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.3-hf817498_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.11.1-h06f31f1_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.12.1-h7c29e54_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.9-ha17a0cc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/rust-1.77.0-hb12b0c0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_sysroot_linux-ppc64le_curr_repodata_hack-4-h43410cf_13.conda
@@ -70,7 +70,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/jq-1.7.1-h10d778d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libcxx-16.0.6-hd57cbcb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/make-4.3-h22f3db7_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.11.1-hb8565cd_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.12.1-h3c5361c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/rust-1.77.0-h7e1429e_0.conda
       osx-arm64:
@@ -78,7 +78,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.7.1-h93a5062_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-16.0.6-h4653b0c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.3-he57ea6c_1.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.11.1-hffc8910_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.12.1-h420ef59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/rust-1.77.0-h4ff7c5d_0.conda
 packages:
@@ -926,87 +926,79 @@ packages:
   timestamp: 1602706418711
 - kind: conda
   name: ninja
-  version: 1.11.1
-  build: h06f31f1_0
-  subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.11.1-h06f31f1_0.conda
-  sha256: dc2e6f1a538c369c8d335bb836b36ecf4316167f69debe8d201af7f4bf633c31
-  md5: 6e7fddcfa46577fe95ebff0b5eaa1605
-  depends:
-  - libgcc-ng >=12
-  - libstdcxx-ng >=12
-  arch: ppc64le
-  platform: linux
-  license: Apache-2.0
-  license_family: Apache
-  size: 2440586
-  timestamp: 1676838885103
-- kind: conda
-  name: ninja
-  version: 1.11.1
-  build: h924138e_0
+  version: 1.12.1
+  build: h297d8ca_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.11.1-h924138e_0.conda
-  sha256: b555247ac8859b4ff311e3d708a0640f1bfe9fae7125c485b444072474a84c41
-  md5: 73a4953a2d9c115bdc10ff30a52f675f
+  url: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.12.1-h297d8ca_0.conda
+  sha256: 40f7b76b07067935f8a5886aab0164067b7aa71eb5ad20b7278618c0c2c98e06
+  md5: 3aa1c7e292afeff25a0091ddd7c69b72
   depends:
   - libgcc-ng >=12
   - libstdcxx-ng >=12
-  arch: x86_64
-  platform: linux
   license: Apache-2.0
   license_family: Apache
-  size: 2251263
-  timestamp: 1676837602636
+  size: 2198858
+  timestamp: 1715440571685
 - kind: conda
   name: ninja
-  version: 1.11.1
-  build: hb8565cd_0
+  version: 1.12.1
+  build: h3c5361c_0
   subdir: osx-64
-  url: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.11.1-hb8565cd_0.conda
-  sha256: 6f738d9a26fa275317b95b2b96832daab9059ef64af9a338f904a3cb684ae426
-  md5: 49ad513efe39447aa51affd47e3aa68f
+  url: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.12.1-h3c5361c_0.conda
+  sha256: 230f11a2f73955b67550be09a0c1fd053772f5e01e98d5873547d63ebea73229
+  md5: a0ebabd021c8191aeb82793fe43cfdcb
   depends:
-  - libcxx >=14.0.6
-  arch: x86_64
-  platform: osx
+  - __osx >=10.13
+  - libcxx >=16
   license: Apache-2.0
   license_family: Apache
-  size: 121284
-  timestamp: 1676837793132
+  size: 124942
+  timestamp: 1715440780183
 - kind: conda
   name: ninja
-  version: 1.11.1
-  build: hdd96247_0
+  version: 1.12.1
+  build: h420ef59_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.12.1-h420ef59_0.conda
+  sha256: 11528acfa0f05d0c51639f6b09b51dc6611b801668449bb36c206c4b055be4f4
+  md5: 9166c10405d41c95ffde8fcb8e5c3d51
+  depends:
+  - __osx >=11.0
+  - libcxx >=16
+  license: Apache-2.0
+  license_family: Apache
+  size: 112576
+  timestamp: 1715440927034
+- kind: conda
+  name: ninja
+  version: 1.12.1
+  build: h70be974_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.11.1-hdd96247_0.conda
-  sha256: 2ba2e59f619c58d748f4b1b858502587691a7ed0fa9ac2c26ac04091908d95ae
-  md5: 58f4c67113cda9171e3c03d3e62731e1
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.12.1-h70be974_0.conda
+  sha256: a42f12c03a69cdcd2e7d5f95fd4e0f1e5fc43ef482aff2b8ee16a3730cc642de
+  md5: 216635cea46498d8045c7cf0f03eaf72
   depends:
   - libgcc-ng >=12
   - libstdcxx-ng >=12
-  arch: aarch64
-  platform: linux
   license: Apache-2.0
   license_family: Apache
-  size: 2398482
-  timestamp: 1676839419214
+  size: 2329583
+  timestamp: 1715442512963
 - kind: conda
   name: ninja
-  version: 1.11.1
-  build: hffc8910_0
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.11.1-hffc8910_0.conda
-  sha256: a594e90b0ed8202c280fff4a008f6a355d0db54a62b17067dc4a950370ddffc0
-  md5: fdecec4002f41cf6ea1eea5b52947ee0
+  version: 1.12.1
+  build: h7c29e54_0
+  subdir: linux-ppc64le
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.12.1-h7c29e54_0.conda
+  sha256: bcd5d7cbe6ce5286bce96509c54ecda21259f0b4b4c0848c6f4f2da7d205cc5a
+  md5: 3e9ee37e23ca2cb869a9e0f8281cbfc9
   depends:
-  - libcxx >=14.0.6
-  arch: aarch64
-  platform: osx
+  - libgcc-ng >=12
+  - libstdcxx-ng >=12
   license: Apache-2.0
   license_family: Apache
-  size: 107047
-  timestamp: 1676837935565
+  size: 2373900
+  timestamp: 1715442306941
 - kind: conda
   name: oniguruma
   version: 6.9.9
