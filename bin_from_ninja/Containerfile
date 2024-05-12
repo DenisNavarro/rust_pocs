@@ -1,0 +1,31 @@
+FROM docker.io/library/rust:1.78.0-slim-bookworm
+
+RUN set -eux; \
+    rustup component add clippy rustfmt; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends libssl-dev pkg-config; \
+    cargo install pixi --version 0.15.2 --locked; \
+    # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
+    apt-get install -y --no-install-recommends rsync; \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /work
+
+COPY pixi.toml pixi.lock /work/
+
+# Remark: `pixi run all` already does `pixi install` if needed. But it is better to have the
+# result in a cache before `COPY . /work/`.
+RUN pixi install
+
+COPY . /work/
+
+RUN set -eux; \
+    pixi run all; \
+    rm -rf .pixi target */clippy.ninjatarget */fmt.ninjatarget */test.ninjatarget .ninja_deps \
+      .ninja_log build.ninja
+
+# Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/bin"` so that you can use
+# `synchronize_backup`, `synchronize_partially`, etc.
+ENV PATH="$PATH:/root/bin"
+
+CMD ["/bin/bash"]

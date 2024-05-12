@@ -4,56 +4,51 @@
 
 This POC combines Make and [Ninja][] to compile and check the Rust programs [`backup`][],
 [`synchronize_backup`][] and [`synchronize_partially`][], and deploy the binaries to `$HOME/bin`,
-thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
+thanks to the `build.ninja` file written by [`ninja_bootstrap`][].  
+It also uses [Pixi][], but this dependency is optional.
 
 [Ninja]: https://ninja-build.org/
 [`backup`]: ./backup/src/main.rs
 [`synchronize_backup`]: ./synchronize_backup/src/main.rs
 [`synchronize_partially`]: ./synchronize_partially/src/main.rs
 [`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
+[Pixi]: https://pixi.sh/
 
-Requirements: There are 3 possible requirement sets:
+Requirements: See the [`Containerfile`][].
 
-  - Installing `podman` only. Then you can launch [`podman_debian.bash`][],
-    [`podman_ubuntu.bash`][], [`podman_debian_pixi.bash`][] or [`podman_ubuntu_pixi.bash`][]. But
-    the binaries will be in the `$HOME/bin` of the container, not your `$HOME/bin`.
-  - Installing what is in [`Containerfile_debian`][] or [`Containerfile_ubuntu`][]. Then you can
-    launch the Make commands.
-  - Installing what is in [`Containerfile_debian_pixi`][] or [`Containerfile_ubuntu_pixi`][]. Then
-    you can launch the [pixi][] commands.
+[`Containerfile`]: ./Containerfile
 
-[`podman_debian.bash`]: ./podman_debian.bash
-[`podman_ubuntu.bash`]: ./podman_ubuntu.bash
-[`podman_debian_pixi.bash`]: ./podman_debian_pixi.bash
-[`podman_ubuntu_pixi.bash`]: ./podman_ubuntu_pixi.bash
-[`Containerfile_debian`]: ./Containerfile_debian
-[`Containerfile_ubuntu`]: ./Containerfile_ubuntu
-[`Containerfile_debian_pixi`]: ./Containerfile_debian_pixi
-[`Containerfile_ubuntu_pixi`]: ./Containerfile_ubuntu_pixi
-[pixi]: https://pixi.sh/
+Remarks:
+
+  - [`podman.bash`][] checks that the [`Containerfile`][] works.
+  - If you don't want to install [Pixi][], then you need to install the dependencies listed in
+    [`pixi.toml`][].
+
+[`podman.bash`]: ./podman.bash
+[`pixi.toml`]: ./pixi.toml
 
 ## Worflow
 
 The idea is that, instead of launching `cargo clippy`, `cargo test`, etc., the developer launches
 one of these commands:
 
-  - `make fmt` or `pixi run fmt`: For each project, if not done yet, reformat the code (with
+  - `pixi run fmt` or `make fmt`: For each project, if not done yet, reformat the code (with
     `cargo fmt`).
-  - `make`, `make check` or `pixi run check`: For each project, if not done yet, reformat the code
+  - `pixi run check`, `make check` or `make`: For each project, if not done yet, reformat the code
     and check it (with `cargo clippy` and `cargo test`).
-  - `make all` or `pixi run all`: For each project, if not done yet, reformat the code, check it,
+  - `pixi run all` or `make all`: For each project, if not done yet, reformat the code, check it,
     compile it in release mode and, if all is good, deploy the up-to-date binary to `$HOME/bin`.
 
-In most cases, the developer launches `make` or `pixi run check`.
+In most cases, the developer launches `pixi run check` or `make`.
 
-When the code is ready to be deployed, `make all` or `pixi run all` can be launched.
+When the code is ready to be deployed, `pixi run all` or `make all` can be launched.
 
-`make fmt` and `pixi run fmt` may be useless if the developer can already reformat the current Rust
+`pixi run fmt` or `make fmt` may be useless if the developer can already reformat the current Rust
 file with a keystroke.
 
 Under the hood, these Make commands call Ninja to launch the underlying commands in parallel.
 
-The pixi commands call the Make commands in a local environment.
+The Pixi commands call the Make commands in a local environment.
 
 ## [Ninja][]
 
@@ -73,14 +68,12 @@ regular programming language to write a code which writes a Ninja build file.
 
 [every sufficiently advanced configuration language is wrong]: https://matt-rickard.com/advanced-configuration-languages-are-wrong
 
-## [Pixi][pixi]
+## [Pixi][]
 
 Pixi is a Conda alternative written in Rust. It allows to manage dependencies in a local
 environment with the Conda packaging ecosystem. This local environment is similar to a Python
 virtual environment, but is not limited to Python. So it is not as isolated as a container, but it
 is more friendly to manage. The corresponding configuration file is [`pixi.toml`][].
-
-[`pixi.toml`]: ./pixi.toml
 
 ## [`backup`][]
 
