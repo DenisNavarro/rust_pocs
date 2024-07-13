@@ -1,13 +1,22 @@
-FROM docker.io/library/rust:1.78.0-slim-bookworm
+FROM docker.io/library/rust:1.79.0-slim-bookworm
+
+ENV HOME="/root"
 
 RUN set -eux; \
+    cargo install xh --version 0.22.2 --locked; \
+    mkdir -p "$HOME/.pixi/bin"; \
+    # Adapted from: https://github.com/prefix-dev/pixi-docker/blob/0.25.0/Dockerfile
+    xh get --download --follow \
+        "https://github.com/prefix-dev/pixi/releases/download/v0.25.0/pixi-$(uname -m)-unknown-linux-musl" \
+        --output "$HOME/.pixi/bin/pixi"; \
+    chmod +x "$HOME/.pixi/bin/pixi"; \
     rustup component add clippy rustfmt; \
     apt-get update; \
-    apt-get install -y --no-install-recommends libssl-dev pkg-config; \
-    cargo install pixi --version 0.15.2 --locked; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
     apt-get install -y --no-install-recommends rsync; \
     rm -rf /var/lib/apt/lists/*
+
+ENV PATH="$PATH:$HOME/.pixi/bin"
 
 WORKDIR /work
 
@@ -24,8 +33,7 @@ RUN set -eux; \
     rm -rf .pixi target */clippy.ninjatarget */fmt.ninjatarget */test.ninjatarget .ninja_deps \
       .ninja_log build.ninja
 
-# Remark: On your PC, in your `.bashrc`, add `export PATH="$PATH:$HOME/bin"` so that you can use
-# `synchronize_backup`, `synchronize_partially`, etc.
-ENV PATH="$PATH:/root/bin"
+# Make available `synchronize_backup`, `synchronize_partially`, etc.
+ENV PATH="$PATH:$HOME/bin"
 
 CMD ["/bin/bash"]
