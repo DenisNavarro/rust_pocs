@@ -17,7 +17,7 @@ use humantime::format_duration;
 ///
 /// For example, if `/aaa/bbb/foo` is a file and `/aaa/bbb/bar/baz` a directory, then
 /// `synchronize_partially /aaa/bbb /xxx/yyy foo bar/baz` copies `/aaa/bbb/foo` to `/xxx/yyy/foo`
-/// and calls `rsync -aAXHv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
+/// and calls `rsync -aHUXv --delete --stats -- /aaa/bbb/bar/baz/ /xxx/yyy/bar/baz`.
 ///
 /// In this example, you can see that `synchronize_partially` works on joined command-line paths.
 /// When a joined command-line path is a symlink, `synchronize_partially` follows it.
@@ -136,7 +136,7 @@ fn synchronize_directory(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Res
         src_path.to_mut().push('/');
     }
     Command::new("rsync")
-        .args(["-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
+        .args(["-aHUXv", "--delete", "--stats", "--", src_path.as_ref()])
         .arg(dst_path)
         .status()
         .context("failed to execute process")

@@ -20,7 +20,7 @@ use time::OffsetDateTime;
 /// For example, on 2022-12-13 14:15:16, if the directory `/my/hard/drive/foo_2022-08-09-10h11`
 /// exists, then `synchronize_backup /path/to/foo /my/hard/drive` renames
 /// `/my/hard/drive/foo_2022-08-09-10h11` to `/my/hard/drive/foo_2022-12-13-14h15` and then calls
-/// `rsync -aAXHv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
+/// `rsync -aHUXv --delete --stats -- /path/to/foo/ /my/hard/drive/foo_2022-12-13-14h15`.
 ///
 /// If there is no directory candidate to rename, `rsync` is called anyway and creates a new one.
 /// If there are several candidates, no one is renamed, `rsync` is not called and an error code is
@@ -137,7 +137,7 @@ fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
         src_path.to_mut().push('/');
     }
     Command::new("rsync")
-        .args(["-aAXHv", "--delete", "--stats", "--", src_path.as_ref()])
+        .args(["-aHUXv", "--delete", "--stats", "--", src_path.as_ref()])
         .arg(dst_path)
         .status()
         .context("failed to execute process")

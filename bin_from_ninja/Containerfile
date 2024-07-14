@@ -1,22 +1,19 @@
 FROM docker.io/library/rust:1.79.0-slim-bookworm
 
 ENV HOME="/root"
+RUN mkdir -p "$HOME/.pixi/bin"
+ENV PATH="$PATH:$HOME/.pixi/bin"
 
 RUN set -eux; \
     cargo install xh --version 0.22.2 --locked; \
-    mkdir -p "$HOME/.pixi/bin"; \
     # Adapted from: https://github.com/prefix-dev/pixi-docker/blob/0.25.0/Dockerfile
     xh get --download --follow \
         "https://github.com/prefix-dev/pixi/releases/download/v0.25.0/pixi-$(uname -m)-unknown-linux-musl" \
         --output "$HOME/.pixi/bin/pixi"; \
     chmod +x "$HOME/.pixi/bin/pixi"; \
     rustup component add clippy rustfmt; \
-    apt-get update; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
-    apt-get install -y --no-install-recommends rsync; \
-    rm -rf /var/lib/apt/lists/*
-
-ENV PATH="$PATH:$HOME/.pixi/bin"
+    pixi global install rsync=3.3.0
 
 WORKDIR /work
 
