@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 use std::fs;
-use std::io::{self, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Instant;
@@ -30,6 +30,12 @@ struct Cli {
     subpaths: Vec<String>,
 }
 
+macro_rules! my_writeln {
+    ($($x:expr),+ $(,)?) => {
+        writeln!(std::io::stdout(), $($x),+).context("failed to write to stdout")
+    };
+}
+
 fn main() -> anyhow::Result<()> {
     let Cli { src_prefix_path, dst_prefix_path, subpaths } = Cli::parse();
     work(&src_prefix_path, &dst_prefix_path, &subpaths)
@@ -43,22 +49,18 @@ fn work(src_prefix_path: &str, dst_prefix_path: &Path, subpaths: &[String]) -> a
     actions.into_iter().try_for_each(|Action { src_path, dst_path, operation }| match operation {
         Operation::SynchronizeDir | Operation::RemoveDestFileAndCopyDir => {
             if operation == Operation::RemoveDestFileAndCopyDir {
-                writeln!(io::stdout(), "---> Remove the file {dst_path:?}.")
-                    .context("failed to write to stdout")?;
+                my_writeln!("---> Remove the file {dst_path:?}.")?;
                 remove_file(&dst_path)?;
             }
-            writeln!(io::stdout(), "---> Synchronize {src_path:?} with {dst_path:?}.")
-                .context("failed to write to stdout")?;
+            my_writeln!("---> Synchronize {src_path:?} with {dst_path:?}.")?;
             execute_and_print_elapsed_time(|| synchronize_directory(src_path.into(), &dst_path))
         }
         Operation::CopyFile | Operation::RemoveDestDirAndCopyFile => {
             if operation == Operation::RemoveDestDirAndCopyFile {
-                writeln!(io::stdout(), "---> Remove the diretory {dst_path:?}.")
-                    .context("failed to write to stdout")?;
+                my_writeln!("---> Remove the diretory {dst_path:?}.")?;
                 remove_directory(&dst_path)?;
             }
-            writeln!(io::stdout(), "---> Copy the file {src_path:?} to {dst_path:?}.")
-                .context("failed to write to stdout")?;
+            my_writeln!("---> Copy the file {src_path:?} to {dst_path:?}.")?;
             execute_and_print_elapsed_time(|| copy_file(&src_path, &dst_path))
         }
     })
@@ -127,8 +129,7 @@ fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> any
     let start = Instant::now();
     f()?;
     let duration = start.elapsed();
-    writeln!(io::stdout(), "Elapsed time: {}.", format_duration(duration))
-        .context("failed to write to stdout")
+    my_writeln!("Elapsed time: {}.", format_duration(duration))
 }
 
 fn synchronize_directory(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {

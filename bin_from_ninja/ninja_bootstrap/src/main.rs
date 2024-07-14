@@ -51,7 +51,8 @@ fn write_rules<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()
 }
 
 fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<()> {
-    let cargo_target_dir = get_cargo_target_dir()?;
+    let cargo_target_dir =
+        get_cargo_target_dir().context("failed to get cargo target directory")?;
     let cargo_toml = fs::read_to_string("Cargo.toml").context("failed to read Cargo.toml")?;
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
@@ -141,8 +142,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
 }
 
 fn get_cargo_target_dir() -> anyhow::Result<Utf8PathBuf> {
-    let cmd = MetadataCommand::new();
-    let metadata = cmd.exec().with_context(|| format!("failed to execute command {cmd:?}"))?;
+    let metadata = MetadataCommand::new().exec().context("failed to execute metadata command")?;
     Ok(metadata.target_directory)
 }
 

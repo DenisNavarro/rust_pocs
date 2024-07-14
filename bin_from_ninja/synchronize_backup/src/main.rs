@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 use std::fs::{self, DirEntry, Metadata};
-use std::io::{self, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Instant;
@@ -34,6 +34,12 @@ struct Cli {
     dst_dir_path: PathBuf,
 }
 
+macro_rules! my_writeln {
+    ($($x:expr),+ $(,)?) => {
+        writeln!(std::io::stdout(), $($x),+).context("failed to write to stdout")
+    };
+}
+
 fn main() -> anyhow::Result<()> {
     let Cli { src_dir_path, dst_dir_path } = Cli::parse();
     let now = OffsetDateTime::now_local().context("could not determine the local offset")?;
@@ -45,8 +51,7 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
     let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
     check_is_directory_or_does_not_exist(&final_dst_path)?;
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
-    writeln!(io::stdout(), "Synchronize {src_dir_path:?} with {final_dst_path:?}.")
-        .context("failed to write to stdout")?;
+    my_writeln!("Synchronize {src_dir_path:?} with {final_dst_path:?}.")?;
     execute_and_print_elapsed_time(|| synchronize(src_dir_path, &final_dst_path))
 }
 
@@ -87,8 +92,7 @@ fn maybe_rename_a_candidate_to_final_dst(
     if let Some(candidate) = candidates.first() {
         fs::rename(candidate, final_dst_path)
             .with_context(|| format!("failed to renamed {candidate:?} to {final_dst_path:?}"))?;
-        writeln!(io::stdout(), "Renamed {candidate:?} to {final_dst_path:?}.")
-            .context("failed to write to stdout")?;
+        my_writeln!("Renamed {candidate:?} to {final_dst_path:?}.")?;
     }
     Ok(())
 }
@@ -128,8 +132,7 @@ fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> any
     let start = Instant::now();
     f()?;
     let duration = start.elapsed();
-    writeln!(io::stdout(), "Elapsed time: {}.", format_duration(duration))
-        .context("failed to write to stdout")
+    my_writeln!("Elapsed time: {}.", format_duration(duration))
 }
 
 fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
