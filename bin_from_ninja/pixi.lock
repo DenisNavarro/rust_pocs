@@ -1,4 +1,4 @@
-version: 4
+version: 5
 environments:
   default:
     channels:
@@ -8,41 +8,41 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/jq-1.7.1-hd590300_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-13.2.0-h807b86a_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-13.2.0-h807b86a_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-13.2.0-h7e041cc_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/make-4.3-hd18ef5c_1.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-14.1.0-h77fa898_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.1.0-h77fa898_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-14.1.0-hc0a3c3a_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/make-4.4.1-hb9d3cd8_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.12.1-h297d8ca_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.9-hd590300_0.conda
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/jq-1.7.1-h31becfc_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-13.2.0-hf8544c7_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-13.2.0-hf8544c7_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-13.2.0-h9a76618_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.3-h309ac5b_1.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-14.1.0-he277a41_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-14.1.0-he277a41_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-14.1.0-h3f4de04_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.4.1-h2a6d0cb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.12.1-h70be974_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.9-h31becfc_0.conda
       linux-ppc64le:
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/_openmp_mutex-4.5-2_gnu.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/jq-1.7.1-ha17a0cc_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-13.2.0-h31ea8bd_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-13.2.0-h31ea8bd_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-13.2.0-h0849fd4_2.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.3-hf817498_1.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-14.1.0-h31e42bb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-14.1.0-h31e42bb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-14.1.0-h262982c_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.4.1-h3d690f4_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.12.1-h7c29e54_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.9-ha17a0cc_0.conda
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/jq-1.7.1-h10d778d_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/libcxx-16.0.6-hd57cbcb_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/make-4.3-h22f3db7_1.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/libcxx-18.1.8-heced48a_4.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/make-4.4.1-h00291cd_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.12.1-h3c5361c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.7.1-h93a5062_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-16.0.6-h4653b0c_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.3-he57ea6c_1.tar.bz2
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-18.1.8-h5a72898_4.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.4.1-hc9fafa5_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.12.1-h420ef59_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
 packages:
@@ -54,8 +54,6 @@ packages:
   url: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
   sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
   md5: d7c89558ba9fa0495403155b64376d81
-  arch: x86_64
-  platform: linux
   license: None
   size: 2562
   timestamp: 1578324546067
@@ -67,8 +65,6 @@ packages:
   url: https://conda.anaconda.org/conda-forge/linux-ppc64le/_libgcc_mutex-0.1-conda_forge.tar.bz2
   sha256: 5dd34b412e6274c0614d01a2f616844376ae873dfb8782c2c67d055779de6df6
   md5: e96f48755dc7c9f86c4aecf4cac40477
-  arch: ppc64le
-  platform: linux
   license: None
   size: 2550
   timestamp: 1578324511581
@@ -82,12 +78,10 @@ packages:
   sha256: fbe2c5e56a653bebb982eda4876a9178aedfc2b545f25d0ce9c4c0b508253d22
   md5: 73aaf86a425cc6e73fcf236a5a46396d
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
+  - _libgcc_mutex 0.1 conda_forge
   - libgomp >=7.5.0
   constrains:
   - openmp_impl 9999
-  arch: x86_64
-  platform: linux
   license: BSD-3-Clause
   license_family: BSD
   size: 23621
@@ -105,8 +99,6 @@ packages:
   - libgomp >=7.5.0
   constrains:
   - openmp_impl 9999
-  arch: aarch64
-  platform: linux
   license: BSD-3-Clause
   license_family: BSD
   size: 23712
@@ -121,12 +113,10 @@ packages:
   sha256: 4c89c2067cf5e7b0fbbdc3200c3f7affa5896e14812acf10f51575be87ae0c05
   md5: 3e41cbaba7e4988d15a24c4e85e6171b
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
+  - _libgcc_mutex 0.1 conda_forge
   - libgomp >=7.5.0
   constrains:
   - openmp_impl 9999
-  arch: ppc64le
-  platform: linux
   license: BSD-3-Clause
   license_family: BSD
   size: 23710
@@ -142,8 +132,6 @@ packages:
   depends:
   - oniguruma 6.9.*
   - oniguruma >=6.9.9,<6.10.0a0
-  arch: x86_64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 303960
@@ -160,8 +148,6 @@ packages:
   - libgcc-ng >=12
   - oniguruma 6.9.*
   - oniguruma >=6.9.9,<6.10.0a0
-  arch: aarch64
-  platform: linux
   license: MIT
   license_family: MIT
   size: 334346
@@ -177,8 +163,6 @@ packages:
   depends:
   - oniguruma 6.9.*
   - oniguruma >=6.9.9,<6.10.0a0
-  arch: aarch64
-  platform: osx
   license: MIT
   license_family: MIT
   size: 317604
@@ -195,8 +179,6 @@ packages:
   - libgcc-ng >=12
   - oniguruma 6.9.*
   - oniguruma >=6.9.9,<6.10.0a0
-  arch: ppc64le
-  platform: linux
   license: MIT
   license_family: MIT
   size: 405804
@@ -213,274 +195,238 @@ packages:
   - libgcc-ng >=12
   - oniguruma 6.9.*
   - oniguruma >=6.9.9,<6.10.0a0
-  arch: x86_64
-  platform: linux
   license: MIT
   license_family: MIT
   size: 318956
   timestamp: 1702500793203
 - kind: conda
   name: libcxx
-  version: 16.0.6
-  build: h4653b0c_0
+  version: 18.1.8
+  build: h5a72898_4
+  build_number: 4
   subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-16.0.6-h4653b0c_0.conda
-  sha256: 11d3fb51c14832d9e4f6d84080a375dec21ea8a3a381a1910e67ff9cedc20355
-  md5: 9d7d724faf0413bf1dbc5a85935700c8
-  arch: aarch64
-  platform: osx
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-18.1.8-h5a72898_4.conda
+  sha256: 997e68bea725ade25ba71bc1a9fce5d7e5c37cccec6bc7656124d0d31743584d
+  md5: 8c71928e2e5c78129e4ccd752ef33e12
+  depends:
+  - __osx >=11.0
   license: Apache-2.0 WITH LLVM-exception
   license_family: Apache
-  size: 1160232
-  timestamp: 1686896993785
+  size: 1216058
+  timestamp: 1723637781569
 - kind: conda
   name: libcxx
-  version: 16.0.6
-  build: hd57cbcb_0
+  version: 18.1.8
+  build: heced48a_4
+  build_number: 4
   subdir: osx-64
-  url: https://conda.anaconda.org/conda-forge/osx-64/libcxx-16.0.6-hd57cbcb_0.conda
-  sha256: 9063271847cf05f3a6cc6cae3e7f0ced032ab5f3a3c9d3f943f876f39c5c2549
-  md5: 7d6972792161077908b62971802f289a
-  arch: x86_64
-  platform: osx
+  url: https://conda.anaconda.org/conda-forge/osx-64/libcxx-18.1.8-heced48a_4.conda
+  sha256: e6ad2e71bc9f2ee8fdcce7596baf5041941f69be5ffef478aaffd673f0691daf
+  md5: 7e13da1296840905452340fca10a625b
+  depends:
+  - __osx >=10.13
   license: Apache-2.0 WITH LLVM-exception
   license_family: Apache
-  size: 1142172
-  timestamp: 1686896907750
+  size: 1268903
+  timestamp: 1723637719063
 - kind: conda
   name: libgcc-ng
-  version: 13.2.0
-  build: h31ea8bd_2
-  build_number: 2
+  version: 14.1.0
+  build: h31e42bb_0
   subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-13.2.0-h31ea8bd_2.conda
-  sha256: 77fbc0be293ad69f6d1f2ab98c78dbe698d760f40bdc790a7c95c449d4a769e7
-  md5: 9167ce6944211916fbcc927b175f2f5a
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-14.1.0-h31e42bb_0.conda
+  sha256: c11a31b49b690eafb2925bad2729abcefc57879a986d55bdccadf04c82acad7b
+  md5: 14b852a64cd26b89248a76a1258e2dd3
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
+  - _libgcc_mutex 0.1 conda_forge
   - _openmp_mutex >=4.5
   constrains:
-  - libgomp 13.2.0 h31ea8bd_2
-  arch: ppc64le
-  platform: linux
+  - libgomp 14.1.0 h31e42bb_0
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 715248
-  timestamp: 1695219552764
+  size: 756177
+  timestamp: 1719547573263
 - kind: conda
   name: libgcc-ng
-  version: 13.2.0
-  build: h807b86a_2
-  build_number: 2
+  version: 14.1.0
+  build: h77fa898_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-13.2.0-h807b86a_2.conda
-  sha256: d361d3c87c376642b99c1fc25cddec4b9905d3d9b9203c1c545b8c8c1b04539a
-  md5: c28003b0be0494f9a7664389146716ff
+  url: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-14.1.0-h77fa898_0.conda
+  sha256: b8e869ac96591cda2704bf7e77a301025e405227791a0bddf14a3dac65125538
+  md5: ca0fad6a41ddaef54a153b78eccb5037
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
+  - _libgcc_mutex 0.1 conda_forge
   - _openmp_mutex >=4.5
   constrains:
-  - libgomp 13.2.0 h807b86a_2
-  arch: x86_64
-  platform: linux
+  - libgomp 14.1.0 h77fa898_0
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 771133
-  timestamp: 1695219384393
+  size: 842109
+  timestamp: 1719538896937
 - kind: conda
   name: libgcc-ng
-  version: 13.2.0
-  build: hf8544c7_2
-  build_number: 2
+  version: 14.1.0
+  build: he277a41_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-13.2.0-hf8544c7_2.conda
-  sha256: 2d7ab7264cf885c81ed2ceed9d279388cdde181aa7a0e549ee03511c7502a381
-  md5: f4dfb3bad7c8b38c3f8ed7f15a91a1ed
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-14.1.0-he277a41_0.conda
+  sha256: b9ca03216bc089c0c46f008bc6f447bc0df8dc826d9801fb4283e49fa89c877e
+  md5: 47ecd1292a3fd78b616640b35dd9632c
   depends:
   - _openmp_mutex >=4.5
   constrains:
-  - libgomp 13.2.0 hf8544c7_2
-  arch: aarch64
-  platform: linux
+  - libgomp 14.1.0 he277a41_0
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 457612
-  timestamp: 1695219010482
+  size: 532273
+  timestamp: 1719547536460
 - kind: conda
   name: libgomp
-  version: 13.2.0
-  build: h31ea8bd_2
-  build_number: 2
+  version: 14.1.0
+  build: h31e42bb_0
   subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-13.2.0-h31ea8bd_2.conda
-  sha256: ea6f74a15d769c3a9664e867f33f2238855ba420e0c2f6e66e598afd656d29ab
-  md5: 8b04ef254cfdace8155918beb0410ccd
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-14.1.0-h31e42bb_0.conda
+  sha256: beb3fdacae435b1fb2353f95dfbafa47248c6fe7bd61ddb5caa9b8ea94d7eba3
+  md5: 7fdd8453eb2e5a324f30fc4eaaf17b14
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
-  arch: ppc64le
-  platform: linux
+  - _libgcc_mutex 0.1 conda_forge
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 424600
-  timestamp: 1695219458803
+  size: 461643
+  timestamp: 1719547428860
 - kind: conda
   name: libgomp
-  version: 13.2.0
-  build: h807b86a_2
-  build_number: 2
+  version: 14.1.0
+  build: h77fa898_0
   subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/libgomp-13.2.0-h807b86a_2.conda
-  sha256: e1e82348f8296abfe344162b3b5f0ddc2f504759ebeb8b337ba99beaae583b15
-  md5: e2042154faafe61969556f28bade94b9
+  url: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.1.0-h77fa898_0.conda
+  sha256: 7699df61a1f6c644b3576a40f54791561f2845983120477a16116b951c9cdb05
+  md5: ae061a5ed5f05818acdf9adab72c146d
   depends:
-  - _libgcc_mutex ==0.1 conda_forge
-  arch: x86_64
-  platform: linux
+  - _libgcc_mutex 0.1 conda_forge
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 421133
-  timestamp: 1695219303065
+  size: 456925
+  timestamp: 1719538796073
 - kind: conda
   name: libgomp
-  version: 13.2.0
-  build: hf8544c7_2
-  build_number: 2
+  version: 14.1.0
+  build: he277a41_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-13.2.0-hf8544c7_2.conda
-  sha256: 7d22718b7f4f0a5f219d260edbd4c2bd4e70527eff6129609e3e3faa0f373dc0
-  md5: 8ce66e4e1d30f0936a525127eaaaf63d
-  arch: aarch64
-  platform: linux
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-14.1.0-he277a41_0.conda
+  sha256: 11f326e49e0fb92c2a52e870c029fc26b4b6d3eb9414fa4374cb8496b231a730
+  md5: 434ccc943b843117e4cebc97265f2504
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 423496
-  timestamp: 1695218935400
+  size: 459535
+  timestamp: 1719547432949
 - kind: conda
   name: libstdcxx-ng
-  version: 13.2.0
-  build: h0849fd4_2
-  build_number: 2
+  version: 14.1.0
+  build: h262982c_0
   subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-13.2.0-h0849fd4_2.conda
-  sha256: e08ca3a27cb2f3c890e4eae2cfba49aff9c8a6593bf459c363c65c0f0c4b701c
-  md5: 5474803059961bb9e14d935917730ee5
-  arch: ppc64le
-  platform: linux
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-14.1.0-h262982c_0.conda
+  sha256: d9dbe77c1065492bc93be1efbc71da90e0657c7d1a784e080beea1d5c545f0f0
+  md5: f28ff87486ca3c4e1c8bff212e18853d
+  depends:
+  - libgcc-ng 14.1.0 h31e42bb_0
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 3974031
-  timestamp: 1695219628600
+  size: 4017768
+  timestamp: 1719547601961
 - kind: conda
   name: libstdcxx-ng
-  version: 13.2.0
-  build: h7e041cc_2
-  build_number: 2
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-13.2.0-h7e041cc_2.conda
-  sha256: ab22ecdc974cdbe148874ea876d9c564294d5eafa760f403ed4fd495307b4243
-  md5: 9172c297304f2a20134fc56c97fbe229
-  arch: x86_64
-  platform: linux
-  license: GPL-3.0-only WITH GCC-exception-3.1
-  license_family: GPL
-  size: 3842773
-  timestamp: 1695219454837
-- kind: conda
-  name: libstdcxx-ng
-  version: 13.2.0
-  build: h9a76618_2
-  build_number: 2
+  version: 14.1.0
+  build: h3f4de04_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-13.2.0-h9a76618_2.conda
-  sha256: 9e31f1bc62de5cc78e70bf8dc5869e807983f1c831b63201b508328e0c65e2d3
-  md5: 921c652898c8602bf2697d015f3efc77
-  arch: aarch64
-  platform: linux
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-14.1.0-h3f4de04_0.conda
+  sha256: 4f2f35b78258d1a1e56b1b0e61091862c10ec76bf67ca1b0ff99dd5e07e76271
+  md5: 2f84852b723ac4389eb188db695526bb
+  depends:
+  - libgcc-ng 14.1.0 he277a41_0
   license: GPL-3.0-only WITH GCC-exception-3.1
   license_family: GPL
-  size: 3752174
-  timestamp: 1695219073519
+  size: 3805250
+  timestamp: 1719547563542
+- kind: conda
+  name: libstdcxx-ng
+  version: 14.1.0
+  build: hc0a3c3a_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-14.1.0-hc0a3c3a_0.conda
+  sha256: 88c42b388202ffe16adaa337e36cf5022c63cf09b0405cf06fc6aeacccbe6146
+  md5: 1cb187a157136398ddbaae90713e2498
+  depends:
+  - libgcc-ng 14.1.0 h77fa898_0
+  license: GPL-3.0-only WITH GCC-exception-3.1
+  license_family: GPL
+  size: 3881307
+  timestamp: 1719538923443
 - kind: conda
   name: make
-  version: '4.3'
-  build: h22f3db7_1
-  build_number: 1
+  version: 4.4.1
+  build: h00291cd_0
   subdir: osx-64
-  url: https://conda.anaconda.org/conda-forge/osx-64/make-4.3-h22f3db7_1.tar.bz2
-  sha256: adef15126b518548b69ecaef24e22f88fa0a6358bd3c11e791af214f7344983b
-  md5: ac4a1dd58e6d821c518ae0011e8592b7
-  arch: x86_64
-  platform: osx
+  url: https://conda.anaconda.org/conda-forge/osx-64/make-4.4.1-h00291cd_0.conda
+  sha256: 32df3c8ae3a0e7d46fb7ece7b8024ec8bb1d1d78eee589802ef0ea85ffac57cd
+  md5: 3d166e7626d15b97713cf576af6662a3
+  depends:
+  - __osx >=10.13
   license: GPL-3.0-or-later
-  license_family: GPL
-  size: 255465
-  timestamp: 1602706542653
+  size: 278710
+  timestamp: 1724373842343
 - kind: conda
   name: make
-  version: '4.3'
-  build: h309ac5b_1
-  build_number: 1
+  version: 4.4.1
+  build: h2a6d0cb_0
   subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.3-h309ac5b_1.tar.bz2
-  sha256: 771e7a32a555693a0d53d3f682ed9dc1139abe99937cba55b16400ae8b8a92d4
-  md5: 0f876fc705b573cf9972bcbeb93864d9
+  url: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.4.1-h2a6d0cb_0.conda
+  sha256: 36e456a56b6d0040d568dea3ea217ec9b5f09d0499b77f54bf48f77c92c3ddb9
+  md5: a56bef9f3ea08602a655b7514fec0d66
   depends:
-  - libgcc-ng >=7.5.0
-  arch: aarch64
-  platform: linux
+  - libgcc-ng >=13
   license: GPL-3.0-or-later
-  license_family: GPL
-  size: 497104
-  timestamp: 1602706670853
+  size: 533802
+  timestamp: 1724373795569
 - kind: conda
   name: make
-  version: '4.3'
-  build: hd18ef5c_1
-  build_number: 1
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/make-4.3-hd18ef5c_1.tar.bz2
-  sha256: 4a5fe7c80bb0de0015328e2d3fc8db1736f528cb1fd53cd0d5527e24269a4f7c
-  md5: 4049ebfd3190b580dffe76daed26155a
-  depends:
-  - libgcc-ng >=7.5.0
-  arch: x86_64
-  platform: linux
-  license: GPL-3.0-or-later
-  license_family: GPL
-  size: 518896
-  timestamp: 1602706451788
-- kind: conda
-  name: make
-  version: '4.3'
-  build: he57ea6c_1
-  build_number: 1
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.3-he57ea6c_1.tar.bz2
-  sha256: a011e3e1c4caec821eb4213d0a0154d39e5f81a44d2e8bafe6f84e7840c3909e
-  md5: 1939d04ef89e38fde652ee8c669e092f
-  arch: aarch64
-  platform: osx
-  license: GPL-3.0-or-later
-  license_family: GPL
-  size: 253227
-  timestamp: 1602706492919
-- kind: conda
-  name: make
-  version: '4.3'
-  build: hf817498_1
-  build_number: 1
+  version: 4.4.1
+  build: h3d690f4_0
   subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.3-hf817498_1.tar.bz2
-  sha256: 058f0ecff40ab4573bcfddf570580f5240d83265bc3428726ff0e6c968876a79
-  md5: c7731ba825b338834e1a04d42ad25d86
+  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.4.1-h3d690f4_0.conda
+  sha256: 2ab520a5597bf91a0f8d79a888124f2316960372b1254074d2a309cf0cf84777
+  md5: 2a0ad9c0a0dcc76c3f3b1e06c80a12bd
   depends:
-  - libgcc-ng >=8.4.0
-  arch: ppc64le
-  platform: linux
+  - libgcc-ng >=13
   license: GPL-3.0-or-later
-  license_family: GPL
-  size: 528947
-  timestamp: 1602706418711
+  size: 536510
+  timestamp: 1724373816688
+- kind: conda
+  name: make
+  version: 4.4.1
+  build: hb9d3cd8_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/make-4.4.1-hb9d3cd8_0.conda
+  sha256: 1c6bac75dff518720d86d4535d8eb10647037925a2662d6cf8009e7252966cb2
+  md5: 0e5a55445a0a4d12a50945eb11da90d3
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc-ng >=13
+  license: GPL-3.0-or-later
+  size: 516062
+  timestamp: 1724373778473
+- kind: conda
+  name: make
+  version: 4.4.1
+  build: hc9fafa5_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.4.1-hc9fafa5_0.conda
+  sha256: cfb20b4832af19e1816ed49f692e3f84e0dea42d995cc29a61ce4f5091dd24d8
+  md5: e944c0125471fab3b75253aa13551fbe
+  depends:
+  - __osx >=11.0
+  license: GPL-3.0-or-later
+  size: 273728
+  timestamp: 1724373828543
 - kind: conda
   name: ninja
   version: 1.12.1
@@ -564,8 +510,6 @@ packages:
   url: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
   sha256: c529ba66bcf31bc1d73c9a6a15cf90dce96e52d65f82e8b7ee903e8437ecb6e8
   md5: 0b1b97981c0b7b59e72606e9f3616431
-  arch: x86_64
-  platform: osx
   license: BSD-2-Clause
   license_family: BSD
   size: 224443
@@ -580,8 +524,6 @@ packages:
   md5: 475018b8e0b8720c985a185427f5bf13
   depends:
   - libgcc-ng >=12
-  arch: aarch64
-  platform: linux
   license: BSD-2-Clause
   license_family: BSD
   size: 250005
@@ -594,8 +536,6 @@ packages:
   url: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
   sha256: 66632aeef5b74e15746161db8fa8b5150a191ab05823d7d2f1587bdf96674c7b
   md5: 770c654e0d5bfa3aa1e6ac5440815cda
-  arch: aarch64
-  platform: osx
   license: BSD-2-Clause
   license_family: BSD
   size: 223231
@@ -610,8 +550,6 @@ packages:
   md5: ad9493324b5d7ca108d2ae808d3efa90
   depends:
   - libgcc-ng >=12
-  arch: ppc64le
-  platform: linux
   license: BSD-2-Clause
   license_family: BSD
   size: 289963
@@ -626,8 +564,6 @@ packages:
   md5: 77dab674d16c1525ebe65e67de30de0d
   depends:
   - libgcc-ng >=12
-  arch: x86_64
-  platform: linux
   license: BSD-2-Clause
   license_family: BSD
   size: 246869

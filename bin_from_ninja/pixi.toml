@@ -13,5 +13,5 @@ fmt = "make fmt"
 # updated later than https://hub.docker.com/_/rust/
 [dependencies]
 jq = "1.7.1"
-make = "4.3"
+make = "4.4.1"
 ninja = "1.12.1"
