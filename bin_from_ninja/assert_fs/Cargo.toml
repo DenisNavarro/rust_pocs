@@ -1,6 +1,7 @@
 [package]
 name = "assert_fs"
-edition = "2021"
+edition.workspace = true
+rust-version.workspace = true
 description = "Local subset of the assert_fs crate from crates.io"
 
 [dependencies]
