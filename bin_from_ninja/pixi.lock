@@ -481,6 +481,7 @@ packages:
   depends:
   - __osx >=10.13
   license: GPL-3.0-or-later
+  license_family: GPL
   size: 278914
   timestamp: 1725561611625
 - kind: conda
@@ -495,6 +496,7 @@ packages:
   depends:
   - libgcc >=13
   license: GPL-3.0-or-later
+  license_family: GPL
   size: 534051
   timestamp: 1725561453050
 - kind: conda
@@ -509,6 +511,7 @@ packages:
   depends:
   - libgcc >=13
   license: GPL-3.0-or-later
+  license_family: GPL
   size: 540907
   timestamp: 1725561496332
 - kind: conda
@@ -524,6 +527,7 @@ packages:
   - __glibc >=2.17,<3.0.a0
   - libgcc >=13
   license: GPL-3.0-or-later
+  license_family: GPL
   size: 513200
   timestamp: 1725561527147
 - kind: conda
@@ -538,6 +542,7 @@ packages:
   depends:
   - __osx >=11.0
   license: GPL-3.0-or-later
+  license_family: GPL
   size: 273831
   timestamp: 1725561599726
 - kind: conda
