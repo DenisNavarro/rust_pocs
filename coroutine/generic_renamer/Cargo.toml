@@ -1,0 +1,20 @@
+[package]
+name = "generic_renamer"
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "generic_renamer"
+path = "main.rs"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+common = { path = "../common" }
+time = { version = "0.3", features = ["formatting", "macros"] }
+
+[lints]
+workspace = true

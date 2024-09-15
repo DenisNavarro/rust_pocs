@@ -2,7 +2,7 @@
 POCs written in Rust
 ====================
 
-Currently, there are 2 POCs:
+Here are the POCs in the chronological order:
 
   - [`structured_concurrency`][] is adapted from [the code][] of the [Rust Book final project][],
     but has a few differences. Notably, it uses the structured concurrency paradigm.
@@ -11,6 +11,9 @@ Currently, there are 2 POCs:
     [`backup`][], [`synchronize_backup`][] and [`synchronize_partially`][], and deploy the
     binaries to `$HOME/bin`, thanks to the `build.ninja` file written by [`ninja_bootstrap`][].  
     It also uses [Pixi][], but this dependency is optional.
+
+  - [`coroutine`] shows a coroutine example and compares it to generic programming for decoupling
+    algorithm from I/O.
 
 [`structured_concurrency`]: ./structured_concurrency
 [the code]: https://github.com/rust-lang/book/tree/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code
@@ -22,3 +25,4 @@ Currently, there are 2 POCs:
 [`synchronize_partially`]: ./bin_from_ninja/synchronize_partially/src/main.rs
 [`ninja_bootstrap`]: ./bin_from_ninja/ninja_bootstrap/src/main.rs
 [Pixi]: https://pixi.sh/
+[`coroutine`]: ./coroutine
