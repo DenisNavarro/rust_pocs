@@ -62,7 +62,7 @@ mod tests {
             ("app.log.2011-12-13.1".into(), Size(100)),
             ("app.log.2011-12-13.2".into(), Size(200)),
         ]);
-        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC)).unwrap();
+        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC));
         assert_eq!(
             files,
             BTreeMap::from([
@@ -76,29 +76,24 @@ mod tests {
     #[test]
     fn first_backup_of_the_day() {
         let mut files = BTreeMap::from([("app.log".into(), Size(42))]);
-        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC)).unwrap();
+        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC));
         assert_eq!(files, BTreeMap::from([("app.log.2011-12-13.1".into(), Size(42))]));
     }
 
     #[test]
     fn noop_because_the_file_is_small() {
         let mut files = BTreeMap::from([("app.log".into(), Size(41))]);
-        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC)).unwrap();
+        launch_work(&mut files, "app.log", datetime!(2011-12-13 14:15:16 UTC));
         assert_eq!(files, BTreeMap::from([("app.log".into(), Size(41))]));
     }
 
-    fn launch_work(
-        files: &mut BTreeMap<String, Size>,
-        file_path: &str,
-        now: OffsetDateTime,
-    ) -> Result<(), &'static str> {
+    fn launch_work(files: &mut BTreeMap<String, Size>, file_path: &str, now: OffsetDateTime) {
         let size = files[file_path].0;
         let get_now = || Ok(now);
-        let exists = |path: &str| Ok(files.contains_key(path));
-        if let Some(RenameTo(dst_path)) = work(file_path, size, get_now, exists)? {
+        let exists = |path: &str| Ok::<bool, ()>(files.contains_key(path));
+        if let Some(RenameTo(dst_path)) = work(file_path, size, get_now, exists).unwrap() {
             let file_size = files.remove(file_path).unwrap();
             files.insert(dst_path, file_size);
         }
-        Ok(())
     }
 }
