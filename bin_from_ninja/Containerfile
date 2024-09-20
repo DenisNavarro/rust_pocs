@@ -6,9 +6,9 @@ ENV PATH="$PATH:$HOME/.pixi/bin"
 
 RUN set -eux; \
     cargo install xh --version 0.22.2 --locked; \
-    # Adapted from: https://github.com/prefix-dev/pixi-docker/blob/0.29.0/Dockerfile
+    # Adapted from: https://github.com/prefix-dev/pixi-docker/blob/0.30.0/Dockerfile
     xh get --download --follow \
-        "https://github.com/prefix-dev/pixi/releases/download/v0.29.0/pixi-$(uname -m)-unknown-linux-musl" \
+        "https://github.com/prefix-dev/pixi/releases/download/v0.30.0/pixi-$(uname -m)-unknown-linux-musl" \
         --output "$HOME/.pixi/bin/pixi"; \
     chmod +x "$HOME/.pixi/bin/pixi"; \
     rustup component add clippy rustfmt; \
