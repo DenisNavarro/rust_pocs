@@ -3,8 +3,6 @@
 MAKEFLAGS += --no-builtin-rules
 MAKEFLAGS += --warn-undefined-variables
 
-cargo_target_dir != cargo metadata --format-version=1 | jq -r .target_directory
-
 .PHONY: check # For each project, if not done yet, reformat the code and check it
 check : build.ninja
 	ninja check -v
@@ -35,11 +33,8 @@ Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
 fetch.maketarget : Cargo.lock
 	cargo fetch && touch $@
 
-$(cargo_target_dir)/debug/ninja_bootstrap : fetch.maketarget $(wildcard ninja_bootstrap/*.rs)
-	cargo build --offline --frozen -p ninja_bootstrap && touch $@
-
-build.ninja : $(cargo_target_dir)/debug/ninja_bootstrap
-	RUST_LIB_BACKTRACE=1 $< > $@
+build.ninja : fetch.maketarget $(wildcard ninja_bootstrap/*.rs)
+	RUST_LIB_BACKTRACE=1 cargo run --offline --frozen -q -p ninja_bootstrap > $@
 
 example.ninja : build.ninja
 	echo '# `build.ninja` is a file identical to the current one, except that:' > $@

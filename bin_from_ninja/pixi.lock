@@ -7,7 +7,6 @@ environments:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-2_gnu.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/jq-1.7.1-hd590300_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-14.1.0-h77fa898_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgcc-ng-14.1.0-h69a702a_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libgomp-14.1.0-h77fa898_1.conda
@@ -15,10 +14,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/libstdcxx-ng-14.1.0-h4852527_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/make-4.4.1-hb9d3cd8_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ninja-1.12.1-h297d8ca_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.9-hd590300_0.conda
       linux-aarch64:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-2_gnu.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/jq-1.7.1-h31becfc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-14.1.0-he277a41_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgcc-ng-14.1.0-he9431aa_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libgomp-14.1.0-he277a41_1.conda
@@ -26,11 +23,9 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/libstdcxx-ng-14.1.0-hf1166c9_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.4.1-h2a6d0cb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/ninja-1.12.1-h70be974_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.9-h31becfc_0.conda
       linux-ppc64le:
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/_libgcc_mutex-0.1-conda_forge.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/_openmp_mutex-4.5-2_gnu.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/jq-1.7.1-ha17a0cc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-14.1.0-h31e42bb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgcc-ng-14.1.0-hfdc3801_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libgomp-14.1.0-h31e42bb_1.conda
@@ -38,19 +33,14 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/libstdcxx-ng-14.1.0-hf27a640_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/make-4.4.1-h3d690f4_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/ninja-1.12.1-h7c29e54_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.9-ha17a0cc_0.conda
       osx-64:
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/jq-1.7.1-h10d778d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/libcxx-19.1.0-hf95d169_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/make-4.4.1-h00291cd_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-64/ninja-1.12.1-h3c5361c_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
       osx-arm64:
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.7.1-h93a5062_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/libcxx-19.1.0-ha82da77_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/make-4.4.1-hc9fafa5_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ninja-1.12.1-h420ef59_0.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
 packages:
 - kind: conda
   name: _libgcc_mutex
@@ -127,84 +117,6 @@ packages:
   license_family: BSD
   size: 23710
   timestamp: 1650671119831
-- kind: conda
-  name: jq
-  version: 1.7.1
-  build: h10d778d_0
-  subdir: osx-64
-  url: https://conda.anaconda.org/conda-forge/osx-64/jq-1.7.1-h10d778d_0.conda
-  sha256: 077ed4a3de447b1f297813a06f0c0c9cc67d50d5a5e52e7ea888a5812b5c3712
-  md5: da3b979d16bbb4b97cb565733ae84ba2
-  depends:
-  - oniguruma 6.9.*
-  - oniguruma >=6.9.9,<6.10.0a0
-  license: MIT
-  license_family: MIT
-  size: 303960
-  timestamp: 1702501070742
-- kind: conda
-  name: jq
-  version: 1.7.1
-  build: h31becfc_0
-  subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/jq-1.7.1-h31becfc_0.conda
-  sha256: 53437ca79e28003faac8058f6c025c83a819e122d3a0fb70624e6da0f77ab126
-  md5: 397702b2c1e53f0f0312d2b170d2e699
-  depends:
-  - libgcc-ng >=12
-  - oniguruma 6.9.*
-  - oniguruma >=6.9.9,<6.10.0a0
-  license: MIT
-  license_family: MIT
-  size: 334346
-  timestamp: 1702502754422
-- kind: conda
-  name: jq
-  version: 1.7.1
-  build: h93a5062_0
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/jq-1.7.1-h93a5062_0.conda
-  sha256: e530cf5800e937bce7847a023a998db504e333a928b469c45a1752535593e762
-  md5: dbf665694fb28d86d77cca18e5dd530c
-  depends:
-  - oniguruma 6.9.*
-  - oniguruma >=6.9.9,<6.10.0a0
-  license: MIT
-  license_family: MIT
-  size: 317604
-  timestamp: 1702501287237
-- kind: conda
-  name: jq
-  version: 1.7.1
-  build: ha17a0cc_0
-  subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/jq-1.7.1-ha17a0cc_0.conda
-  sha256: 90e0774fadfa3155632b5edccf3bfde789e8d2d119127c6ef3c56142048487a4
-  md5: 6d1e7da3a2518bb6968933313e608114
-  depends:
-  - libgcc-ng >=12
-  - oniguruma 6.9.*
-  - oniguruma >=6.9.9,<6.10.0a0
-  license: MIT
-  license_family: MIT
-  size: 405804
-  timestamp: 1702503318526
-- kind: conda
-  name: jq
-  version: 1.7.1
-  build: hd590300_0
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/jq-1.7.1-hd590300_0.conda
-  sha256: a04a1603e405ea9ae5c4a492a8e361086cb441a91ef7299bd4bf3eca0b485b6d
-  md5: 80814f94713e35df60aad6c4b235de87
-  depends:
-  - libgcc-ng >=12
-  - oniguruma 6.9.*
-  - oniguruma >=6.9.9,<6.10.0a0
-  license: MIT
-  license_family: MIT
-  size: 318956
-  timestamp: 1702500793203
 - kind: conda
   name: libcxx
   version: 19.1.0
@@ -618,69 +530,3 @@ packages:
   license_family: Apache
   size: 2373900
   timestamp: 1715442306941
-- kind: conda
-  name: oniguruma
-  version: 6.9.9
-  build: h10d778d_0
-  subdir: osx-64
-  url: https://conda.anaconda.org/conda-forge/osx-64/oniguruma-6.9.9-h10d778d_0.conda
-  sha256: c529ba66bcf31bc1d73c9a6a15cf90dce96e52d65f82e8b7ee903e8437ecb6e8
-  md5: 0b1b97981c0b7b59e72606e9f3616431
-  license: BSD-2-Clause
-  license_family: BSD
-  size: 224443
-  timestamp: 1697485744652
-- kind: conda
-  name: oniguruma
-  version: 6.9.9
-  build: h31becfc_0
-  subdir: linux-aarch64
-  url: https://conda.anaconda.org/conda-forge/linux-aarch64/oniguruma-6.9.9-h31becfc_0.conda
-  sha256: e21b1822736959ba434ebce452ee86844a11d918c8b1c48c71f15e9a932fd571
-  md5: 475018b8e0b8720c985a185427f5bf13
-  depends:
-  - libgcc-ng >=12
-  license: BSD-2-Clause
-  license_family: BSD
-  size: 250005
-  timestamp: 1697487236819
-- kind: conda
-  name: oniguruma
-  version: 6.9.9
-  build: h93a5062_0
-  subdir: osx-arm64
-  url: https://conda.anaconda.org/conda-forge/osx-arm64/oniguruma-6.9.9-h93a5062_0.conda
-  sha256: 66632aeef5b74e15746161db8fa8b5150a191ab05823d7d2f1587bdf96674c7b
-  md5: 770c654e0d5bfa3aa1e6ac5440815cda
-  license: BSD-2-Clause
-  license_family: BSD
-  size: 223231
-  timestamp: 1697485732214
-- kind: conda
-  name: oniguruma
-  version: 6.9.9
-  build: ha17a0cc_0
-  subdir: linux-ppc64le
-  url: https://conda.anaconda.org/conda-forge/linux-ppc64le/oniguruma-6.9.9-ha17a0cc_0.conda
-  sha256: fdcfa08aae69449e8aed1ab5dac584080d290f10afe041b4390b987f186209f2
-  md5: ad9493324b5d7ca108d2ae808d3efa90
-  depends:
-  - libgcc-ng >=12
-  license: BSD-2-Clause
-  license_family: BSD
-  size: 289963
-  timestamp: 1697487579258
-- kind: conda
-  name: oniguruma
-  version: 6.9.9
-  build: hd590300_0
-  subdir: linux-64
-  url: https://conda.anaconda.org/conda-forge/linux-64/oniguruma-6.9.9-hd590300_0.conda
-  sha256: dec1c78df7670d34880f71f75ac716f082d087494b4a2c6a90d5d75a82c933ed
-  md5: 77dab674d16c1525ebe65e67de30de0d
-  depends:
-  - libgcc-ng >=12
-  license: BSD-2-Clause
-  license_family: BSD
-  size: 246869
-  timestamp: 1697485543293
