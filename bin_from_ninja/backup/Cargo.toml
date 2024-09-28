@@ -10,11 +10,11 @@ path = "main.rs"
 [dependencies]
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
+common = { path = "../common" }
 time = { version = "0.3", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]
 assert_fs = { path = "../assert_fs" }
-test_helper = { path = "../test_helper" }
 
 [lints]
 workspace = true

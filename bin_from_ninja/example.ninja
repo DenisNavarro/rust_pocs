@@ -26,17 +26,24 @@ build assert_fs/test.ninjatarget: test Cargo.lock assert_fs/fmt.ninjatarget
 build backup/fmt.ninjatarget: fmt rustfmt.toml backup/main.rs
   project = backup
 build backup/clippy.ninjatarget: clippy Cargo.lock backup/fmt.ninjatarget $
-  assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
+  common/fmt.ninjatarget assert_fs/fmt.ninjatarget
   project = backup
-build backup/test.ninjatarget: test Cargo.lock backup/fmt.ninjatarget assert_fs/fmt.ninjatarget $
-  test_helper/fmt.ninjatarget
+build backup/test.ninjatarget: test Cargo.lock backup/fmt.ninjatarget common/fmt.ninjatarget $
+  assert_fs/fmt.ninjatarget
   project = backup
 build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/backup: release $
-  Cargo.lock backup/fmt.ninjatarget
+  Cargo.lock backup/fmt.ninjatarget common/fmt.ninjatarget
   project = backup
 build /home/denis/bin/backup: copy $
   /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/backup | $
-  backup/clippy.ninjatarget backup/test.ninjatarget || /home/denis/bin
+  backup/clippy.ninjatarget backup/test.ninjatarget common/clippy.ninjatarget $
+  common/test.ninjatarget || /home/denis/bin
+build common/fmt.ninjatarget: fmt rustfmt.toml common/lib.rs
+  project = common
+build common/clippy.ninjatarget: clippy Cargo.lock common/fmt.ninjatarget
+  project = common
+build common/test.ninjatarget: test Cargo.lock common/fmt.ninjatarget
+  project = common
 build ninja_bootstrap/fmt.ninjatarget: fmt rustfmt.toml ninja_bootstrap/main.rs $
   ninja_bootstrap/ninja_writer.rs
   project = ninja_bootstrap
@@ -47,44 +54,38 @@ build ninja_bootstrap/test.ninjatarget: test Cargo.lock ninja_bootstrap/fmt.ninj
 build synchronize_backup/fmt.ninjatarget: fmt rustfmt.toml synchronize_backup/main.rs
   project = synchronize_backup
 build synchronize_backup/clippy.ninjatarget: clippy Cargo.lock $
-  synchronize_backup/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_backup/fmt.ninjatarget common/fmt.ninjatarget assert_fs/fmt.ninjatarget
   project = synchronize_backup
 build synchronize_backup/test.ninjatarget: test Cargo.lock synchronize_backup/fmt.ninjatarget $
-  assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
+  common/fmt.ninjatarget assert_fs/fmt.ninjatarget
   project = synchronize_backup
 build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_backup: $
-  release Cargo.lock synchronize_backup/fmt.ninjatarget
+  release Cargo.lock synchronize_backup/fmt.ninjatarget common/fmt.ninjatarget
   project = synchronize_backup
 build /home/denis/bin/synchronize_backup: copy $
   /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_backup | $
-  synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget || /home/denis/bin
+  synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget $
+  common/clippy.ninjatarget common/test.ninjatarget || /home/denis/bin
 build synchronize_partially/fmt.ninjatarget: fmt rustfmt.toml synchronize_partially/main.rs
   project = synchronize_partially
 build synchronize_partially/clippy.ninjatarget: clippy Cargo.lock $
-  synchronize_partially/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_partially/fmt.ninjatarget common/fmt.ninjatarget assert_fs/fmt.ninjatarget
   project = synchronize_partially
 build synchronize_partially/test.ninjatarget: test Cargo.lock $
-  synchronize_partially/fmt.ninjatarget assert_fs/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_partially/fmt.ninjatarget common/fmt.ninjatarget assert_fs/fmt.ninjatarget
   project = synchronize_partially
 build /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_partially: $
-  release Cargo.lock synchronize_partially/fmt.ninjatarget
+  release Cargo.lock synchronize_partially/fmt.ninjatarget common/fmt.ninjatarget
   project = synchronize_partially
 build /home/denis/bin/synchronize_partially: copy $
   /home/denis/Documents/git/rust_pocs/bin_from_ninja/target/release/synchronize_partially | $
-  synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget || $
-  /home/denis/bin
-build test_helper/fmt.ninjatarget: fmt rustfmt.toml test_helper/lib.rs
-  project = test_helper
-build test_helper/clippy.ninjatarget: clippy Cargo.lock test_helper/fmt.ninjatarget
-  project = test_helper
-build test_helper/test.ninjatarget: test Cargo.lock test_helper/fmt.ninjatarget
-  project = test_helper
-build fmt: phony assert_fs/fmt.ninjatarget backup/fmt.ninjatarget $
+  synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget $
+  common/clippy.ninjatarget common/test.ninjatarget || /home/denis/bin
+build fmt: phony assert_fs/fmt.ninjatarget backup/fmt.ninjatarget common/fmt.ninjatarget $
   ninja_bootstrap/fmt.ninjatarget synchronize_backup/fmt.ninjatarget $
-  synchronize_partially/fmt.ninjatarget test_helper/fmt.ninjatarget
+  synchronize_partially/fmt.ninjatarget
 build check: phony assert_fs/clippy.ninjatarget assert_fs/test.ninjatarget $
-  backup/clippy.ninjatarget backup/test.ninjatarget ninja_bootstrap/clippy.ninjatarget $
-  ninja_bootstrap/test.ninjatarget synchronize_backup/clippy.ninjatarget $
-  synchronize_backup/test.ninjatarget synchronize_partially/clippy.ninjatarget $
-  synchronize_partially/test.ninjatarget test_helper/clippy.ninjatarget $
-  test_helper/test.ninjatarget
+  backup/clippy.ninjatarget backup/test.ninjatarget common/clippy.ninjatarget $
+  common/test.ninjatarget ninja_bootstrap/clippy.ninjatarget ninja_bootstrap/test.ninjatarget $
+  synchronize_backup/clippy.ninjatarget synchronize_backup/test.ninjatarget $
+  synchronize_partially/clippy.ninjatarget synchronize_partially/test.ninjatarget

@@ -8,6 +8,8 @@ use clap::Parser;
 use time::macros::format_description;
 use time::OffsetDateTime;
 
+use common::quote_path;
+
 #[derive(Parser)]
 /// Copy directories and files by adding a suffix which depends on the current datetime.
 /// Tested on Linux.
@@ -32,7 +34,7 @@ fn work(src_paths: Vec<PathBuf>, now: OffsetDateTime) -> anyhow::Result<()> {
     let copy_actions: Vec<_> = check_all_copies_seem_possible(src_paths, &dst_path_suffix)?;
     copy_actions.into_iter().try_for_each(|CopyAction { src_path, dst_path, src_is_dir }| {
         copy(&src_path, &dst_path, src_is_dir)?;
-        writeln!(io::stdout(), "Copied {src_path:?} to {dst_path:?}.")
+        writeln!(io::stdout(), "Copied {} to {}.", quote_path(&src_path), quote_path(&dst_path))
             .context("failed to write to stdout")
     })
 }
@@ -50,15 +52,20 @@ fn check_all_copies_seem_possible(
         .map(|src_path| {
             let src_file_name = src_path
                 .file_name()
-                .with_context(|| format!("{src_path:?} does not have a name"))?;
-            let src_metadata = fs::metadata(&src_path)
-                .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
+                .with_context(|| format!("{} does not have a name", quote_path(&src_path)))?;
+            let src_metadata = fs::metadata(&src_path).with_context(|| {
+                format!("failed to read metadata from {}", quote_path(&src_path))
+            })?;
             let dst_path = {
                 let mut dst_file_name = src_file_name.to_owned();
                 dst_file_name.push(dst_path_suffix);
                 src_path.with_file_name(&dst_file_name)
             };
-            ensure!(dst_path.symlink_metadata().is_err(), "{dst_path:?} already exists");
+            ensure!(
+                dst_path.symlink_metadata().is_err(),
+                "{} already exists",
+                quote_path(&dst_path)
+            );
             Ok(CopyAction { src_path, dst_path, src_is_dir: src_metadata.is_dir() })
         })
         .collect()
@@ -79,7 +86,7 @@ fn copy(src_path: &Path, dst_path: &Path, src_is_dir: bool) -> anyhow::Result<()
         }
         anyhow::Ok(())
     })()
-    .with_context(|| format!("failed to copy {src_path:?} to {dst_path:?}"))
+    .with_context(|| format!("failed to copy {} to {}", quote_path(src_path), quote_path(dst_path)))
 }
 
 struct CopyAction {
@@ -96,7 +103,7 @@ mod tests {
     use assert_fs::TempDir;
     use time::macros::datetime;
 
-    use test_helper::{check_err_contains, Check};
+    use common::{check_err_contains, Check};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:

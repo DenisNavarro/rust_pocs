@@ -1,10 +1,33 @@
 //! Utility to write unit tests
 
-use std::fmt;
+use std::fmt::{Debug, Display};
 use std::fs::{self, Metadata};
 use std::path::Path;
 
 use anyhow::{ensure, Context};
+use serde_json::json;
+
+#[must_use]
+pub fn quote(string: &str) -> impl Display + '_ {
+    // The Rust documentation says:
+    //
+    // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
+    // > etc.) are not stable, and may also change with future Rust versions.
+    //
+    // This is why I use `format!("{}", quote(string))` instead of `format!("{string:?}")`.
+    json!(string)
+}
+
+#[must_use]
+pub fn quote_path(path: &Path) -> impl Display + '_ {
+    // The Rust documentation says:
+    //
+    // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
+    // > etc.) are not stable, and may also change with future Rust versions.
+    //
+    // This is why I use `format!("{}", quote_path(path))` instead of `format!("{path:?}")`.
+    json!(path.to_string_lossy())
+}
 
 pub trait Check {
     fn check_does_not_exist(&self) -> anyhow::Result<()>;
@@ -68,7 +91,7 @@ fn symlink_metadata(path: &Path) -> anyhow::Result<Metadata> {
 
 pub fn check_err_contains<T, E>(result: Result<T, E>, text: impl AsRef<str>) -> anyhow::Result<()>
 where
-    E: fmt::Debug,
+    E: Debug,
 {
     let text = text.as_ref();
     let error = result.err().context("missing error")?;

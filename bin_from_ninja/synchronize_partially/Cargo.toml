@@ -11,11 +11,11 @@ path = "main.rs"
 anyhow = "1"
 camino = "1"
 clap = { version = "4", features = ["derive"] }
+common = { path = "../common" }
 humantime = "2.1.0"
 
 [dev-dependencies]
 assert_fs = { path = "../assert_fs" }
-test_helper = { path = "../test_helper" }
 
 [lints]
 workspace = true

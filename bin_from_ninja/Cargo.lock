@@ -104,7 +104,7 @@ dependencies = [
  "anyhow",
  "assert_fs",
  "clap",
- "test_helper",
+ "common",
  "time",
 ]
 
@@ -197,6 +197,14 @@ name = "colorchoice"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3fd119d74b830634cea2a0f58bbd0d54540518a14397557951e79340abc28c0"
+
+[[package]]
+name = "common"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "serde_json",
+]
 
 [[package]]
 name = "deranged"
@@ -512,9 +520,9 @@ dependencies = [
  "assert_fs",
  "camino",
  "clap",
+ "common",
  "humantime",
  "regex-lite",
- "test_helper",
  "time",
 ]
 
@@ -526,8 +534,8 @@ dependencies = [
  "assert_fs",
  "camino",
  "clap",
+ "common",
  "humantime",
- "test_helper",
 ]
 
 [[package]]
@@ -541,13 +549,6 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys 0.59.0",
-]
-
-[[package]]
-name = "test_helper"
-version = "0.0.0"
-dependencies = [
- "anyhow",
 ]
 
 [[package]]

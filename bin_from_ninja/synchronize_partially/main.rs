@@ -10,6 +10,8 @@ use camino::Utf8Path;
 use clap::Parser;
 use humantime::format_duration;
 
+use common::{quote, quote_path};
+
 #[expect(clippy::doc_markdown)]
 #[derive(Parser)]
 /// Synchronize parts of two directories. rsync is used to synchronize directory parts.
@@ -49,31 +51,35 @@ fn work(src_prefix_path: &str, dst_prefix_path: &Path, subpaths: &[String]) -> a
     actions.into_iter().try_for_each(|Action { src_path, dst_path, operation }| match operation {
         Operation::SynchronizeDir | Operation::RemoveDestFileAndCopyDir => {
             if operation == Operation::RemoveDestFileAndCopyDir {
-                my_writeln!("---> Remove the file {dst_path:?}.")?;
+                my_writeln!("---> Remove the file {}.", quote_path(&dst_path))?;
                 remove_file(&dst_path)?;
             }
-            my_writeln!("---> Synchronize {src_path:?} with {dst_path:?}.")?;
+            my_writeln!("---> Synchronize {} with {}.", quote(&src_path), quote_path(&dst_path))?;
             execute_and_print_elapsed_time(|| synchronize_directory(src_path.into(), &dst_path))
         }
         Operation::CopyFile | Operation::RemoveDestDirAndCopyFile => {
             if operation == Operation::RemoveDestDirAndCopyFile {
-                my_writeln!("---> Remove the diretory {dst_path:?}.")?;
+                my_writeln!("---> Remove the diretory {}.", quote_path(&dst_path))?;
                 remove_directory(&dst_path)?;
             }
-            my_writeln!("---> Copy the file {src_path:?} to {dst_path:?}.")?;
+            my_writeln!("---> Copy the file {} to {}.", quote(&src_path), quote_path(&dst_path))?;
             execute_and_print_elapsed_time(|| copy_file(&src_path, &dst_path))
         }
     })
 }
 
 fn check_is_relative(path: &Path) -> anyhow::Result<()> {
-    path.is_relative().then_some(()).with_context(|| format!("{path:?} is absolute"))
+    path.is_relative().then_some(()).with_context(|| format!("{} is absolute", quote_path(path)))
 }
 
 fn check_is_directory(path: &Path) -> anyhow::Result<()> {
-    let metadata =
-        path.metadata().with_context(|| format!("failed to read metadata from {path:?}"))?;
-    metadata.is_dir().then_some(()).with_context(|| format!("{path:?} is not a directory"))
+    let metadata = path
+        .metadata()
+        .with_context(|| format!("failed to read metadata from {}", quote_path(path)))?;
+    metadata
+        .is_dir()
+        .then_some(())
+        .with_context(|| format!("{} is not a directory", quote_path(path)))
 }
 
 fn check_all_synchronizations_seem_possible(
@@ -86,7 +92,7 @@ fn check_all_synchronizations_seem_possible(
         .map(|subpath| {
             let src_path = Utf8Path::new(src_prefix_path).join(subpath).to_string();
             let src_metadata = fs::metadata(&src_path)
-                .with_context(|| format!("failed to read metadata from {src_path:?}"))?;
+                .with_context(|| format!("failed to read metadata from {}", quote(&src_path)))?;
             let dst_path = dst_prefix_path.join(subpath);
             let operation = check_dst_path_is_ok(src_metadata.is_dir(), &dst_path)?;
             Ok(Action { src_path, dst_path, operation })
@@ -102,9 +108,9 @@ fn check_dst_path_is_ok(src_is_dir: bool, dst_path: &Path) -> anyhow::Result<Ope
             }
             if dst_metadata.is_symlink() {
                 let metadata = fs::metadata(dst_path)
-                    .with_context(|| format!("{dst_path:?} is a broken symlink"))?;
+                    .with_context(|| format!("{} is a broken symlink", quote_path(dst_path)))?;
                 if metadata.is_file() {
-                    bail!("{dst_path:?} is a symlink whose final target is a file");
+                    bail!("{} is a symlink whose final target is a file", quote_path(dst_path));
                 }
             }
         }
@@ -116,9 +122,9 @@ fn check_dst_path_is_ok(src_is_dir: bool, dst_path: &Path) -> anyhow::Result<Ope
         }
         if dst_metadata.is_symlink() {
             let metadata = fs::metadata(dst_path)
-                .with_context(|| format!("{dst_path:?} is a broken symlink"))?;
+                .with_context(|| format!("{} is a broken symlink", quote_path(dst_path)))?;
             if metadata.is_dir() {
-                bail!("{dst_path:?} is a symlink whose final target is a directory");
+                bail!("{} is a symlink whose final target is a directory", quote_path(dst_path));
             }
         }
     }
@@ -144,21 +150,25 @@ fn synchronize_directory(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Res
         .and_then(|status| {
             status.success().then_some(()).with_context(|| format!("error status: {status}"))
         })
-        .with_context(|| format!("failed to synchronize {src_path:?} with {dst_path:?}"))
+        .with_context(|| {
+            format!("failed to synchronize {} with {}", quote(&src_path), quote_path(dst_path))
+        })
 }
 
 fn copy_file(src_path: &str, dst_path: &Path) -> anyhow::Result<()> {
-    fs::copy(src_path, dst_path)
-        .with_context(|| format!("failed to copy the file {src_path:?} to {dst_path:?}"))?;
+    fs::copy(src_path, dst_path).with_context(|| {
+        format!("failed to copy the file {} to {}", quote(src_path), quote_path(dst_path))
+    })?;
     Ok(())
 }
 
 fn remove_directory(path: &Path) -> anyhow::Result<()> {
-    fs::remove_dir_all(path).with_context(|| format!("failed to remove the diretory {path:?}"))
+    fs::remove_dir_all(path)
+        .with_context(|| format!("failed to remove the diretory {}", quote_path(path)))
 }
 
 fn remove_file(path: &Path) -> anyhow::Result<()> {
-    fs::remove_file(path).with_context(|| format!("failed to remove the file {path:?}"))
+    fs::remove_file(path).with_context(|| format!("failed to remove the file {}", quote_path(path)))
 }
 
 struct Action {
@@ -182,7 +192,7 @@ mod tests {
     use assert_fs::fixture::{FileWriteStr, PathChild, PathCreateDir, SymlinkToDir, SymlinkToFile};
     use assert_fs::TempDir;
 
-    use test_helper::{check_err_contains, Check};
+    use common::{check_err_contains, Check};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:

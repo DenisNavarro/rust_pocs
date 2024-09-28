@@ -13,6 +13,8 @@ use regex_lite::Regex;
 use time::macros::format_description;
 use time::OffsetDateTime;
 
+use common::{quote, quote_path};
+
 #[derive(Parser)]
 /// Synchronize a directory with a backup directory by renaming a suffix and calling rsync.
 /// Tested on Linux.
@@ -51,17 +53,17 @@ fn work(src_dir_path: Cow<str>, dst_dir_path: &Path, now: OffsetDateTime) -> any
     let final_dst_path = get_final_dst_path(src_dir_name, dst_dir_path.to_owned(), now);
     check_is_directory_or_does_not_exist(&final_dst_path)?;
     maybe_rename_a_candidate_to_final_dst(src_dir_name, dst_dir_path, &final_dst_path)?;
-    my_writeln!("Synchronize {src_dir_path:?} with {final_dst_path:?}.")?;
+    my_writeln!("Synchronize {} with {}.", quote(&src_dir_path), quote_path(&final_dst_path))?;
     execute_and_print_elapsed_time(|| synchronize(src_dir_path, &final_dst_path))
 }
 
 fn check_src_dir_path_is_ok(src_dir_path: &str) -> anyhow::Result<&str> {
     let src_dir_name = Utf8Path::new(src_dir_path)
         .file_name()
-        .with_context(|| format!("{src_dir_path:?} does not have a name"))?;
+        .with_context(|| format!("{} does not have a name", quote(src_dir_path)))?;
     let src_dir_metadata = fs::metadata(src_dir_path)
-        .with_context(|| format!("failed to read metadata from {src_dir_path:?}"))?;
-    ensure!(src_dir_metadata.is_dir(), "{src_dir_path:?} is not a directory");
+        .with_context(|| format!("failed to read metadata from {}", quote(src_dir_path)))?;
+    ensure!(src_dir_metadata.is_dir(), "{} is not a directory", quote(src_dir_path));
     Ok(src_dir_name)
 }
 
@@ -76,7 +78,7 @@ fn get_final_dst_path(src_dir_name: &str, dst_dir_path: PathBuf, now: OffsetDate
 
 fn check_is_directory_or_does_not_exist(path: &Path) -> anyhow::Result<()> {
     if let Ok(metadata) = path.symlink_metadata() {
-        ensure!(metadata.is_dir(), "{path:?} exists but is not a directory");
+        ensure!(metadata.is_dir(), "{} exists but is not a directory", quote_path(path));
     }
     Ok(())
 }
@@ -90,9 +92,10 @@ fn maybe_rename_a_candidate_to_final_dst(
         get_candidates(src_dir_name, dst_dir_path).context("failed to look for candidates")?;
     ensure!(candidates.len() < 2, "there are several candidates: {candidates:?}");
     if let Some(candidate) = candidates.first() {
-        fs::rename(candidate, final_dst_path)
-            .with_context(|| format!("failed to renamed {candidate:?} to {final_dst_path:?}"))?;
-        my_writeln!("Renamed {candidate:?} to {final_dst_path:?}.")?;
+        fs::rename(candidate, final_dst_path).with_context(|| {
+            format!("failed to renamed {} to {}", quote_path(candidate), quote_path(final_dst_path))
+        })?;
+        my_writeln!("Renamed {} to {}.", quote_path(candidate), quote_path(final_dst_path))?;
     }
     Ok(())
 }
@@ -103,11 +106,11 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
     )
     .unwrap();
     let entries_and_errors = fs::read_dir(dst_dir_path)
-        .with_context(|| format!("failed to read as a directory {dst_dir_path:?}"))?;
+        .with_context(|| format!("failed to read as a directory {}", quote_path(dst_dir_path)))?;
     let mut result = Vec::<PathBuf>::new();
     for entry_or_err in entries_and_errors {
-        let entry =
-            entry_or_err.with_context(|| format!("failed to read an entry in {dst_dir_path:?}"))?;
+        let entry = entry_or_err
+            .with_context(|| format!("failed to read an entry in {}", quote_path(dst_dir_path)))?;
         let metadata =
             entry.metadata().with_context(|| format!("failed to read metadata from {entry:?}"))?;
         if is_candidate(&entry, &metadata, src_dir_name, &regex) {
@@ -147,7 +150,9 @@ fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
         .and_then(|status| {
             status.success().then_some(()).with_context(|| format!("error status: {status}"))
         })
-        .with_context(|| format!("failed to synchronize {src_path:?} with {dst_path:?}"))
+        .with_context(|| {
+            format!("failed to synchronize {} with {}", quote(&src_path), quote_path(dst_path))
+        })
 }
 
 #[cfg(test)]
@@ -158,7 +163,7 @@ mod tests {
     use assert_fs::TempDir;
     use time::macros::datetime;
 
-    use test_helper::{check_err_contains, Check};
+    use common::{check_err_contains, Check};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:
