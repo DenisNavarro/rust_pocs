@@ -18,9 +18,9 @@ clean :
 edit :
 	@codium Makefile
 
-.PHONY: install_git_hooks # Install Git hooks with Cocogitto
+.PHONY: install_git_hooks # Install Git hooks
 install_git_hooks:
-	cog install-hook --all
+	cp pre-commit.sh .git/hooks/pre-commit
 
 .PHONY: install_rust_toolchain # Install the Rust toolchain used by the `pre-commit` hook
 install_rust_toolchain:

@@ -1,20 +1,22 @@
-[git_hooks.pre-commit]
-script = """#!/bin/sh
+#!/bin/sh
+
 set -e
+
 if ! git diff --quiet @ bin_from_ninja; then (
     cd bin_from_ninja
     ./podman.bash
 ) fi
+
 if ! git diff --quiet @ coroutine; then (
     cd coroutine
     cargo +1.81.0 fmt --all --check
     cargo +1.81.0 clippy --workspace --all-features --all-targets -- -D warnings
     cargo +1.81.0 test --workspace
 ) fi
+
 if ! git diff --quiet @ structured_concurrency; then (
     cd structured_concurrency
     cargo +1.81.0 fmt --check
     cargo +1.81.0 clippy --all-features --all-targets -- -D warnings
     cargo +1.81.0 test
 ) fi
-"""
