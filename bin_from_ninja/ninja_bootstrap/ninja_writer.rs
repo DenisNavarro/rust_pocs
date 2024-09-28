@@ -68,7 +68,6 @@ enum InnerError {
     BuildEnd { source: io::Error },
 }
 
-#[allow(dead_code)] // TODO: remove this after using the config
 pub struct NinjaWriter<W: Write> {
     config: Config,
     writer: W,

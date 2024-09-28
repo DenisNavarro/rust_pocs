@@ -242,7 +242,7 @@ mod tests {
     fn fancy_directory_names() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         let dir_names = ["foo.abc.xyz", " ", "--b a r", "--", "-"];
-        dir_names.iter().try_for_each(|p| temp.child(p).create_dir_all())?;
+        dir_names.iter().try_for_each(|path| temp.child(path).create_dir_all())?;
         launch_work(&temp, dir_names, datetime!(2022-12-13 14:15:16 UTC))?;
         temp.child("foo.abc.xyz_2022-12-13-14h15").check_is_dir()?;
         temp.child(" _2022-12-13-14h15").check_is_dir()?;
@@ -255,7 +255,7 @@ mod tests {
     fn fancy_file_names() -> anyhow::Result<()> {
         let temp = TempDir::new()?;
         let file_names = ["foo.abc.xyz", " ", "--b a r", "--", "-"];
-        file_names.iter().try_for_each(|p| temp.child(p).write_str("whatever"))?;
+        file_names.iter().try_for_each(|path| temp.child(path).write_str("whatever"))?;
         launch_work(&temp, file_names, datetime!(2022-12-13 14:15:16 UTC))?;
         temp.child("foo.abc.xyz_2022-12-13-14h15").check_is_file_with_content("whatever")?;
         temp.child(" _2022-12-13-14h15").check_is_file_with_content("whatever")?;

@@ -11,10 +11,5 @@ test = false
 [dependencies]
 anyhow = "1"
 
-[lints.rust]
-unsafe_code = "forbid"
-
-[lints.clippy]
-missing_errors_doc = "allow"
-nursery = "warn"
-pedantic = "warn"
+[lints]
+workspace = true

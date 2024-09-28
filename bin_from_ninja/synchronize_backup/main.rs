@@ -128,9 +128,9 @@ fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex
     regex.captures(dir_name).is_some_and(|capture| &capture[1] == src_dir_name)
 }
 
-fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
+fn execute_and_print_elapsed_time(fun: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
     let start = Instant::now();
-    f()?;
+    fun()?;
     let duration = start.elapsed();
     my_writeln!("Elapsed time: {}.", format_duration(duration))
 }
@@ -420,7 +420,7 @@ mod tests {
             ("foo/co -- lors", "--"),
             ("foo/-", "-"),
         ] {
-            [src_path, dst_path].iter().try_for_each(|p| temp.child(p).create_dir_all())?;
+            [src_path, dst_path].iter().try_for_each(|path| temp.child(path).create_dir_all())?;
             launch_work(&temp, src_path, dst_path, now)?;
         }
         temp.child("bar.abc.xyz/colors.abc.xyz_2022-12-13-14h15").check_is_dir()?;
@@ -440,11 +440,11 @@ mod tests {
         // └── foo/
         //    └── colors/
         let valid_candidates = ["bar/colors_2022-08-09-10h11", "bar/colors_2022-09-10-11h12"];
-        valid_candidates.iter().try_for_each(|p| temp.child(p).create_dir_all())?;
+        valid_candidates.iter().try_for_each(|path| temp.child(path).create_dir_all())?;
         temp.child("foo/colors").create_dir_all()?;
         let result = launch_work(&temp, "foo/colors", "bar", datetime!(2022-12-13 14:15:16 UTC));
         check_err_contains(result, "there are several candidates")?;
-        valid_candidates.iter().try_for_each(|p| temp.child(p).check_is_dir())?;
+        valid_candidates.iter().try_for_each(|path| temp.child(path).check_is_dir())?;
         temp.child("bar/colors_2022-12-13-14h15").check_does_not_exist()
     }
 
@@ -475,7 +475,9 @@ mod tests {
             "bar/colors_2022-AA-09-10h11",
             "bar/some_colors_2022-08-09-10h11",
         ];
-        invalid_directory_candidates.iter().try_for_each(|p| temp.child(p).create_dir_all())?;
+        invalid_directory_candidates
+            .iter()
+            .try_for_each(|path| temp.child(path).create_dir_all())?;
         let file_candidate = "bar/colors_2022-09-10-11h12"; // file, so invalid
         temp.child(file_candidate).write_str("whatever")?;
         temp.child("foo/colors/red").write_str("blood")?;
@@ -497,7 +499,7 @@ mod tests {
         //       └── red
         temp.child(valid_candidate).check_does_not_exist()?;
         temp.child(file_candidate).check_is_file_with_content("whatever")?;
-        invalid_directory_candidates.iter().try_for_each(|p| temp.child(p).check_is_dir())?;
+        invalid_directory_candidates.iter().try_for_each(|path| temp.child(path).check_is_dir())?;
         temp.child("bar/colors_2022-12-13-14h15").check_is_dir()?;
         temp.child("bar/colors_2022-12-13-14h15/red").check_is_file_with_content("blood")
     }

@@ -10,7 +10,7 @@ use camino::Utf8Path;
 use clap::Parser;
 use humantime::format_duration;
 
-#[allow(clippy::doc_markdown)]
+#[expect(clippy::doc_markdown)]
 #[derive(Parser)]
 /// Synchronize parts of two directories. rsync is used to synchronize directory parts.
 /// Tested on Linux.
@@ -125,9 +125,9 @@ fn check_dst_path_is_ok(src_is_dir: bool, dst_path: &Path) -> anyhow::Result<Ope
     Ok(Operation::CopyFile)
 }
 
-fn execute_and_print_elapsed_time(f: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
+fn execute_and_print_elapsed_time(fun: impl FnOnce() -> anyhow::Result<()>) -> anyhow::Result<()> {
     let start = Instant::now();
-    f()?;
+    fun()?;
     let duration = start.elapsed();
     my_writeln!("Elapsed time: {}.", format_duration(duration))
 }

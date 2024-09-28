@@ -9,8 +9,8 @@ use anyhow::{ensure, Context};
 pub trait Check {
     fn check_does_not_exist(&self) -> anyhow::Result<()>;
     fn check_is_dir(&self) -> anyhow::Result<()>;
-    fn check_is_file_with_content(&self, content: impl AsRef<str>) -> anyhow::Result<()>;
-    fn check_is_symlink_to(&self, path: impl AsRef<Path>) -> anyhow::Result<()>;
+    fn check_is_file_with_content(&self, expected: impl AsRef<str>) -> anyhow::Result<()>;
+    fn check_is_symlink_to(&self, expected: impl AsRef<Path>) -> anyhow::Result<()>;
 }
 
 impl<T> Check for T
