@@ -4,7 +4,7 @@ MAKEFLAGS += --warn-undefined-variables
 
 .PHONY: help # Print each phony target with its description
 help:
-	@grep '^.PHONY: .* # ' Makefile | sed 's/\.PHONY: \(.*\) # \(.*\)/\1\t\2/' | expand -t 23
+	@grep '^.PHONY: .* # ' Makefile | sed 's/\.PHONY: \(.*\) # \(.*\)/\1\t\2/' | expand -t 24
 
 #############################################
 # Other phony targets in alphabetical order #
@@ -22,6 +22,6 @@ edit :
 install_git_hooks:
 	cp pre-commit.sh .git/hooks/pre-commit
 
-.PHONY: install_rust_toolchain # Install the Rust toolchain used by the `pre-commit` hook
-install_rust_toolchain:
+.PHONY: install_rust_toolchains # Install the Rust toolchains used by the Git hooks
+install_rust_toolchains:
 	rustup toolchain install 1.81.0 --profile minimal --component clippy,rustfmt
