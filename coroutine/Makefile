@@ -47,11 +47,11 @@ release : test.maketarget
 # File targets #
 ################
 
-clippy.maketarget : fmt.maketarget Cargo.toml $(wildcard */Cargo.toml)
-	cargo clippy --all-targets --all-features -- -D warnings && touch $@
-
 fmt.maketarget : rustfmt.toml $(wildcard */*.rs)
 	cargo fmt && touch $@
+
+clippy.maketarget : fmt.maketarget Cargo.toml $(wildcard */Cargo.toml)
+	cargo clippy --all-targets --all-features -- -D warnings && touch $@
 
 test.maketarget : clippy.maketarget Cargo.lock
 	cargo test && touch $@
