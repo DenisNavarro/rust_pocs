@@ -28,12 +28,12 @@ pub fn rename(src_path: &str, dst_path: &str) -> anyhow::Result<()> {
 }
 
 #[must_use]
-pub fn quote(arg: &str) -> impl Display + '_ {
+pub fn quote(string: &str) -> impl Display + '_ {
     // The Rust documentation says:
     //
     // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
     // > etc.) are not stable, and may also change with future Rust versions.
     //
-    // This is why I use `format!("{}", quote(the_string))` instead of `format!("{the_string:?}")`.
-    json!(arg)
+    // This is why I use `format!("{}", quote(string))` instead of `format!("{string:?}")`.
+    json!(string)
 }
