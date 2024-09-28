@@ -1,0 +1,22 @@
+[git_hooks.pre-commit]
+script = """#!/bin/sh
+set -e
+if test -n "$(git diff HEAD -- bin_from_ninja)"; then (
+    cd bin_from_ninja
+    cargo +1.81.0 fmt --all --check
+    cargo +1.81.0 clippy --all-features --all-targets -- -D warnings
+    cargo +1.81.0 test --workspace
+) fi
+if test -n "$(git diff HEAD -- coroutine)"; then (
+    cd coroutine
+    cargo +1.81.0 fmt --all --check
+    cargo +1.81.0 clippy --workspace --all-features --all-targets -- -D warnings
+    cargo +1.81.0 test --workspace
+) fi
+if test -n "$(git diff HEAD -- structured_concurrency)"; then (
+    cd structured_concurrency
+    cargo +1.81.0 fmt --check
+    cargo +1.81.0 clippy --all-features --all-targets -- -D warnings
+    cargo +1.81.0 test
+) fi
+"""
