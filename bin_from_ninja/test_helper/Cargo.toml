@@ -3,12 +3,13 @@ name = "test_helper"
 edition.workspace = true
 rust-version.workspace = true
 
-[dependencies]
-anyhow = "1"
-
 [lib]
+path = "lib.rs"
 doctest = false
 test = false
+
+[dependencies]
+anyhow = "1"
 
 [lints.rust]
 unsafe_code = "forbid"

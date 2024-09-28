@@ -3,6 +3,10 @@ name = "synchronize_backup"
 edition.workspace = true
 rust-version.workspace = true
 
+[[bin]]
+name = "synchronize_backup"
+path = "main.rs"
+
 [dependencies]
 anyhow = "1"
 camino = "1"

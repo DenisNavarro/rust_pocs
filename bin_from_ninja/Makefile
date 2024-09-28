@@ -35,7 +35,7 @@ Cargo.lock : Cargo.toml $(wildcard */Cargo.toml)
 fetch.maketarget : Cargo.lock
 	cargo fetch && touch $@
 
-$(cargo_target_dir)/debug/ninja_bootstrap : fetch.maketarget $(wildcard ninja_bootstrap/src/*.rs)
+$(cargo_target_dir)/debug/ninja_bootstrap : fetch.maketarget $(wildcard ninja_bootstrap/*.rs)
 	cargo build --offline --frozen -p ninja_bootstrap && touch $@
 
 build.ninja : $(cargo_target_dir)/debug/ninja_bootstrap

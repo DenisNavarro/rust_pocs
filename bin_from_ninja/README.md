@@ -8,10 +8,10 @@ thanks to the `build.ninja` file written by [`ninja_bootstrap`][].
 It also uses [Pixi][], but this dependency is optional.
 
 [Ninja]: https://ninja-build.org/
-[`backup`]: ./backup/src/main.rs
-[`synchronize_backup`]: ./synchronize_backup/src/main.rs
-[`synchronize_partially`]: ./synchronize_partially/src/main.rs
-[`ninja_bootstrap`]: ./ninja_bootstrap/src/main.rs
+[`backup`]: ./backup/main.rs
+[`synchronize_backup`]: ./synchronize_backup/main.rs
+[`synchronize_partially`]: ./synchronize_partially/main.rs
+[`ninja_bootstrap`]: ./ninja_bootstrap/main.rs
 [Pixi]: https://pixi.sh/
 
 Requirements: See the [`Containerfile`][].

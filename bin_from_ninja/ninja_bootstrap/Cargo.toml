@@ -3,6 +3,11 @@ name = "ninja_bootstrap"
 edition.workspace = true
 rust-version.workspace = true
 
+[[bin]]
+name = "ninja_bootstrap"
+path = "main.rs"
+test = false
+
 [dependencies]
 anyhow = "1"
 camino = "1"
@@ -15,10 +20,6 @@ toml = { version = "0.8", default-features = false, features = ["parse"] }
 
 [dev-dependencies]
 anyhow = { version = "1", features = ["backtrace"] }
-
-[[bin]]
-name = "ninja_bootstrap"
-test = false
 
 [lints]
 workspace = true

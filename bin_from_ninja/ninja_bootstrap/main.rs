@@ -66,7 +66,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
             .output(format!("{project}/fmt.ninjatarget"))?
             .rule("fmt")?
             .input("rustfmt.toml")?
-            .unix_input_results(glob(&format!("{project}/src/**/*.rs")).unwrap())?
+            .unix_input_results(glob(&format!("{project}/**/*.rs")).unwrap())?
             .variable_and_value("project", project)?
             .end()?;
         let local_dependencies = get_local_dependencies(project, &projects)?;
@@ -178,7 +178,9 @@ fn get_local_projects_from(
 }
 
 fn has_a_binary_to_deploy(project: &str) -> bool {
-    project != "ninja_bootstrap" && PathBuf::from(format!("{project}/src/main.rs")).is_file()
+    project != "ninja_bootstrap"
+        && (PathBuf::from(format!("{project}/src/main.rs")).is_file()
+            || PathBuf::from(format!("{project}/main.rs")).is_file())
 }
 
 #[derive(Deserialize)]
