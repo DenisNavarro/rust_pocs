@@ -21,7 +21,7 @@ impl<'scope> ThreadPool<'scope> {
         // In the original code, `ThreadPool::new` panicked if the size (thread count) was 0:
         // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L20
         thread_count: NonZeroUsize,
-    ) -> ThreadPool<'scope> {
+    ) -> Self {
         let thread_count = thread_count.get();
         let mut workers = Vec::with_capacity(thread_count);
         for id in 0..thread_count {
@@ -68,7 +68,7 @@ impl<'scope> Worker<'scope> {
         s: &'scope Scope<'scope, 'env>,
         id: usize,
         receiver: &'env Mutex<mpsc::Receiver<Job>>,
-    ) -> Worker<'scope> {
+    ) -> Self {
         // The original code called `std::thread::spawn` instead of `std::thread::Scope::spawn`:
         // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L71
         // This change had a lot of consequences in the calling code.
