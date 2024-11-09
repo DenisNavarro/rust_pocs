@@ -92,7 +92,8 @@ mod tests {
         let size = files[file_path].0;
         let get_now = || Ok(now);
         let exists = |path: &str| Ok::<bool, Infallible>(files.contains_key(path));
-        if let Some(RenameTo(dst_path)) = work(file_path, size, get_now, exists).unwrap() {
+        let Ok(action) = work(file_path, size, get_now, exists);
+        if let Some(RenameTo(dst_path)) = action {
             let file_size = files.remove(file_path).unwrap();
             files.insert(dst_path, file_size);
         }

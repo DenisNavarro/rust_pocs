@@ -9,7 +9,7 @@ resolver = "2"
 
 [workspace.package]
 edition = "2021"
-rust-version = "1.81.0"
+rust-version = "1.82.0"
 
 [profile.dev]
 debug = false
@@ -66,4 +66,5 @@ try_err = "warn"
 unnecessary_self_imports = "warn"
 unneeded_field_pattern = "warn"
 unseparated_literal_suffix = "warn"
+unused_result_ok = "warn"
 use_debug = "warn"
