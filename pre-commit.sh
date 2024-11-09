@@ -12,6 +12,9 @@ if ! git diff --cached --quiet -- coroutine; then (
     cargo +1.81.0 fmt --all --check
     cargo +1.81.0 clippy --all-features --all-targets --locked --workspace -- -D warnings
     cargo +1.81.0 test --locked --workspace
+    cargo +1.82.0 fmt --all --check
+    cargo +1.82.0 clippy --all-features --all-targets --locked --workspace -- -D warnings
+    cargo +1.82.0 test --locked --workspace
 ) fi
 
 if ! git diff --cached --quiet -- structured_concurrency; then (

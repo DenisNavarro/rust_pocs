@@ -8,6 +8,7 @@ target/
 .ninja_deps
 .ninja_log
 Containerfile
+Containerfile_msrv
 build.ninja
 example.ninja
 fetch.maketarget
