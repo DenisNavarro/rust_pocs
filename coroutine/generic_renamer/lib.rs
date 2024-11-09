@@ -48,6 +48,7 @@ mod tests {
 
     use alloc::collections::BTreeMap;
     use alloc::string::String;
+    use core::convert::Infallible;
 
     use time::macros::datetime;
     use time::OffsetDateTime;
@@ -90,7 +91,7 @@ mod tests {
     fn launch_work(files: &mut BTreeMap<String, Size>, file_path: &str, now: OffsetDateTime) {
         let size = files[file_path].0;
         let get_now = || Ok(now);
-        let exists = |path: &str| Ok::<bool, ()>(files.contains_key(path));
+        let exists = |path: &str| Ok::<bool, Infallible>(files.contains_key(path));
         if let Some(RenameTo(dst_path)) = work(file_path, size, get_now, exists).unwrap() {
             let file_size = files.remove(file_path).unwrap();
             files.insert(dst_path, file_size);
