@@ -298,7 +298,7 @@ impl<'a, W: Write> AfterRule<'a, W> {
     }
 }
 
-impl<'a, W: Write> AfterCommand<'a, W> {
+impl<W: Write> AfterCommand<'_, W> {
     pub fn end(self) -> Result<(), Error> {
         self.0.write_rule_end()
     }
@@ -442,19 +442,19 @@ impl<'a, W: Write> AfterImplicitDependency<'a, W> {
     }
 }
 
-impl<'a, W: Write> AfterOrderOnlyDependency<'a, W> {
+impl<W: Write> AfterOrderOnlyDependency<'_, W> {
     pub fn end(self) -> Result<(), Error> {
         self.0.write_build_end()
     }
 }
 
-impl<'a, W: Write> AfterVariableAndValue<'a, W> {
+impl<W: Write> AfterVariableAndValue<'_, W> {
     pub fn end(self) -> Result<(), Error> {
         self.0.write_build_end()
     }
 }
 
-impl<'a, W: Write> AfterBuildRuleOrInput<'a, W> {
+impl<W: Write> AfterBuildRuleOrInput<'_, W> {
     pub fn end(self) -> Result<(), Error> {
         match self {
             Self::AfterBuildRule(step) => step.end(),

@@ -9,8 +9,6 @@ check = "make check"
 example = "make example.ninja"
 fmt = "make fmt"
 
-# Remark: The dependencies could include "rust", but https://anaconda.org/conda-forge/rust is
-# updated later than https://hub.docker.com/_/rust/
 [dependencies]
 make = "4.4.1"
 ninja = "1.12.1"
