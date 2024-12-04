@@ -1,11 +1,11 @@
 use std::borrow::Cow;
 use std::fs;
-use std::io::Write;
+use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Instant;
 
-use anyhow::{bail, Context};
+use anyhow::{bail, Context as _};
 use camino::Utf8Path;
 use clap::Parser;
 use humantime::format_duration;
@@ -189,10 +189,13 @@ enum Operation {
 mod tests {
     use super::*;
 
-    use assert_fs::fixture::{FileWriteStr, PathChild, PathCreateDir, SymlinkToDir, SymlinkToFile};
+    use assert_fs::fixture::{
+        FileWriteStr as _, PathChild as _, PathCreateDir as _, SymlinkToDir as _,
+        SymlinkToFile as _,
+    };
     use assert_fs::TempDir;
 
-    use common::{check_err_contains, Check};
+    use common::{check_err_contains, Check as _};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:

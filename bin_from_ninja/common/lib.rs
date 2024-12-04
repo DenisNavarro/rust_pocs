@@ -4,7 +4,7 @@ use std::fmt::{Debug, Display};
 use std::fs::{self, Metadata};
 use std::path::Path;
 
-use anyhow::{ensure, Context};
+use anyhow::{ensure, Context as _};
 use serde_json::json;
 
 #[must_use]

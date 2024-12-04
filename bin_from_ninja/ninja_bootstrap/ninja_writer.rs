@@ -7,7 +7,7 @@ use std::error;
 use std::ffi::OsStr;
 use std::io::{self, Write};
 
-use snafu::{ResultExt, Snafu};
+use snafu::{ResultExt as _, Snafu};
 
 #[must_use]
 #[derive(Clone, Copy)]

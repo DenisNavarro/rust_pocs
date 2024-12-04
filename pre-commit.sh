@@ -9,9 +9,6 @@ if ! git diff --cached --quiet -- bin_from_ninja; then (
 
 if ! git diff --cached --quiet -- coroutine; then (
     cd coroutine
-    cargo +1.82.0 fmt --all --check
-    cargo +1.82.0 clippy --all-features --all-targets --locked --workspace -- -D warnings
-    cargo +1.82.0 test --locked --workspace
     cargo +1.83.0 fmt --all --check
     cargo +1.83.0 clippy --all-features --all-targets --locked --workspace -- -D warnings
     cargo +1.83.0 test --locked --workspace

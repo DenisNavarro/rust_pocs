@@ -1,9 +1,9 @@
 use std::fs;
-use std::io::{self, Write};
+use std::io::{self, Write as _};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use anyhow::{ensure, Context};
+use anyhow::{ensure, Context as _};
 use clap::Parser;
 use time::macros::format_description;
 use time::OffsetDateTime;
@@ -99,11 +99,14 @@ struct CopyAction {
 mod tests {
     use super::*;
 
-    use assert_fs::fixture::{FileWriteStr, PathChild, PathCreateDir, SymlinkToDir, SymlinkToFile};
+    use assert_fs::fixture::{
+        FileWriteStr as _, PathChild as _, PathCreateDir as _, SymlinkToDir as _,
+        SymlinkToFile as _,
+    };
     use assert_fs::TempDir;
     use time::macros::datetime;
 
-    use common::{check_err_contains, Check};
+    use common::{check_err_contains, Check as _};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:

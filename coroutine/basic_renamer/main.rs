@@ -57,8 +57,8 @@ mod tests {
     use std::fs::{self, Metadata};
     use std::path::Path;
 
-    use anyhow::{ensure, Context};
-    use assert_fs::fixture::{FileWriteStr, PathChild};
+    use anyhow::{ensure, Context as _};
+    use assert_fs::fixture::{FileWriteStr as _, PathChild as _};
     use assert_fs::TempDir;
     use time::macros::datetime;
     use time::OffsetDateTime;

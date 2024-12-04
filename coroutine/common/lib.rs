@@ -1,8 +1,8 @@
 use std::fmt::Display;
 use std::fs;
-use std::io::{self, Write};
+use std::io::{self, Write as _};
 
-use anyhow::Context;
+use anyhow::Context as _;
 use serde_json::json;
 use time::OffsetDateTime;
 

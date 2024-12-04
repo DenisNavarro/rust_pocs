@@ -13,7 +13,7 @@ use std::io::{self, Write};
 use std::iter;
 use std::path::PathBuf;
 
-use anyhow::Context;
+use anyhow::Context as _;
 use camino::Utf8PathBuf;
 use cargo_metadata::MetadataCommand;
 use glob::glob;
