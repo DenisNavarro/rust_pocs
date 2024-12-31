@@ -203,7 +203,7 @@ name = "common"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "serde_json",
+ "uniquote",
 ]
 
 [[package]]
@@ -643,6 +643,12 @@ name = "unicode-ident"
 version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "adb9e6ca4f869e1180728b7950e35922a7fc6397f7b641499e8f3ef06e50dc83"
+
+[[package]]
+name = "uniquote"
+version = "4.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fd76d314b2276c3efba1c90e48135f1b8b8bd7f9fca39dd5e7425c0cef74c79"
 
 [[package]]
 name = "utf8parse"

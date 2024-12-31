@@ -3,8 +3,8 @@ use std::fs;
 use std::io::{self, Write as _};
 
 use anyhow::Context as _;
-use serde_json::json;
 use time::OffsetDateTime;
+use uniquote::Quote as _;
 
 pub fn get_size(file_path: &str) -> anyhow::Result<u64> {
     let metadata = fs::metadata(file_path)
@@ -28,12 +28,12 @@ pub fn rename(src_path: &str, dst_path: &str) -> anyhow::Result<()> {
 }
 
 #[must_use]
-pub fn quote(string: &str) -> impl Display + '_ {
+pub fn quote(string: &str) -> impl Display + use<'_> {
     // The Rust documentation says:
     //
     // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
     // > etc.) are not stable, and may also change with future Rust versions.
     //
     // This is why I use `format!("{}", quote(string))` instead of `format!("{string:?}")`.
-    json!(string)
+    string.quote()
 }
