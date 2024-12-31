@@ -1,5 +1,3 @@
-//! Utility to write unit tests
-
 use std::fmt::{Debug, Display};
 use std::fs::{self, Metadata};
 use std::path::Path;
