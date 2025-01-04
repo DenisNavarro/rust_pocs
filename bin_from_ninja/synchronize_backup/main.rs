@@ -102,7 +102,7 @@ fn maybe_rename_a_candidate_to_final_dst(
 
 fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec<PathBuf>> {
     let regex = Regex::new(
-        r"^(.*)_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{2}h[[:digit:]]{2}$",
+        "^(.*)_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{2}h[[:digit:]]{2}$",
     )
     .unwrap();
     let entries_and_errors = fs::read_dir(dst_dir_path)
