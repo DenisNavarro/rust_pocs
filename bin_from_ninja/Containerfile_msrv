@@ -2,9 +2,11 @@ FROM docker.io/library/rust:1.82.0-slim-bookworm
 
 RUN set -eux; \
     rustup component add clippy rustfmt; \
-    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.39.5 --locked; \
+    # Pixi 0.41.0 and 0.41.1 do not compile with Rust 1.82.0, because
+    #   `std::io::ErrorKind::NotADirectory` is available since Rust 1.83.0.
+    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.40.3 --locked; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
-    pixi global install rsync=3.3.0
+    pixi global install rsync=3.4.1
 
 ENV HOME="/root"
 ENV PATH="$PATH:$HOME/.pixi/bin"

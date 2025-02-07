@@ -10,5 +10,5 @@ example = "make example.ninja"
 fmt = "make fmt"
 
 [dependencies]
-make = "4.4.1"
-ninja = "1.12.1"
+make = "4.4.1.*"
+ninja = "1.12.1.*"

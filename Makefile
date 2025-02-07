@@ -26,4 +26,4 @@ install_git_hooks:
 install_rust_toolchains:
 	rustup toolchain install 1.81.0 --profile minimal --component clippy,rustfmt
 	rustup toolchain install 1.82.0 --profile minimal
-	rustup toolchain install 1.84.0 --profile minimal --component clippy,rustfmt
+	rustup toolchain install 1.84.1 --profile minimal --component clippy,rustfmt
