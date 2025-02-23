@@ -4,9 +4,9 @@ use std::fs;
 use std::io::Write;
 use std::path;
 
-use super::errors::*;
 use super::ChildPath;
 use super::TempDir;
+use super::errors::*;
 
 /// Create empty directories at [`ChildPath`].
 ///

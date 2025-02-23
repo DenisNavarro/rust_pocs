@@ -2,7 +2,7 @@ use std::fmt::{Debug, Display};
 use std::fs::{self, Metadata};
 use std::path::Path;
 
-use anyhow::{ensure, Context as _};
+use anyhow::{Context as _, ensure};
 use uniquote::Quote as _;
 
 #[must_use]

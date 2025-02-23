@@ -62,7 +62,9 @@ enum InnerError {
         "failed to write, in a build definition, the order-only dependency {dependency:?}"
     ))]
     OrderOnlyDependency { source: io::Error, dependency: String },
-    #[snafu(display("failed to write, in a build definition, the variable {variable:?} with the value {value:?}"))]
+    #[snafu(display(
+        "failed to write, in a build definition, the variable {variable:?} with the value {value:?}"
+    ))]
     VariableAndValue { source: io::Error, variable: String, value: String },
     #[snafu(display("failed to write the end of a build definition"))]
     BuildEnd { source: io::Error },

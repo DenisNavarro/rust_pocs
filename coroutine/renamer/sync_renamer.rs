@@ -1,7 +1,7 @@
 use clap::Parser;
 
 use common::{exists, get_now, get_size, rename};
-use renamer::{work, RenameTo, Yield};
+use renamer::{RenameTo, Yield, work};
 
 #[derive(Parser)]
 /// If the file has 42 bytes or more, move it by appending a suffix.

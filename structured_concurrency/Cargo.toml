@@ -1,6 +1,6 @@
 [package]
 name = "structured_concurrency"
-edition = "2021"
+edition = "2024"
 
 [profile.dev]
 debug = false

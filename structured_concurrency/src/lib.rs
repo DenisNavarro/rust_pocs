@@ -3,7 +3,7 @@
 // The original code lacks error handling. To limit the differences, I did not fix it.
 
 use std::num::NonZeroUsize;
-use std::sync::{mpsc, Mutex};
+use std::sync::{Mutex, mpsc};
 use std::thread::{Scope, ScopedJoinHandle};
 
 pub struct ThreadPool<'scope> {
@@ -72,14 +72,16 @@ impl<'scope> Worker<'scope> {
         // The original code called `std::thread::spawn` instead of `std::thread::Scope::spawn`:
         // https://github.com/rust-lang/book/blob/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code/src/lib.rs#L71
         // This change had a lot of consequences in the calling code.
-        let thread = s.spawn(move || loop {
-            let message = receiver.lock().unwrap().recv(); // unwrap like in the original code
-            if let Ok(job) = message {
-                println!("Worker {id} got a job; executing.");
-                job();
-            } else {
-                println!("Worker {id} disconnected; shutting down.");
-                break;
+        let thread = s.spawn(move || {
+            loop {
+                let message = receiver.lock().unwrap().recv(); // unwrap like in the original code
+                if let Ok(job) = message {
+                    println!("Worker {id} got a job; executing.");
+                    job();
+                } else {
+                    println!("Worker {id} disconnected; shutting down.");
+                    break;
+                }
             }
         });
         Worker { id, thread }

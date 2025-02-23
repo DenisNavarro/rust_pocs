@@ -5,13 +5,13 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::Instant;
 
-use anyhow::{ensure, Context as _};
+use anyhow::{Context as _, ensure};
 use camino::Utf8Path;
 use clap::Parser;
 use humantime::format_duration;
 use regex_lite::Regex;
-use time::macros::format_description;
 use time::OffsetDateTime;
+use time::macros::format_description;
 
 use common::{quote, quote_path};
 
@@ -159,14 +159,14 @@ fn synchronize(mut src_path: Cow<str>, dst_path: &Path) -> anyhow::Result<()> {
 mod tests {
     use super::*;
 
+    use assert_fs::TempDir;
     use assert_fs::fixture::{
         FileWriteStr as _, PathChild as _, PathCreateDir as _, SymlinkToDir as _,
         SymlinkToFile as _,
     };
-    use assert_fs::TempDir;
     use time::macros::datetime;
 
-    use common::{check_err_contains, Check as _};
+    use common::{Check as _, check_err_contains};
 
     // TODO: make the code more readable and then remove most comments.
     // The future code will probably write and check the directory content with YAML. Example:

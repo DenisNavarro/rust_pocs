@@ -6,7 +6,7 @@ use time::OffsetDateTime;
 use tokio::fs;
 
 use common::{get_now, quote};
-use renamer::{work, RenameTo, Yield};
+use renamer::{RenameTo, Yield, work};
 
 #[derive(Parser)]
 /// If the file has 42 bytes or more, move it by appending a suffix.

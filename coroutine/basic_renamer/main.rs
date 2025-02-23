@@ -1,6 +1,6 @@
 use clap::Parser;
-use time::macros::format_description;
 use time::OffsetDateTime;
+use time::macros::format_description;
 
 use common::{exists, get_now, get_size, rename};
 
@@ -57,11 +57,11 @@ mod tests {
     use std::fs::{self, Metadata};
     use std::path::Path;
 
-    use anyhow::{ensure, Context as _};
-    use assert_fs::fixture::{FileWriteStr as _, PathChild as _};
+    use anyhow::{Context as _, ensure};
     use assert_fs::TempDir;
-    use time::macros::datetime;
+    use assert_fs::fixture::{FileWriteStr as _, PathChild as _};
     use time::OffsetDateTime;
+    use time::macros::datetime;
 
     const BIG_ENOUGH_CONTENT: &str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 

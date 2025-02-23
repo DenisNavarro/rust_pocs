@@ -4,8 +4,8 @@ extern crate alloc;
 use alloc::format;
 use alloc::string::String;
 
-use time::macros::format_description;
 use time::OffsetDateTime;
+use time::macros::format_description;
 
 #[must_use]
 pub struct RenameTo(pub String);
@@ -44,14 +44,14 @@ fn get_destination_path<E>(
 
 #[cfg(test)]
 mod tests {
-    use super::{work, RenameTo};
+    use super::{RenameTo, work};
 
     use alloc::collections::BTreeMap;
     use alloc::string::String;
     use core::convert::Infallible;
 
-    use time::macros::datetime;
     use time::OffsetDateTime;
+    use time::macros::datetime;
 
     #[derive(Debug, PartialEq, Eq)]
     struct Size(u64);

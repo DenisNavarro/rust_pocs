@@ -8,8 +8,8 @@ members = [
 resolver = "2"
 
 [workspace.package]
-edition = "2021"
-rust-version = "1.82.0"
+edition = "2024"
+rust-version = "1.85.0"
 
 [profile.dev]
 debug = false

@@ -19,8 +19,8 @@ use cargo_metadata::MetadataCommand;
 use glob::glob;
 use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
-use toml::value::Table;
 use toml::Value;
+use toml::value::Table;
 
 use ninja_writer::{Config, NinjaWriter};
 

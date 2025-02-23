@@ -4,8 +4,8 @@ extern crate alloc;
 use alloc::format;
 use alloc::string::String;
 
-use time::macros::format_description;
 use time::OffsetDateTime;
+use time::macros::format_description;
 
 #[must_use]
 pub enum Yield<'a> {
@@ -69,13 +69,13 @@ fn get_candidate(file_path: &str, formatted_date: &str, number: usize) -> String
 
 #[cfg(test)]
 mod tests {
-    use super::{work, RenameTo, Yield};
+    use super::{RenameTo, Yield, work};
 
     use alloc::collections::BTreeMap;
     use alloc::string::String;
 
-    use time::macros::datetime;
     use time::OffsetDateTime;
+    use time::macros::datetime;
 
     #[derive(Debug, PartialEq, Eq)]
     struct Size(u64);
