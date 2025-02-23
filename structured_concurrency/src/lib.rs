@@ -43,7 +43,7 @@ impl<'scope> ThreadPool<'scope> {
     }
 }
 
-impl<'scope> Drop for ThreadPool<'scope> {
+impl Drop for ThreadPool<'_> {
     fn drop(&mut self) {
         drop(self.sender.take());
         for worker in self.workers.drain(..) {
