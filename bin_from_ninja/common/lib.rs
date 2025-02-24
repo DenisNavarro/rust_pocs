@@ -6,7 +6,7 @@ use anyhow::{Context as _, ensure};
 use uniquote::Quote as _;
 
 #[must_use]
-pub fn quote(string: &str) -> impl Display + use<'_> {
+pub fn quote(string: &str) -> impl Display {
     // The Rust documentation says:
     //
     // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
@@ -17,7 +17,7 @@ pub fn quote(string: &str) -> impl Display + use<'_> {
 }
 
 #[must_use]
-pub fn quote_path(path: &Path) -> impl Display + use<'_> {
+pub fn quote_path(path: &Path) -> impl Display {
     // The Rust documentation says:
     //
     // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,
