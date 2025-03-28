@@ -105,19 +105,21 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
         "^(.*)_[[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}-[[:digit:]]{2}h[[:digit:]]{2}$",
     )
     .unwrap();
-    let entries_and_errors = fs::read_dir(dst_dir_path)
-        .with_context(|| format!("failed to read as a directory {}", quote_path(dst_dir_path)))?;
-    let mut result = Vec::<PathBuf>::new();
-    for entry_or_err in entries_and_errors {
-        let entry = entry_or_err
-            .with_context(|| format!("failed to read an entry in {}", quote_path(dst_dir_path)))?;
-        let metadata =
-            entry.metadata().with_context(|| format!("failed to read metadata from {entry:?}"))?;
-        if is_candidate(&entry, &metadata, src_dir_name, &regex) {
-            result.push(entry.path());
-        }
-    }
-    Ok(result)
+    fs::read_dir(dst_dir_path)
+        .with_context(|| format!("failed to read as a directory {}", quote_path(dst_dir_path)))?
+        .filter_map(|entry_or_err| {
+            (|| {
+                let entry = entry_or_err.with_context(|| {
+                    format!("failed to read an entry in {}", quote_path(dst_dir_path))
+                })?;
+                let metadata = entry
+                    .metadata()
+                    .with_context(|| format!("failed to read metadata from {entry:?}"))?;
+                Ok(is_candidate(&entry, &metadata, src_dir_name, &regex).then(|| entry.path()))
+            })()
+            .transpose()
+        })
+        .collect()
 }
 
 fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex: &Regex) -> bool {
