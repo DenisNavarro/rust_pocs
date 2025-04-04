@@ -247,7 +247,7 @@ impl<W: Write> NinjaWriter<W> {
             match byte {
                 b'$' | b' ' | b':' | b'|' | b'#' | b'\n' => self.writer.write_all(b"$")?,
                 _ => (),
-            };
+            }
             self.writer.write_all(&[byte])?;
         }
         self.current_line_size += escaped_path_size;

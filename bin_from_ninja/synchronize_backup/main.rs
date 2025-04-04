@@ -125,7 +125,7 @@ fn get_candidates(src_dir_name: &str, dst_dir_path: &Path) -> anyhow::Result<Vec
 fn is_candidate(entry: &DirEntry, metadata: &Metadata, src_dir_name: &str, regex: &Regex) -> bool {
     if !metadata.is_dir() {
         return false;
-    };
+    }
     let dir_name = entry.file_name();
     let Some(dir_name) = dir_name.to_str() else {
         return false;
