@@ -4,7 +4,8 @@ RUN set -eux; \
     rustup component add clippy rustfmt; \
     cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.46.0 --locked; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
-    pixi global install rsync=3.4.1
+    pixi global install rsync=3.4.1; \
+    pixi clean cache --yes
 
 ENV HOME="/root"
 ENV PATH="$PATH:$HOME/.pixi/bin"
@@ -13,14 +14,15 @@ WORKDIR /work
 
 COPY pixi.toml pixi.lock /work/
 
-# Remark: `pixi run all` already does `pixi install` if needed. But it is better to have the
-# result in a cache before `COPY . /work/`.
-RUN pixi install
+RUN set -eux; \
+    pixi install; \
+    pixi clean cache --yes
 
 COPY . /work/
 
 RUN set -eux; \
     pixi run all; \
+    pixi clean cache --yes; \
     rm -rf .pixi target */clippy.ninjatarget */fmt.ninjatarget */test.ninjatarget .ninja_deps \
       .ninja_log build.ninja
 
