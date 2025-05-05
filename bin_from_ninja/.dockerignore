@@ -3,13 +3,13 @@ target/
 */clippy.ninjatarget
 */fmt.ninjatarget
 */test.ninjatarget
-.containerignore
+.dockerignore
 .gitignore
 .ninja_deps
 .ninja_log
-Containerfile
-Containerfile_msrv
 build.ninja
+Dockerfile
+Dockerfile_msrv
 example.ninja
 fetch.maketarget
 podman.bash

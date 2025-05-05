@@ -14,13 +14,13 @@ It also uses [Pixi][], but this dependency is optional.
 [`ninja_bootstrap`]: ./ninja_bootstrap/main.rs
 [Pixi]: https://pixi.sh/
 
-Requirements: See the [`Containerfile`][].
+Requirements: See the [`Dockerfile`][].
 
-[`Containerfile`]: ./Containerfile
+[`Dockerfile`]: ./Dockerfile
 
 Remarks:
 
-  - [`podman.bash`][] checks that the [`Containerfile`][] works.
+  - [`podman.bash`][] checks that the [`Dockerfile`][] works.
   - If you don't want to install [Pixi][], then you need to install the dependencies listed in
     [`pixi.toml`][].
 
