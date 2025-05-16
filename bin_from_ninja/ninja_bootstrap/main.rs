@@ -8,6 +8,7 @@
 
 mod ninja_writer;
 
+use std::env;
 use std::fs;
 use std::io::{self, Write};
 use std::iter;
@@ -17,7 +18,6 @@ use anyhow::Context as _;
 use camino::Utf8PathBuf;
 use cargo_metadata::MetadataCommand;
 use glob::glob;
-use home::home_dir; // std::env::home_dir is deprecated since Rust 1.29.0.
 use serde::Deserialize;
 use toml::Value;
 use toml::value::Table;
@@ -57,7 +57,7 @@ fn write_builds<W: Write>(ninja_writer: &mut NinjaWriter<W>) -> anyhow::Result<(
     let cargo_toml =
         toml::from_str::<CargoToml>(&cargo_toml).context("failed to parse Cargo.toml")?;
     let projects = cargo_toml.workspace.members;
-    let home_path = home_dir().context("failed to get the home directory path")?;
+    let home_path = env::home_dir().context("failed to get the home directory path")?;
     let bin_path = home_path.join("bin");
     ninja_writer.build()?.unix_output(&bin_path)?.rule("create_directory")?.end()?;
     for project in &projects {
