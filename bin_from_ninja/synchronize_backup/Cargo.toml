@@ -17,7 +17,7 @@ regex-lite = "0.1"
 time = { version = "0.3", features = ["formatting", "local-offset", "macros"] }
 
 [dev-dependencies]
-assert_fs = { path = "../assert_fs" }
+assert_fs = "1"
 
 [lints]
 workspace = true

@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "assert_fs",
     "backup",
     "common",
     "ninja_bootstrap",
