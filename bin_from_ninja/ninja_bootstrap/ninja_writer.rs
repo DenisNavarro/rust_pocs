@@ -81,7 +81,7 @@ impl<W: Write> NinjaWriter<W> {
         Self { config, writer, current_line_size: 0 }
     }
 
-    pub fn rule(&mut self, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<W>, Error> {
+    pub fn rule(&mut self, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<'_, W>, Error> {
         assert!(self.current_line_size == 0);
         let rule_name = rule_name.as_ref();
         self.writer
@@ -92,7 +92,7 @@ impl<W: Write> NinjaWriter<W> {
         Ok(AfterRule(self))
     }
 
-    fn write_command(&mut self, command: &[u8]) -> Result<AfterCommand<W>, Error> {
+    fn write_command(&mut self, command: &[u8]) -> Result<AfterCommand<'_, W>, Error> {
         self.writer
             .write_all(b"\n  command = ")
             .and_then(|()| self.writer.write_all(command))
@@ -107,14 +107,14 @@ impl<W: Write> NinjaWriter<W> {
         Ok(())
     }
 
-    pub fn build(&mut self) -> Result<AfterBuild<W>, Error> {
+    pub fn build(&mut self) -> Result<AfterBuild<'_, W>, Error> {
         assert!(self.current_line_size == 0);
         self.writer.write_all(b"build").context(BeginningSnafu)?;
         self.current_line_size = 5;
         Ok(AfterBuild(self))
     }
 
-    fn write_output(&mut self, output: &[u8]) -> Result<AfterOutput<W>, Error> {
+    fn write_output(&mut self, output: &[u8]) -> Result<AfterOutput<'_, W>, Error> {
         self.writer
             .write_all(b" ")
             .with_context(|_| OutputSnafu { output: String::from_utf8_lossy(output) })?;
@@ -124,7 +124,7 @@ impl<W: Write> NinjaWriter<W> {
         Ok(AfterOutput(self))
     }
 
-    fn write_rule(&mut self, rule_name: &[u8]) -> Result<AfterBuildRule<W>, Error> {
+    fn write_rule(&mut self, rule_name: &[u8]) -> Result<AfterBuildRule<'_, W>, Error> {
         self.writer
             .write_all(b": ")
             .with_context(|_| BuildRuleSnafu { rule_name: String::from_utf8_lossy(rule_name) })?;
@@ -134,7 +134,7 @@ impl<W: Write> NinjaWriter<W> {
         Ok(AfterBuildRule(self))
     }
 
-    fn write_input(&mut self, input: &[u8]) -> Result<AfterInput<W>, Error> {
+    fn write_input(&mut self, input: &[u8]) -> Result<AfterInput<'_, W>, Error> {
         self.writer
             .write_all(b" ")
             .with_context(|_| InputSnafu { input: String::from_utf8_lossy(input) })?;
@@ -147,7 +147,7 @@ impl<W: Write> NinjaWriter<W> {
     fn write_first_implicit_dependency(
         &mut self,
         dependency: &[u8],
-    ) -> Result<AfterImplicitDependency<W>, Error> {
+    ) -> Result<AfterImplicitDependency<'_, W>, Error> {
         self.writer.write_all(b" | ").with_context(|_| ImplicitDependencySnafu {
             dependency: String::from_utf8_lossy(dependency),
         })?;
@@ -161,7 +161,7 @@ impl<W: Write> NinjaWriter<W> {
     fn write_extra_implicit_dependency(
         &mut self,
         dependency: &[u8],
-    ) -> Result<AfterImplicitDependency<W>, Error> {
+    ) -> Result<AfterImplicitDependency<'_, W>, Error> {
         self.writer.write_all(b" ").with_context(|_| ImplicitDependencySnafu {
             dependency: String::from_utf8_lossy(dependency),
         })?;
@@ -175,7 +175,7 @@ impl<W: Write> NinjaWriter<W> {
     fn write_first_order_only_dependency(
         &mut self,
         dependency: &[u8],
-    ) -> Result<AfterOrderOnlyDependency<W>, Error> {
+    ) -> Result<AfterOrderOnlyDependency<'_, W>, Error> {
         self.writer.write_all(b" || ").with_context(|_| OrderOnlyDependencySnafu {
             dependency: String::from_utf8_lossy(dependency),
         })?;
@@ -190,7 +190,7 @@ impl<W: Write> NinjaWriter<W> {
         &mut self,
         variable: &[u8],
         value: &[u8],
-    ) -> Result<AfterVariableAndValue<W>, Error> {
+    ) -> Result<AfterVariableAndValue<'_, W>, Error> {
         for bytes in [b"\n  ", variable, b" = ", value] {
             self.writer.write_all(bytes).with_context(|_| VariableAndValueSnafu {
                 variable: String::from_utf8_lossy(variable),

@@ -30,7 +30,7 @@ pub struct WantsExists<'a> {
 #[must_use]
 pub struct RenameTo(pub String);
 
-pub const fn work(file_path: &str, size: u64) -> Yield {
+pub const fn work(file_path: &str, size: u64) -> Yield<'_> {
     if size >= 42 {
         return Yield::WantsNow(WantsNow { file_path });
     }
