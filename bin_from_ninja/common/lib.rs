@@ -66,7 +66,7 @@ where
     fn check_is_file_with_content(&self, expected: impl AsRef<str>) -> anyhow::Result<()> {
         fn inner(path: &Path, expected: &str) -> anyhow::Result<()> {
             let metadata = symlink_metadata(path)?;
-            ensure!(metadata.is_file(), "{path:?} exists but is not a file");
+            ensure!(metadata.is_file(), "{} exists but is not a file", quote_path(path));
             let cont =
                 fs::read(path).with_context(|| format!("failed to read {}", quote_path(path)))?;
             let cont = String::from_utf8(cont)
