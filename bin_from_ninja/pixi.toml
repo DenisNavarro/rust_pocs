@@ -1,4 +1,4 @@
-[project]
+[workspace]
 name = "bin_from_ninja"
 channels = ["conda-forge"]
 platforms = ["linux-64", "linux-aarch64", "linux-ppc64le", "osx-64", "osx-arm64"]
