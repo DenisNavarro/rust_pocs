@@ -1,8 +1,11 @@
-FROM docker.io/library/rust:1.87.0-slim-bookworm
+# Pixi 0.68.0 depends on sevenz-rust2 0.21.0 which requires at least Rust 1.93.0.
+# https://github.com/prefix-dev/pixi/blob/v0.68.0/Cargo.lock#L6968
+# https://github.com/hasenbanck/sevenz-rust2/blob/v0.21.0/Cargo.toml#L10
+FROM docker.io/library/rust:1.93.0-slim-bookworm
 
 RUN set -eux; \
     rustup component add clippy rustfmt; \
-    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.59.0 --locked; \
+    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.68.0 --locked; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
     pixi global install rsync=3.4.1; \
     pixi clean cache --yes
