@@ -1,11 +1,11 @@
 #!/bin/sh
-
 set -e
 
-if ! git diff --cached --quiet -- bin_from_ninja; then (
-    cd bin_from_ninja
-    ./podman.bash
-) fi
+cd "$(git rev-parse --show-toplevel)"
+
+if ! git diff --cached --quiet -- bin_from_ninja; then
+    ./bin_from_ninja/podman.bash
+fi
 
 if ! git diff --cached --quiet -- coroutine; then (
     cd coroutine

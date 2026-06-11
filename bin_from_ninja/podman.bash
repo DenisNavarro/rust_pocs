@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -xeuo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
 podman build -t bin_from_ninja_msrv -f Dockerfile_msrv .
 podman build -t bin_from_ninja .
 podman image prune -f
