@@ -82,7 +82,7 @@ impl<W: Write> NinjaWriter<W> {
     }
 
     pub fn rule(&mut self, rule_name: impl AsRef<[u8]>) -> Result<AfterRule<'_, W>, Error> {
-        assert!(self.current_line_size == 0);
+        assert_eq!(self.current_line_size, 0);
         let rule_name = rule_name.as_ref();
         self.writer
             .write_all(b"rule ")
@@ -108,7 +108,7 @@ impl<W: Write> NinjaWriter<W> {
     }
 
     pub fn build(&mut self) -> Result<AfterBuild<'_, W>, Error> {
-        assert!(self.current_line_size == 0);
+        assert_eq!(self.current_line_size, 0);
         self.writer.write_all(b"build").context(BeginningSnafu)?;
         self.current_line_size = 5;
         Ok(AfterBuild(self))
