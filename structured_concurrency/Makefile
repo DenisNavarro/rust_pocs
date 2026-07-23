@@ -15,10 +15,6 @@ debug : clippy.maketarget
 clean :
 	git clean -dXf
 
-.PHONY: edit # Edit the Makefile
-edit :
-	@codium Makefile
-
 .PHONY: help # Print each phony target with its description
 help:
 	@grep '^.PHONY: .* # ' Makefile | sed 's/\.PHONY: \(.*\) # \(.*\)/\1\t\2/' | expand -t 8

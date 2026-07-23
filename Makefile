@@ -14,16 +14,18 @@ help:
 clean :
 	git clean -dXf
 
-.PHONY: edit # Edit the `Makefile`
-edit :
-	@codium Makefile
-
-.PHONY: install_git_hooks # Install Git hooks
-install_git_hooks:
-	cp pre-commit.sh .git/hooks/pre-commit
+.PHONY: git_hooks # Update the Git hooks
+git_hooks: .git/hooks/pre-commit
 
 .PHONY: install_rust_toolchains # Install the Rust toolchains used by the Git hooks
 install_rust_toolchains:
 	rustup toolchain install 1.85.1 --profile minimal
 	rustup toolchain install 1.88.0 --profile minimal
 	rustup toolchain install 1.97.1 --profile minimal --component clippy,rustfmt
+
+###############
+# File target #
+###############
+
+.git/hooks/pre-commit: pre-commit.sh
+	cp -- $< $@
