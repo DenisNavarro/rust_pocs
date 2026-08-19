@@ -12,8 +12,8 @@ Here are the POCs in the chronological order:
     binaries to `$HOME/bin`, thanks to the `build.ninja` file written by [`ninja_bootstrap`][].  
     It also uses [Pixi][], but this dependency is optional.
 
-  - [`coroutine`] shows a coroutine example and compares it to generic programming for decoupling
-    algorithm from I/O.
+  - [`coroutine`] shows several implementations of the same CLI and compares coroutine examples to
+    generic programming for decoupling algorithm from I/O.
 
 [`structured_concurrency`]: ./structured_concurrency
 [the code]: https://github.com/rust-lang/book/tree/8d3584f55fa7f70ee699016be7e895d35d0e9b27/listings/ch20-web-server/no-listing-07-final-code

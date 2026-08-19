@@ -7,59 +7,56 @@ use alloc::string::String;
 use time::OffsetDateTime;
 use time::macros::format_description;
 
+use corophage::{CoSend, Effects, Program, Yielder, effect};
+
+#[effect(OffsetDateTime)]
+pub struct Now;
+
+#[effect(bool)]
+pub struct Exists(pub String);
+
+type Effs = Effects![Now, Exists];
+
 #[must_use]
 pub struct RenameTo(pub String);
 
-pub async fn work<E, F1, F2>(
-    file_path: &str,
-    size: u64,
-    get_now: impl FnOnce() -> F1,
-    exists: impl FnMut(String) -> F2,
-) -> Result<Option<RenameTo>, E>
-where
-    F1: Future<Output = Result<OffsetDateTime, E>>,
-    F2: Future<Output = Result<bool, E>>,
-{
-    if size >= 42 {
-        let dst_path = get_destination_path(file_path, get_now, exists).await?;
-        return Ok(Some(RenameTo(dst_path)));
-    }
-    Ok(None)
+#[must_use]
+pub fn work(file_path: &str, size: u64) -> CoSend<'_, Effs, Option<RenameTo>> {
+    CoSend::new(move |mut yi: Yielder<'_, Effs>| async move {
+        if size >= 42 {
+            let dst_path = yi.invoke(Program::from_co(get_destination_path(file_path))).await;
+            return Some(RenameTo(dst_path));
+        }
+        None
+    })
 }
 
-async fn get_destination_path<E, F1, F2>(
-    file_path: &str,
-    get_now: impl FnOnce() -> F1,
-    mut exists: impl FnMut(String) -> F2,
-) -> Result<String, E>
-where
-    F1: Future<Output = Result<OffsetDateTime, E>>,
-    F2: Future<Output = Result<bool, E>>,
-{
-    let formatted_date = {
-        let now = get_now().await?;
-        now.format(&format_description!("[year]-[month]-[day]")).unwrap()
-    };
-    let mut number = 1;
-    loop {
-        let candidate = format!("{file_path}.{formatted_date}.{number}");
-        if !exists(candidate.clone()).await? {
-            break Ok(candidate);
+#[must_use]
+fn get_destination_path(file_path: &str) -> CoSend<'_, Effs, String> {
+    CoSend::new(move |mut yi: Yielder<'_, Effs>| async move {
+        let formatted_date = {
+            let now = yi.yield_(Now).await;
+            now.format(&format_description!("[year]-[month]-[day]")).unwrap()
+        };
+        let mut number = 1;
+        loop {
+            let candidate = format!("{file_path}.{formatted_date}.{number}");
+            if !yi.yield_(Exists(candidate.clone())).await {
+                break candidate;
+            }
+            number += 1;
         }
-        number += 1;
-    }
+    })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{RenameTo, work};
+    use super::{Exists, Now, RenameTo, work};
 
     use alloc::collections::BTreeMap;
     use alloc::string::String;
-    use core::convert::Infallible;
-    use core::future::ready;
 
-    use futures::executor::block_on;
+    use corophage::{Control, Program};
     use time::OffsetDateTime;
     use time::macros::datetime;
 
@@ -100,9 +97,11 @@ mod tests {
 
     fn launch_work(files: &mut BTreeMap<String, Size>, file_path: &str, now: OffsetDateTime) {
         let size = files[file_path].0;
-        let get_now = || ready(Ok(now));
-        let exists = |path: String| ready(Ok::<bool, Infallible>(files.contains_key(&path)));
-        let Ok(action) = block_on(work(file_path, size, get_now, exists));
+        let action = Program::from_co(work(file_path, size))
+            .handle(|_: Now| Control::resume(now))
+            .handle(|Exists(path)| Control::resume(files.contains_key(&path)))
+            .run_sync()
+            .unwrap(); // no Err(Cancelled)
         if let Some(RenameTo(dst_path)) = action {
             let file_size = files.remove(file_path).unwrap();
             files.insert(dst_path, file_size);

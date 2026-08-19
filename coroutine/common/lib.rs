@@ -12,12 +12,25 @@ pub fn get_size(file_path: &str) -> anyhow::Result<u64> {
     Ok(metadata.len())
 }
 
+pub async fn get_size_async(file_path: &str) -> anyhow::Result<u64> {
+    let metadata = tokio::fs::metadata(file_path)
+        .await
+        .with_context(|| format!("failed to read metadata from {}", quote(file_path)))?;
+    Ok(metadata.len())
+}
+
 pub fn get_now() -> anyhow::Result<OffsetDateTime> {
     OffsetDateTime::now_local().context("failed to determine the local offset")
 }
 
 pub fn exists(path: &str) -> anyhow::Result<bool> {
     fs::exists(path).with_context(|| format!("failed to get the existence of {}", quote(path)))
+}
+
+pub async fn exists_async(path: &str) -> anyhow::Result<bool> {
+    tokio::fs::try_exists(path)
+        .await
+        .with_context(|| format!("failed to get the existence of {}", quote(path)))
 }
 
 pub fn rename(src_path: &str, dst_path: &str) -> anyhow::Result<()> {
@@ -27,8 +40,16 @@ pub fn rename(src_path: &str, dst_path: &str) -> anyhow::Result<()> {
         .context("failed to write to stdout")
 }
 
+pub async fn rename_async(src_path: &str, dst_path: &str) -> anyhow::Result<()> {
+    tokio::fs::rename(src_path, dst_path)
+        .await
+        .with_context(|| format!("failed to rename {} to {}", quote(src_path), quote(dst_path)))?;
+    writeln!(io::stdout(), "Renamed {} to {}", quote(src_path), quote(dst_path))
+        .context("failed to write to stdout")
+}
+
 #[must_use]
-pub fn quote(string: &str) -> impl Display {
+fn quote(string: &str) -> impl Display {
     // The Rust documentation says:
     //
     // > `Debug` implementations of types provided by the standard library (`std`, `core`, `alloc`,

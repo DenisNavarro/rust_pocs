@@ -9,6 +9,7 @@ path = "lib.rs"
 [dependencies]
 anyhow = "1"
 time = { version = "0.3", features = ["local-offset"] }
+tokio = { version = "1.40", features = ["fs"] }
 uniquote = "4"
 
 [lints]

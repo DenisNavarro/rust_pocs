@@ -10,40 +10,32 @@ use time::macros::format_description;
 #[must_use]
 pub struct RenameTo(pub String);
 
-pub async fn work<E, F1, F2>(
+pub fn work<E>(
     file_path: &str,
     size: u64,
-    get_now: impl FnOnce() -> F1,
-    exists: impl FnMut(String) -> F2,
-) -> Result<Option<RenameTo>, E>
-where
-    F1: Future<Output = Result<OffsetDateTime, E>>,
-    F2: Future<Output = Result<bool, E>>,
-{
+    get_now: impl FnOnce() -> Result<OffsetDateTime, E>,
+    exists: impl FnMut(&str) -> Result<bool, E>,
+) -> Result<Option<RenameTo>, E> {
     if size >= 42 {
-        let dst_path = get_destination_path(file_path, get_now, exists).await?;
+        let dst_path = get_destination_path(file_path, get_now, exists)?;
         return Ok(Some(RenameTo(dst_path)));
     }
     Ok(None)
 }
 
-async fn get_destination_path<E, F1, F2>(
+fn get_destination_path<E>(
     file_path: &str,
-    get_now: impl FnOnce() -> F1,
-    mut exists: impl FnMut(String) -> F2,
-) -> Result<String, E>
-where
-    F1: Future<Output = Result<OffsetDateTime, E>>,
-    F2: Future<Output = Result<bool, E>>,
-{
+    get_now: impl FnOnce() -> Result<OffsetDateTime, E>,
+    mut exists: impl FnMut(&str) -> Result<bool, E>,
+) -> Result<String, E> {
     let formatted_date = {
-        let now = get_now().await?;
+        let now = get_now()?;
         now.format(&format_description!("[year]-[month]-[day]")).unwrap()
     };
     let mut number = 1;
     loop {
         let candidate = format!("{file_path}.{formatted_date}.{number}");
-        if !exists(candidate.clone()).await? {
+        if !exists(&candidate)? {
             break Ok(candidate);
         }
         number += 1;
@@ -57,9 +49,7 @@ mod tests {
     use alloc::collections::BTreeMap;
     use alloc::string::String;
     use core::convert::Infallible;
-    use core::future::ready;
 
-    use futures::executor::block_on;
     use time::OffsetDateTime;
     use time::macros::datetime;
 
@@ -100,9 +90,9 @@ mod tests {
 
     fn launch_work(files: &mut BTreeMap<String, Size>, file_path: &str, now: OffsetDateTime) {
         let size = files[file_path].0;
-        let get_now = || ready(Ok(now));
-        let exists = |path: String| ready(Ok::<bool, Infallible>(files.contains_key(&path)));
-        let Ok(action) = block_on(work(file_path, size, get_now, exists));
+        let get_now = || Ok(now);
+        let exists = |path: &str| Ok::<bool, Infallible>(files.contains_key(path));
+        let Ok(action) = work(file_path, size, get_now, exists);
         if let Some(RenameTo(dst_path)) = action {
             let file_size = files.remove(file_path).unwrap();
             files.insert(dst_path, file_size);

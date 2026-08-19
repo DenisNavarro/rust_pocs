@@ -2,8 +2,10 @@
 members = [
     "basic_renamer",
     "common",
+    "corophage_renamer",
     "generic_renamer",
     "renamer",
+    "simple_generic_renamer",
 ]
 resolver = "3"
 

@@ -1,15 +1,11 @@
 [package]
-name = "generic_renamer"
+name = "simple_generic_renamer"
 edition.workspace = true
 rust-version.workspace = true
 
 [[bin]]
-name = "generic_async_renamer"
-path = "generic_async_renamer.rs"
-
-[[bin]]
-name = "generic_sync_renamer"
-path = "generic_sync_renamer.rs"
+name = "simple_generic_renamer"
+path = "main.rs"
 
 [lib]
 path = "lib.rs"
@@ -18,9 +14,7 @@ path = "lib.rs"
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
 common = { path = "../common" }
-futures = "0.3"
 time = { version = "0.3", features = ["formatting", "macros"] }
-tokio = { version = "1.40", features = ["fs", "rt"] }
 
 [lints]
 workspace = true
