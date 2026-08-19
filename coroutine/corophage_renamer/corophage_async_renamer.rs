@@ -1,6 +1,6 @@
 use anyhow::Context as _;
 use clap::Parser;
-use corophage::{Cancelled, Control, Program};
+use corophage::{Cancelled, Control};
 use time::OffsetDateTime;
 
 use common::{exists_async, get_now, get_size_async, rename_async};
@@ -32,7 +32,7 @@ fn main() -> anyhow::Result<()> {
 async fn main_impl(file_path: &str, now: OffsetDateTime) -> anyhow::Result<()> {
     let size = get_size_async(file_path).await?;
     let mut error: Option<anyhow::Error> = None;
-    let result = Program::from_co(work(file_path, size))
+    let result = work(file_path, size)
         .handle(async |_: &mut Option<anyhow::Error>, _: Now| Control::resume(now))
         .handle(async |error: &mut Option<anyhow::Error>, Exists(path)| {
             match exists_async(&path).await {

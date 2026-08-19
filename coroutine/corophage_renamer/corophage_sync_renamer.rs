@@ -1,5 +1,5 @@
 use clap::Parser;
-use corophage::{Cancelled, Control, Program};
+use corophage::{Cancelled, Control};
 
 use common::{exists, get_now, get_size, rename};
 use corophage_renamer::{Exists, Now, RenameTo, work};
@@ -19,7 +19,7 @@ fn main() -> anyhow::Result<()> {
     let Cli { file_path } = Cli::parse();
     let size = get_size(&file_path)?;
     let mut error: Option<anyhow::Error> = None;
-    let result = Program::from_co(work(&file_path, size))
+    let result = work(&file_path, size)
         .handle(|error: &mut Option<anyhow::Error>, _: Now| match get_now() {
             Ok(now) => Control::resume(now),
             Err(err) => {
