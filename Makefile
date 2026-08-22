@@ -21,7 +21,7 @@ git_hooks: .git/hooks/pre-commit
 install_rust_toolchains:
 	rustup toolchain install 1.85.1 --profile minimal
 	rustup toolchain install 1.88.0 --profile minimal
-	rustup toolchain install 1.97.1 --profile minimal --component clippy,rustfmt
+	rustup toolchain install 1.98.0 --profile minimal --component clippy,rustfmt
 
 ###############
 # File target #

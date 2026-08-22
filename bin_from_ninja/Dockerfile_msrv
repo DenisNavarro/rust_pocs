@@ -1,5 +1,5 @@
-# Pixi 0.73.0 depends on sysinfo 0.39.3 which requires at least Rust 1.95.0.
-# https://github.com/prefix-dev/pixi/blob/v0.73.0/Cargo.lock#L10777
+# Pixi 0.77.0 depends on sysinfo 0.39.3 which requires at least Rust 1.95.0.
+# https://github.com/prefix-dev/pixi/blob/v0.77.0/Cargo.lock#L10890
 # https://github.com/GuillaumeGomez/sysinfo/blob/v0.39.3/Cargo.toml#L9
 FROM docker.io/library/rust:1.95.0-slim-bookworm
 
@@ -7,7 +7,7 @@ ENV HOME="/root"
 
 RUN set -eux; \
     rustup component add clippy rustfmt; \
-    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.73.0 --locked; \
+    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.77.0 --locked; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
     pixi global install rsync=3.4.4; \
     rm -rf ~/.cargo/git/db ~/.cargo/git/checkouts ~/.cargo/registry/src \

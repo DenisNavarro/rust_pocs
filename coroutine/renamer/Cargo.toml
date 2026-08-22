@@ -19,7 +19,7 @@ anyhow = "1"
 clap = { version = "4", features = ["derive"] }
 common = { path = "../common" }
 time = { version = "0.3", features = ["formatting", "macros"] }
-tokio = { version = "1.40", features = ["fs", "rt"] }
+tokio = { version = "1", features = ["fs", "rt"] }
 
 [lints]
 workspace = true
