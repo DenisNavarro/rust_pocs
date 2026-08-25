@@ -180,9 +180,10 @@ If the algorithm is a function, then it has a `connect` callback which returns a
 `Result<Handle, E>`. `Handle` provides the server operations and a `disconnect` method which
 destroys the handle.
 
-In sync Rust, you can call `disconnect` from `Handle::drop`. But, if the algorithm and `disconnect`
-are async functions, then you should call `disconnect` yourself. Be careful not to skip the call to
-`disconnect` by an early return, for example by propagating errors with the `?` operator.
+In sync Rust, you can call `disconnect` from `Handle::drop`. But, if you want to be able to
+propagate the error if `disconnect` fails, then you have to call it explicitly. In async Rust, you
+have to call it explicitly anyway. Be careful not to skip the call to `disconnect` by an early
+return, for example by propagating errors with the `?` operator.
 Rust does not support linear types yet.
 
 If the algorithm is a coroutine which can yield, among other things, a `Connect`, a server
