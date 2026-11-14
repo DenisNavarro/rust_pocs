@@ -1,12 +1,12 @@
-FROM docker.io/library/rust:1.99.0-slim-bookworm
+FROM docker.io/library/rust:1.100.0-slim-bookworm
 
 ENV HOME="/root"
 
 RUN set -eux; \
     rustup component add clippy rustfmt; \
-    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.81.0 --locked; \
+    cargo install pixi --git https://github.com/prefix-dev/pixi.git --tag v0.84.2; \
     # Remark: `synchronize_backup` and `synchronize_partially` call `rsync`.
-    pixi global install rsync=3.4.4; \
+    pixi global install rsync=3.5.2; \
     rm -rf ~/.cargo/git/db ~/.cargo/git/checkouts ~/.cargo/registry/src \
       ~/.cargo/registry/cache ~/.cargo/registry/index; \
     pixi clean cache --yes
